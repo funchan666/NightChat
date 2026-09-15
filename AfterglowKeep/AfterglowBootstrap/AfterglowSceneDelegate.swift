@@ -10,7 +10,7 @@ final class AfterglowSceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
-        window.backgroundColor = AfterHoursPalette.inkWell
+        window.backgroundColor = AfterHoursPalette.magentaPeak
         AfterglowRootCoordinator.install(in: window)
         self.window = window
         window.makeKeyAndVisible()

@@ -6,6 +6,7 @@ final class AfterglowAppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        NightSocialSessionDrawer.shared.openDrawer()
         AfterglowRootCoordinator.applyChrome()
         return true
     }

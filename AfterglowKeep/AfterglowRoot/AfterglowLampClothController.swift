@@ -1,23 +1,26 @@
 import UIKit
 
-final class AfterglowLampClothController: UIViewController {
-    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
+final class AfterglowLampClothController: NightSocialWashController {
+    private var didAdvance = false
+    private let emberPulse = NeonAfterglowDotPulse()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = AfterHoursPalette.inkWell
-
-        let lampCloth = UIImageView(image: UIImage(named: "LaunchLampCloth"))
-        lampCloth.contentMode = .scaleAspectFill
-        lampCloth.clipsToBounds = true
-        lampCloth.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(lampCloth)
+        let mark = attachCenteredStageMark(edge: 96)
+        view.addSubview(emberPulse)
         NSLayoutConstraint.activate([
-            lampCloth.topAnchor.constraint(equalTo: view.topAnchor),
-            lampCloth.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            lampCloth.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            lampCloth.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            emberPulse.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emberPulse.topAnchor.constraint(equalTo: mark.bottomAnchor, constant: 22),
         ])
+        emberPulse.ignitePulse()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !didAdvance else { return }
+        didAdvance = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.45) { [weak self] in
+            AfterglowRootCoordinator.advanceFromLaunchCloth(in: self?.view.window)
+        }
     }
 }

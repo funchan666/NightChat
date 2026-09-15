@@ -19,6 +19,9 @@ targets:
       - path: AfterglowKeep
         excludes:
           - "**/*.md"
+      - path: assets/images
+        type: group
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lampdesk.afterhours

@@ -1,24 +1,79 @@
 import UIKit
 
 enum AfterHoursPalette {
-    static let inkWell = UIColor(red: 0.086, green: 0.067, blue: 0.047, alpha: 1)
-    static let walnut = UIColor(red: 0.165, green: 0.122, blue: 0.086, alpha: 1)
-    static let brass = UIColor(red: 0.769, green: 0.631, blue: 0.353, alpha: 1)
-    static let lampAmber = UIColor(red: 0.902, green: 0.694, blue: 0.361, alpha: 1)
-    static let ember = UIColor(red: 0.769, green: 0.361, blue: 0.149, alpha: 1)
-    static let creamPaper = UIColor(red: 0.957, green: 0.906, blue: 0.820, alpha: 1)
-    static let teaStain = UIColor(red: 0.851, green: 0.769, blue: 0.627, alpha: 1)
-    static let hushInk = UIColor(red: 0.173, green: 0.141, blue: 0.110, alpha: 1)
+    static let magentaPeak = UIColor(red: 1.00, green: 0.22, blue: 0.72, alpha: 1)
+    static let peachWash = UIColor(red: 1.00, green: 0.69, blue: 0.62, alpha: 1)
+    static let snowCard = UIColor.white
+    static let midnightPill = UIColor(red: 0.11, green: 0.07, blue: 0.12, alpha: 1)
+    static let mistPlaceholder = UIColor(red: 0.73, green: 0.73, blue: 0.75, alpha: 1)
+    static let titleSnow = UIColor.white
+    static let inkOnSnow = UIColor(red: 0.10, green: 0.08, blue: 0.12, alpha: 1)
+    static let hairlineMist = UIColor(red: 0.93, green: 0.93, blue: 0.94, alpha: 1)
+    static let footerSnow = UIColor.white.withAlphaComponent(0.94)
+    static let portraitDiscFill = UIColor.white.withAlphaComponent(0.28)
+    static let stageDockPlum = UIColor(red: 0x8A / 255.0, green: 0x11 / 255.0, blue: 0x5C / 255.0, alpha: 1)
+    static let loungeInk = UIColor(red: 0.165, green: 0.035, blue: 0.145, alpha: 1)
+    static let loungeCard = UIColor(red: 0.31, green: 0.08, blue: 0.27, alpha: 1)
+    static let loungePink = UIColor(red: 1.00, green: 0.29, blue: 0.62, alpha: 1)
+    static let levelMint = UIColor(red: 0.49, green: 0.98, blue: 0.70, alpha: 1)
 }
 
 enum AfterHoursType {
-    static func sittingTitle(_ size: CGFloat) -> UIFont {
-        let base = UIFont.systemFont(ofSize: size, weight: .semibold)
-        guard let serif = base.fontDescriptor.withDesign(.serif) else { return base }
-        return UIFont(descriptor: serif, size: size)
+    static func foyerHeadline(_ size: CGFloat) -> UIFont {
+        UIFont.systemFont(ofSize: size, weight: .medium)
     }
 
-    static func deskBody(_ size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
+    static func foyerPill(_ size: CGFloat) -> UIFont {
+        UIFont.systemFont(ofSize: size, weight: .semibold)
+    }
+
+    static func foyerBody(_ size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
         UIFont.systemFont(ofSize: size, weight: weight)
+    }
+
+    static func foyerCaption(_ size: CGFloat) -> UIFont {
+        UIFont.systemFont(ofSize: size, weight: .medium)
+    }
+}
+
+enum NightSocialImageCabinet {
+    static var stageWash: UIImage? {
+        UIImage(named: "MagentaStageWash") ?? UIImage(named: "background")
+    }
+
+    static var stageMark: UIImage? {
+        UIImage(named: "NightSocialStageMark") ?? UIImage(named: "Group_891")
+    }
+
+    static var portraitLens: UIImage? {
+        UIImage(named: "PortraitLensBadge") ?? UIImage(named: "Frame_1")
+    }
+
+    static func dockHouse(lit: Bool) -> UIImage? {
+        lit
+            ? (UIImage(named: "DockHouseLit") ?? UIImage(named: "Group_146@2x(1)"))
+            : (UIImage(named: "DockHouseIdle") ?? UIImage(named: "tab1"))
+    }
+
+    static func dockWave(lit: Bool) -> UIImage? {
+        lit
+            ? (UIImage(named: "DockWaveLit") ?? UIImage(named: "Frame@2x(59)"))
+            : (UIImage(named: "DockWaveIdle") ?? UIImage(named: "tab2"))
+    }
+
+    static func dockChime(lit: Bool) -> UIImage? {
+        lit
+            ? (UIImage(named: "DockChimeLit") ?? UIImage(named: "Group_150@2x(1)"))
+            : (UIImage(named: "DockChimeIdle") ?? UIImage(named: "tab3"))
+    }
+
+    static func dockSmile(lit: Bool) -> UIImage? {
+        lit
+            ? (UIImage(named: "DockSmileLit") ?? UIImage(named: "Group_148@2x(1)"))
+            : (UIImage(named: "DockSmileIdle") ?? UIImage(named: "tab4"))
+    }
+
+    static func named(_ catalog: String, fallback: String) -> UIImage? {
+        UIImage(named: catalog) ?? UIImage(named: fallback)
     }
 }
