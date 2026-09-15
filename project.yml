@@ -1,0 +1,39 @@
+name: NightChat
+options:
+  bundleIdPrefix: com.lampdesk
+  deploymentTarget:
+    iOS: "16.0"
+  developmentLanguage: en
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+targets:
+  NightChat:
+    type: application
+    platform: iOS
+    sources:
+      - path: AfterglowKeep
+        excludes:
+          - "**/*.md"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lampdesk.afterhours
+        INFOPLIST_FILE: AfterglowKeep/Info.plist
+        PRODUCT_NAME: NightChat
+        CODE_SIGN_ENTITLEMENTS: AfterglowKeep/NightChat.entitlements
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: false
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: false
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_EMIT_LOC_STRINGS: false
+        INFOPLIST_KEY_CFBundleDisplayName: NightChat
+        INFOPLIST_KEY_UILaunchStoryboardName: LaunchScreen
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+    scheme:
+      testTargets: []
