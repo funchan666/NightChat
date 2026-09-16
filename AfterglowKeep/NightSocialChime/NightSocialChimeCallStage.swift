@@ -29,7 +29,7 @@ final class NightSocialChimeCallStage: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeInk
         additionalSafeAreaInsets = .zero
-        cover.image = NightSocialStandIn.plate(seed: spokenName + "-call", size: CGSize(width: 420, height: 760))
+        cover.image = NightSocialMediaAssets.cover(for: deskKey, size: CGSize(width: 420, height: 760))
         cover.contentMode = .scaleAspectFill
         cover.clipsToBounds = true
         cover.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +41,7 @@ final class NightSocialChimeCallStage: UIViewController {
         namePlate.isUserInteractionEnabled = true
         namePlate.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openDesk)))
         namePlate.translatesAutoresizingMaskIntoConstraints = false
-        avatar.image = NightSocialStandIn.plate(seed: spokenName, size: CGSize(width: 220, height: 220))
+        avatar.image = NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 220, height: 220))
         avatar.layer.cornerRadius = 70
         avatar.clipsToBounds = true
         avatar.layer.borderWidth = 3

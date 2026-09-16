@@ -371,7 +371,7 @@ final class WaveChamberRow: UITableViewCell {
 
     func paint(_ chamber: WaveVoiceChamber) {
         let host = NightSocialWaveCatalog.hostName(chamber)
-        portrait.image = NightSocialStandIn.plate(seed: host, size: CGSize(width: 120, height: 120))
+        portrait.image = NightSocialMediaAssets.portrait(for: chamber.hostDeskKey, size: CGSize(width: 120, height: 120))
         titlePlate.text = chamber.chamberTitle
         hostPlate.text = "\(host)  \(chamber.moodLine)"
         heatPlate.text = "\(chamber.heatScore)"
@@ -388,8 +388,8 @@ final class WaveChamberRow: UITableViewCell {
             tagRow.addArrangedSubview(plate)
         }
         let seats = chamber.seatDeskKeys
-        stackA.image = seats.indices.contains(0) ? NightSocialStandIn.plate(seed: seats[0], size: CGSize(width: 40, height: 40)) : nil
-        stackB.image = seats.indices.contains(1) ? NightSocialStandIn.plate(seed: seats[1], size: CGSize(width: 40, height: 40)) : nil
-        stackC.image = seats.indices.contains(2) ? NightSocialStandIn.plate(seed: seats[2], size: CGSize(width: 40, height: 40)) : nil
+        stackA.image = seats.indices.contains(0) ? NightSocialMediaAssets.portrait(for: seats[0], size: CGSize(width: 40, height: 40)) : nil
+        stackB.image = seats.indices.contains(1) ? NightSocialMediaAssets.portrait(for: seats[1], size: CGSize(width: 40, height: 40)) : nil
+        stackC.image = seats.indices.contains(2) ? NightSocialMediaAssets.portrait(for: seats[2], size: CGSize(width: 40, height: 40)) : nil
     }
 }

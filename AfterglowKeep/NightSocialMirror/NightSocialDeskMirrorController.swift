@@ -273,9 +273,9 @@ final class NightSocialDeskMirrorController: UIViewController {
         fanPlate.text = "\(NightSocialSessionDrawer.shared.fanDeskKeys().count)\nFollowers"
         friendPlate.text = "\(NightSocialSessionDrawer.shared.acceptedFriendKeys().count)\nFriends"
         portrait.image = NightSocialSessionDrawer.shared.loadPortrait()
-            ?? NightSocialStandIn.plate(seed: alias, size: CGSize(width: 160, height: 160))
+            ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 160, height: 160))
         cover.image = NightSocialSessionDrawer.shared.loadCover()
-            ?? NightSocialStandIn.plate(seed: alias + "-cover", size: CGSize(width: 420, height: 520))
+            ?? NightSocialMediaAssets.localCover(size: CGSize(width: 420, height: 520))
     }
 
     @objc private func openLanguage() {

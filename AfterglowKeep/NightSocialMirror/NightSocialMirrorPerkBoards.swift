@@ -225,7 +225,7 @@ final class NightSocialMirrorLevelBoard: UIViewController {
         wash.layer.cornerRadius = 22
         wash.translatesAutoresizingMaskIntoConstraints = false
         let alias = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "Night guest"
-        let pic = UIImageView(image: NightSocialSessionDrawer.shared.loadPortrait() ?? NightSocialStandIn.plate(seed: alias, size: CGSize(width: 120, height: 120)))
+        let pic = UIImageView(image: NightSocialSessionDrawer.shared.loadPortrait() ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 120, height: 120)))
         pic.layer.cornerRadius = 28
         pic.clipsToBounds = true
         pic.translatesAutoresizingMaskIntoConstraints = false
@@ -740,7 +740,7 @@ final class NightSocialMirrorEditBoard: UIViewController, PHPickerViewController
         cover.isUserInteractionEnabled = true
         cover.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pickCover)))
         cover.translatesAutoresizingMaskIntoConstraints = false
-        cover.image = NightSocialSessionDrawer.shared.loadCover()
+        cover.image = NightSocialMediaAssets.localCover(size: CGSize(width: 420, height: 520))
         let hint = UILabel()
         hint.text = "Change the background image"
         hint.font = AfterHoursType.foyerBody(14)
@@ -750,7 +750,10 @@ final class NightSocialMirrorEditBoard: UIViewController, PHPickerViewController
         let slot = UIButton(type: .custom)
         slot.backgroundColor = AfterHoursPalette.loungeCard
         slot.layer.cornerRadius = 16
-        slot.setTitle("+", for: .normal)
+        slot.setImage(NightSocialMediaAssets.localPortrait(size: CGSize(width: 120, height: 120)), for: .normal)
+        slot.imageView?.contentMode = .scaleAspectFill
+        slot.clipsToBounds = true
+        slot.accessibilityLabel = "Change profile photo"
         slot.titleLabel?.font = AfterHoursType.foyerHeadline(28)
         slot.addTarget(self, action: #selector(pickPortrait), for: .touchUpInside)
         slot.translatesAutoresizingMaskIntoConstraints = false

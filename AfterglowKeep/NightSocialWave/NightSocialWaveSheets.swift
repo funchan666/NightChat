@@ -45,7 +45,7 @@ final class NightSocialWaveRankSheet: UIViewController, UITableViewDataSource, U
         cell.backgroundColor = AfterHoursPalette.loungeInk.withAlphaComponent(0.4)
         cell.textLabel?.textColor = .white
         cell.textLabel?.text = "\(indexPath.row + 1)  \(desk.spokenName)    \(840 - indexPath.row * 200)"
-        cell.imageView?.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 48, height: 48))
+        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
         cell.selectionStyle = .none
         return cell
     }
@@ -197,7 +197,7 @@ final class NightSocialWaveHostPicksSheet: UIViewController, UITableViewDataSour
         cell.backgroundColor = .clear
         cell.textLabel?.textColor = .white
         cell.textLabel?.text = "\(desk.spokenName)  \(desk.cityLabel)"
-        cell.imageView?.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 48, height: 48))
+        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
         cell.selectionStyle = .none
         return cell
     }

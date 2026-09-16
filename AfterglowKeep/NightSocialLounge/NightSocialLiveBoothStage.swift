@@ -2,6 +2,7 @@ import UIKit
 
 final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     private let boothKey: String
+    private var videoSurface: NightSocialVideoSurface?
     private var chatLines: [LoungeDiscussLine] = []
     private let table = UITableView()
     private let field = UITextField()
@@ -13,6 +14,16 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     required init?(coder: NSCoder) { nil }
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        videoSurface?.start()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        videoSurface?.stop()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeInk
@@ -20,8 +31,8 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         view.insetsLayoutMarginsFromSafeArea = false
         guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
 
-        let cover = UIImageView(image: NightSocialStandIn.plate(seed: booth.hostSpokenName + "-live", size: CGSize(width: 420, height: 760)))
-        cover.contentMode = .scaleAspectFill
+        let cover = NightSocialVideoSurface(ownerKey: booth.hostDeskKey)
+        videoSurface = cover
         cover.clipsToBounds = true
         cover.translatesAutoresizingMaskIntoConstraints = false
 
@@ -30,7 +41,7 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         hostChip.layer.cornerRadius = 20
         hostChip.addTarget(self, action: #selector(openHost), for: .touchUpInside)
         hostChip.translatesAutoresizingMaskIntoConstraints = false
-        let hostPic = UIImageView(image: NightSocialStandIn.plate(seed: booth.hostSpokenName, size: CGSize(width: 80, height: 80)))
+        let hostPic = UIImageView(image: NightSocialMediaAssets.portrait(for: booth.hostDeskKey, size: CGSize(width: 80, height: 80)))
         hostPic.layer.cornerRadius = 16
         hostPic.clipsToBounds = true
         hostPic.translatesAutoresizingMaskIntoConstraints = false
@@ -296,7 +307,7 @@ final class NightSocialBoothCrowdSheet: UIViewController, UITableViewDataSource,
         cell.textLabel?.textColor = .white
         cell.textLabel?.numberOfLines = 2
         cell.textLabel?.text = "\(desk.spokenName)  \(desk.cityLabel)\n\(desk.handleTag)  \(desk.vibeLine)"
-        cell.imageView?.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 48, height: 48))
+        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
         cell.selectionStyle = .none
         return cell
     }
@@ -349,7 +360,7 @@ final class NightSocialBoothLadderSheet: UIViewController, UITableViewDataSource
         cell.textLabel?.textColor = .white
         let desk = rows[indexPath.row]
         cell.textLabel?.text = "\(indexPath.row + 1)  \(desk.spokenName)    \(desk.activityScore)"
-        cell.imageView?.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 48, height: 48))
+        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
         cell.selectionStyle = .none
         return cell
     }
@@ -374,7 +385,7 @@ final class NightSocialHostCardSheet: UIViewController {
         view.backgroundColor = AfterHoursPalette.loungeCard
         guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey),
               let desk = NightSocialLoungeCatalog.creator(deskKey: booth.hostDeskKey) else { return }
-        let pic = UIImageView(image: NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 140, height: 140)))
+        let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 140, height: 140)))
         pic.layer.cornerRadius = 32
         pic.clipsToBounds = true
         pic.isUserInteractionEnabled = true

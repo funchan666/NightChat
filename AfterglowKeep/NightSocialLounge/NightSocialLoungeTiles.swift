@@ -77,7 +77,7 @@ final class LoungeCreatorTile: UICollectionViewCell {
     required init?(coder: NSCoder) { nil }
 
     func paint(_ desk: LoungeCreatorDesk) {
-        cover.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 320, height: 420))
+        cover.image = NightSocialMediaAssets.cover(for: desk.deskKey, size: CGSize(width: 320, height: 420))
         hotMark.isHidden = !desk.isHot
         likePlate.text = "♡ \(desk.likeCount)"
         namePlate.text = desk.spokenName
@@ -176,7 +176,7 @@ final class LoungeBoothTile: UICollectionViewCell {
     required init?(coder: NSCoder) { nil }
 
     func paint(_ booth: LoungeLiveBooth) {
-        thumb.image = NightSocialStandIn.plate(seed: booth.hostSpokenName, size: CGSize(width: 200, height: 240))
+        thumb.image = NightSocialMediaAssets.cover(for: booth.hostDeskKey, size: CGSize(width: 200, height: 240))
         titlePlate.text = booth.boothTitle
         moodPlate.text = booth.moodLine
         hostPlate.text = booth.hostSpokenName
@@ -228,7 +228,7 @@ final class LoungeClipTile: UICollectionViewCell {
     required init?(coder: NSCoder) { nil }
 
     func paint(_ clip: LoungeClipReel, musicMode: Bool) {
-        cover.image = NightSocialStandIn.plate(seed: clip.clipKey, size: CGSize(width: 320, height: 400))
+        cover.image = NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 320, height: 400))
         captionPlate.text = "  " + (musicMode ? clip.musicTitle : clip.caption) + "  "
     }
 }

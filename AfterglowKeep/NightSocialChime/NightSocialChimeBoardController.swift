@@ -215,7 +215,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             let wrap = UIControl()
             wrap.translatesAutoresizingMaskIntoConstraints = false
             wrap.widthAnchor.constraint(equalToConstant: 64).isActive = true
-            let pic = UIImageView(image: NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 96, height: 96)))
+            let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 96, height: 96)))
             pic.layer.cornerRadius = 24
             pic.clipsToBounds = true
             pic.translatesAutoresizingMaskIntoConstraints = false
@@ -368,7 +368,7 @@ final class ChimeThreadRow: UITableViewCell {
 
     func paint(deskKey: String) {
         let desk = NightSocialChimeCatalog.desk(for: deskKey)
-        portrait.image = NightSocialStandIn.plate(seed: desk?.spokenName ?? deskKey, size: CGSize(width: 88, height: 88))
+        portrait.image = NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 88, height: 88))
         namePlate.text = desk?.spokenName ?? "Night guest"
         let stored = NightSocialSessionDrawer.shared.chimeLines(for: deskKey)
         if let last = stored.last {
@@ -449,7 +449,7 @@ final class ChimeFollowRow: UITableViewCell {
         contentView.frame = contentView.frame.insetBy(dx: 16, dy: 5)
     }
     func paint(_ desk: LoungeCreatorDesk) {
-        portrait.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 88, height: 88))
+        portrait.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 88, height: 88))
         namePlate.text = "\(desk.spokenName)  \(desk.cityLabel)"
         metaPlate.text = "\(desk.followerCount) followers"
         liveMark.isHidden = !desk.isLive

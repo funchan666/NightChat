@@ -167,7 +167,7 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
 
     @objc private func reloadLane() {
         let followed = NightSocialSessionDrawer.shared.followedDeskKeys()
-        func meridianOk<T>(_ itemMeridian: LoungeMeridianLane) -> Bool {
+        func meridianOk(_ itemMeridian: LoungeMeridianLane) -> Bool {
             meridianLane == .global || itemMeridian == meridianLane
         }
         creatorItems = NightSocialLoungeCatalog.visibleCreators().filter { desk in

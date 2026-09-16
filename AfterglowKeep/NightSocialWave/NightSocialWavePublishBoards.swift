@@ -256,7 +256,7 @@ final class NightSocialWavePostBoard: UIViewController, PHPickerViewControllerDe
             }
         } else {
             DispatchQueue.main.async {
-                self.clipImage = NightSocialStandIn.plate(seed: "posted-clip", size: CGSize(width: 240, height: 240))
+                self.clipImage = NightSocialMediaAssets.portrait(for: "posted-clip", size: CGSize(width: 240, height: 240))
                 self.slot.image = self.clipImage
                 self.slot.viewWithTag(45)?.isHidden = true
             }

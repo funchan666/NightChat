@@ -199,7 +199,7 @@ final class MirrorPersonRow: UITableViewCell {
         contentView.frame = contentView.frame.insetBy(dx: 16, dy: 5)
     }
     func paint(_ desk: LoungeCreatorDesk, kind: MirrorPeopleKind) {
-        portrait.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 80, height: 80))
+        portrait.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 80, height: 80))
         namePlate.text = desk.spokenName
         trash.isHidden = kind != .blacklist
         chat.isHidden = kind == .blacklist

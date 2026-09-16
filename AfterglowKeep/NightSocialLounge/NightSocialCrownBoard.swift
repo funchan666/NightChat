@@ -108,7 +108,7 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
         for index in order where index < rows.count {
             let desk = rows[index]
             let col = UIView()
-            let pic = UIImageView(image: NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 100, height: 100)))
+            let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 100, height: 100)))
             pic.layer.cornerRadius = 28
             pic.clipsToBounds = true
             pic.translatesAutoresizingMaskIntoConstraints = false
@@ -163,7 +163,7 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
         cell.backgroundColor = .clear
         cell.textLabel?.text = "\(indexPath.row + 4)   \(desk.spokenName)"
         cell.detailTextLabel?.text = nil
-        cell.imageView?.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 48, height: 48))
+        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
         cell.accessoryType = .none
         let score = UILabel()
         score.text = "\(desk.activityScore)"

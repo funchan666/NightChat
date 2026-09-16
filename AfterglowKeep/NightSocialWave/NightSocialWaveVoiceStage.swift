@@ -34,7 +34,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         hostChip.layer.cornerRadius = 18
         hostChip.addTarget(self, action: #selector(openHost), for: .touchUpInside)
         hostChip.translatesAutoresizingMaskIntoConstraints = false
-        let hostPic = UIImageView(image: NightSocialStandIn.plate(seed: hostName, size: CGSize(width: 72, height: 72)))
+        let hostPic = UIImageView(image: NightSocialMediaAssets.portrait(for: chamber.hostDeskKey, size: CGSize(width: 72, height: 72)))
         hostPic.layer.cornerRadius = 14
         hostPic.clipsToBounds = true
         hostPic.translatesAutoresizingMaskIntoConstraints = false
@@ -314,7 +314,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
             let key = occupied[index]
             let desk = NightSocialLoungeCatalog.creator(deskKey: key)
             let spoken = desk?.spokenName ?? key
-            pic.image = NightSocialStandIn.plate(seed: spoken, size: CGSize(width: 112, height: 112))
+            pic.image = NightSocialMediaAssets.portrait(for: key, size: CGSize(width: 112, height: 112))
             name.text = spoken.split(separator: " ").first.map(String.init)
             heat.text = "\(40 + index * 7)"
             pic.isHidden = false

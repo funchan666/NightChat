@@ -22,6 +22,12 @@ targets:
       - path: assets/images
         type: group
         buildPhase: resources
+      - path: assets/pics
+        type: folder
+        buildPhase: resources
+      - path: assets/videos
+        type: folder
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lampdesk.afterhours

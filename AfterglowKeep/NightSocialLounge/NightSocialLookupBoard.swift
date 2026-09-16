@@ -135,7 +135,7 @@ final class LookupDeskRow: UITableViewCell {
     required init?(coder: NSCoder) { nil }
 
     func paint(_ desk: LoungeCreatorDesk) {
-        portrait.image = NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 120, height: 120))
+        portrait.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 120, height: 120))
         namePlate.text = "\(desk.spokenName)  \(desk.cityLabel)"
         handlePlate.text = "\(desk.handleTag)  \(desk.vibeLine)"
         liveMark.isHidden = !desk.isLive

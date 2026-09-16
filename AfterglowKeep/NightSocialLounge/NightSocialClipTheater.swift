@@ -21,7 +21,7 @@ final class NightSocialClipTheater: UIViewController {
         view.insetsLayoutMarginsFromSafeArea = false
         guard let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) else { return }
 
-        let cover = UIImageView(image: NightSocialStandIn.plate(seed: clip.clipKey, size: CGSize(width: 420, height: 760)))
+        let cover = UIImageView(image: NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 420, height: 760)))
         cover.contentMode = .scaleAspectFill
         cover.clipsToBounds = true
         cover.translatesAutoresizingMaskIntoConstraints = false
@@ -63,7 +63,7 @@ final class NightSocialClipTheater: UIViewController {
         bubble.translatesAutoresizingMaskIntoConstraints = false
         send.translatesAutoresizingMaskIntoConstraints = false
 
-        let portrait = UIImageView(image: NightSocialStandIn.plate(seed: clip.authorSpokenName, size: CGSize(width: 80, height: 80)))
+        let portrait = UIImageView(image: NightSocialMediaAssets.portrait(for: clip.authorDeskKey, size: CGSize(width: 80, height: 80)))
         portrait.layer.cornerRadius = 18
         portrait.clipsToBounds = true
         portrait.isUserInteractionEnabled = true
@@ -334,7 +334,7 @@ final class DiscussLineRow: UITableViewCell {
     required init?(coder: NSCoder) { nil }
 
     func paint(_ line: LoungeDiscussLine) {
-        portrait.image = NightSocialStandIn.plate(seed: line.speakerName, size: CGSize(width: 64, height: 64))
+        portrait.image = NightSocialMediaAssets.portrait(for: line.speakerDeskKey, size: CGSize(width: 64, height: 64))
         namePlate.text = line.speakerName
         bodyPlate.text = line.spokenBody
     }

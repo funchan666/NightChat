@@ -28,7 +28,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
             !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey)
         }
 
-        cover.image = NightSocialStandIn.plate(seed: desk.spokenName + "-cover", size: CGSize(width: 400, height: 640))
+        cover.image = NightSocialMediaAssets.cover(for: desk.deskKey, size: CGSize(width: 400, height: 640))
         cover.contentMode = .scaleAspectFill
         cover.clipsToBounds = true
         cover.translatesAutoresizingMaskIntoConstraints = false
@@ -43,7 +43,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         card.layer.cornerRadius = 22
         card.translatesAutoresizingMaskIntoConstraints = false
 
-        let portrait = UIImageView(image: NightSocialStandIn.plate(seed: desk.spokenName, size: CGSize(width: 160, height: 160)))
+        let portrait = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 160, height: 160)))
         portrait.layer.cornerRadius = 28
         portrait.clipsToBounds = true
         portrait.translatesAutoresizingMaskIntoConstraints = false

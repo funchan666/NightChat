@@ -50,7 +50,7 @@ final class NightSocialDeskCardController: NightSocialWashController, PHPickerVi
         kicker.translatesAutoresizingMaskIntoConstraints = false
 
         let session = NightSocialSessionDrawer.shared.restoredSession()
-        portraitDisc.image = NightSocialSessionDrawer.shared.loadPortrait()
+        portraitDisc.image = NightSocialMediaAssets.localPortrait(size: CGSize(width: 160, height: 160))
         chosenPortrait = portraitDisc.image
         portraitDisc.backgroundColor = AfterHoursPalette.portraitDiscFill
         portraitDisc.contentMode = .scaleAspectFill
@@ -170,7 +170,7 @@ final class NightSocialDeskCardController: NightSocialWashController, PHPickerVi
             config.title = spoken
             config.baseBackgroundColor = AfterHoursPalette.snowCard
             config.baseForegroundColor = AfterHoursPalette.inkOnSnow
-            config.cornerRadius = 16
+            config.background.cornerRadius = 16
             config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 14, bottom: 6, trailing: 14)
             let chip = UIButton(configuration: config)
             chip.titleLabel?.font = AfterHoursType.foyerBody(13, weight: .semibold)

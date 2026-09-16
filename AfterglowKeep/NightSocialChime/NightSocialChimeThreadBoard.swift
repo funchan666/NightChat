@@ -42,7 +42,7 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
         card.layer.cornerRadius = 18
         card.translatesAutoresizingMaskIntoConstraints = false
         card.isHidden = deskKey == NightSocialChimeCatalog.supportDeskKey
-        let pic = UIImageView(image: NightSocialStandIn.plate(seed: desk?.spokenName ?? "desk", size: CGSize(width: 96, height: 96)))
+        let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 96, height: 96)))
         pic.layer.cornerRadius = 24
         pic.clipsToBounds = true
         pic.isUserInteractionEnabled = true
