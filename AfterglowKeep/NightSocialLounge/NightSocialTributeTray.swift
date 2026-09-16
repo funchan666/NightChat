@@ -90,10 +90,13 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
             minus.centerYAnchor.constraint(equalTo: send.centerYAnchor),
         ])
         picked = NightSocialLoungeCatalog.gifts.first
+        NotificationCenter.default.addObserver(self, selector: #selector(paintPurse), name: .deskDrawerDidChange, object: nil)
         paintPurse()
     }
 
-    private func paintPurse() {
+    deinit { NotificationCenter.default.removeObserver(self) }
+
+    @objc private func paintPurse() {
         pursePlate.text = "◆ \(NightSocialSessionDrawer.shared.diamondPurse)"
         qtyPlate.text = "\(quantity)"
     }
@@ -121,18 +124,19 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
     @objc private func offerGift() {
         guard let gift = picked else { return }
         let cost = gift.diamondCost * quantity
-        present(NightSocialDiamondPrompt(cost: cost, quantity: quantity, giftTitle: gift.spokenTitle) { [weak self] in
+        let count = quantity
+        NightSocialLampStore.spend(.liveGift(gift, quantity: count), from: self) { [weak self] in
             NotificationCenter.default.post(
                 name: .liveGiftOffered,
                 object: nil,
                 userInfo: [
                     "title": gift.spokenTitle,
-                    "quantity": quantity,
+                    "quantity": count,
                     "glyph": gift.glyphCatalog,
                 ]
             )
             self?.dismiss(animated: true)
-        }, animated: true)
+        }
     }
 }
 
@@ -176,11 +180,13 @@ final class NightSocialDiamondPrompt: UIViewController {
     private let quantity: Int
     private let giftTitle: String
     private let onPaid: (() -> Void)?
-    init(cost: Int, quantity: Int, giftTitle: String, onPaid: (() -> Void)? = nil) {
+    private let onShort: (() -> Void)?
+    init(cost: Int, quantity: Int, giftTitle: String, onPaid: (() -> Void)? = nil, onShort: (() -> Void)? = nil) {
         self.cost = cost
         self.quantity = quantity
         self.giftTitle = giftTitle
         self.onPaid = onPaid
+        self.onShort = onShort
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .overFullScreen
         modalTransitionStyle = .crossDissolve
@@ -201,7 +207,7 @@ final class NightSocialDiamondPrompt: UIViewController {
         body.textAlignment = .center
         body.font = AfterHoursType.foyerHeadline(18)
         body.textColor = AfterHoursPalette.inkOnSnow
-        body.text = enough ? "Spend \(cost) Diamonds\nto send ?" : "Insufficient Diamonds.\nPlease top-up."
+        body.text = enough ? "Spend \(cost) night coins\nfor \(giftTitle)?" : "Not enough night coins\nfor \(giftTitle)."
         body.translatesAutoresizingMaskIntoConstraints = false
         let cancel = NightSocialLoungeChrome.ghostPill(title: "Cancel")
         cancel.setTitleColor(AfterHoursPalette.inkOnSnow, for: .normal)
@@ -238,8 +244,12 @@ final class NightSocialDiamondPrompt: UIViewController {
             let paid = onPaid
             dismiss(animated: true) { paid?() }
         } else {
-            NightSocialSessionDrawer.shared.writeDiamondPurse(purse + 1000)
-            dismiss(animated: true)
+            let short = onShort
+            let host = presentingViewController
+            dismiss(animated: true) {
+                if let short { short() }
+                else if let host { NightSocialLampStore.revealRecharge(from: host) }
+            }
         }
     }
 }

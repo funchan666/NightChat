@@ -589,9 +589,10 @@ final class NightSocialMirrorSupportBoard: UIViewController, UITableViewDataSour
 }
 
 final class NightSocialMirrorRechargeBoard: UIViewController {
-    private var picked = 0
     private let pursePlate = UILabel()
+    private let busy = UIActivityIndicatorView(style: .large)
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeInk
@@ -599,97 +600,141 @@ final class NightSocialMirrorRechargeBoard: UIViewController {
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
         let head = UILabel()
-        head.text = "Recharge"
+        head.text = "Night purse"
         head.font = AfterHoursType.foyerHeadline(20)
         head.textColor = .white
         head.translatesAutoresizingMaskIntoConstraints = false
+
+        let scroller = UIScrollView()
+        scroller.alwaysBounceVertical = true
+        scroller.translatesAutoresizingMaskIntoConstraints = false
+
         let banner = UIView()
         banner.backgroundColor = AfterHoursPalette.loungePink
         banner.layer.cornerRadius = 18
         banner.translatesAutoresizingMaskIntoConstraints = false
-        pursePlate.font = AfterHoursType.foyerHeadline(28)
+        pursePlate.font = AfterHoursType.foyerHeadline(32)
         pursePlate.textColor = .white
         pursePlate.translatesAutoresizingMaskIntoConstraints = false
         let coinLine = UILabel()
-        coinLine.text = "My coins:"
+        coinLine.text = "Night coins on this desk"
         coinLine.font = AfterHoursType.foyerPill(14)
         coinLine.textColor = .white
         coinLine.translatesAutoresizingMaskIntoConstraints = false
         let hint = UILabel()
-        hint.text = "Diamonds can be used to post videos and send gifts."
+        hint.text = "Balance updates the moment Apple finishes the sitting."
         hint.font = AfterHoursType.foyerCaption(12)
         hint.textColor = UIColor.white.withAlphaComponent(0.85)
         hint.translatesAutoresizingMaskIntoConstraints = false
         let gem = UIImageView(image: NightSocialImageCabinet.named("MirrorDiamondPack", fallback: "image_650"))
         gem.contentMode = .scaleAspectFit
         gem.translatesAutoresizingMaskIntoConstraints = false
+
         let grid = UIStackView()
         grid.axis = .vertical
         grid.spacing = 10
         grid.translatesAutoresizingMaskIntoConstraints = false
-        grid.tag = 88
+        let packs = NightSocialLampPack.allCases
         for row in 0..<3 {
             let line = UIStackView()
             line.axis = .horizontal
             line.spacing = 10
             line.distribution = .fillEqually
             for col in 0..<3 {
-                let index = row * 3 + col
-                let card = UIButton(type: .custom)
+                let pack = packs[row * 3 + col]
+                let card = UIControl()
                 card.backgroundColor = UIColor(red: 1, green: 0.86, blue: 0.92, alpha: 1)
                 card.layer.cornerRadius = 16
-                card.tag = index
-                card.addTarget(self, action: #selector(pickPack(_:)), for: .touchUpInside)
-                let title = UILabel()
-                title.text = "99\n$9.99"
-                title.numberOfLines = 2
-                title.textAlignment = .center
-                title.font = AfterHoursType.foyerPill(14)
-                title.textColor = AfterHoursPalette.loungePink
-                title.translatesAutoresizingMaskIntoConstraints = false
-                title.isUserInteractionEnabled = false
-                card.addSubview(title)
+                card.tag = row * 3 + col
+                card.addTarget(self, action: #selector(buyPack(_:)), for: .touchUpInside)
+                let coins = UILabel()
+                coins.text = "\(pack.coins)"
+                coins.font = AfterHoursType.foyerHeadline(18)
+                coins.textColor = AfterHoursPalette.loungePink
+                coins.textAlignment = .center
+                coins.translatesAutoresizingMaskIntoConstraints = false
+                let price = UILabel()
+                price.text = pack.listedPrice
+                price.font = AfterHoursType.foyerCaption(12)
+                price.textColor = AfterHoursPalette.inkOnSnow
+                price.textAlignment = .center
+                price.translatesAutoresizingMaskIntoConstraints = false
+                let name = UILabel()
+                name.text = pack.spokenTitle
+                name.font = AfterHoursType.foyerCaption(11)
+                name.textColor = AfterHoursPalette.inkOnSnow.withAlphaComponent(0.7)
+                name.textAlignment = .center
+                name.translatesAutoresizingMaskIntoConstraints = false
+                card.addSubview(name)
+                card.addSubview(coins)
+                card.addSubview(price)
                 NSLayoutConstraint.activate([
-                    card.heightAnchor.constraint(equalToConstant: 72),
-                    title.centerXAnchor.constraint(equalTo: card.centerXAnchor),
-                    title.centerYAnchor.constraint(equalTo: card.centerYAnchor),
+                    card.heightAnchor.constraint(equalToConstant: 88),
+                    name.topAnchor.constraint(equalTo: card.topAnchor, constant: 8),
+                    name.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+                    coins.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+                    coins.centerYAnchor.constraint(equalTo: card.centerYAnchor, constant: 2),
+                    price.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -8),
+                    price.centerXAnchor.constraint(equalTo: card.centerXAnchor),
                 ])
                 line.addArrangedSubview(card)
             }
             grid.addArrangedSubview(line)
         }
-        let go = UIButton(type: .custom)
-        go.backgroundColor = AfterHoursPalette.midnightPill
-        go.layer.cornerRadius = 22
-        go.setTitle("Continue", for: .normal)
-        go.setTitleColor(.white, for: .normal)
-        go.titleLabel?.font = AfterHoursType.foyerPill(16)
-        go.addTarget(self, action: #selector(buyPack), for: .touchUpInside)
-        go.translatesAutoresizingMaskIntoConstraints = false
-        go.heightAnchor.constraint(equalToConstant: 48).isActive = true
+
+        let guideHead = UILabel()
+        guideHead.text = "Where coins go"
+        guideHead.font = AfterHoursType.foyerPill(16)
+        guideHead.textColor = .white
+        guideHead.translatesAutoresizingMaskIntoConstraints = false
+        let guide = UIStackView()
+        guide.axis = .vertical
+        guide.spacing = 8
+        guide.translatesAutoresizingMaskIntoConstraints = false
+        for item in NightSocialLampStore.spendGuide {
+            let row = UILabel()
+            row.text = "\(item.0)  ·  \(item.1)"
+            row.font = AfterHoursType.foyerCaption(13)
+            row.textColor = UIColor.white.withAlphaComponent(0.78)
+            row.numberOfLines = 0
+            guide.addArrangedSubview(row)
+        }
+
+        busy.hidesWhenStopped = true
+        busy.color = .white
+        busy.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(back)
         view.addSubview(head)
-        view.addSubview(banner)
+        view.addSubview(scroller)
+        scroller.addSubview(banner)
         banner.addSubview(coinLine)
         banner.addSubview(pursePlate)
         banner.addSubview(hint)
         banner.addSubview(gem)
-        view.addSubview(grid)
-        view.addSubview(go)
+        scroller.addSubview(grid)
+        scroller.addSubview(guideHead)
+        scroller.addSubview(guide)
+        view.addSubview(busy)
         NSLayoutConstraint.activate([
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
             head.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             head.centerYAnchor.constraint(equalTo: back.centerYAnchor),
+            scroller.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 8),
+            scroller.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroller.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroller.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             banner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             banner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            banner.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 16),
-            banner.heightAnchor.constraint(equalToConstant: 110),
+            banner.topAnchor.constraint(equalTo: scroller.contentLayoutGuide.topAnchor, constant: 8),
+            banner.heightAnchor.constraint(equalToConstant: 118),
             coinLine.leadingAnchor.constraint(equalTo: banner.leadingAnchor, constant: 16),
-            coinLine.topAnchor.constraint(equalTo: banner.topAnchor, constant: 16),
+            coinLine.topAnchor.constraint(equalTo: banner.topAnchor, constant: 14),
             pursePlate.leadingAnchor.constraint(equalTo: coinLine.leadingAnchor),
             pursePlate.topAnchor.constraint(equalTo: coinLine.bottomAnchor, constant: 4),
             hint.leadingAnchor.constraint(equalTo: coinLine.leadingAnchor),
+            hint.trailingAnchor.constraint(equalTo: gem.leadingAnchor, constant: -8),
             hint.bottomAnchor.constraint(equalTo: banner.bottomAnchor, constant: -12),
             gem.trailingAnchor.constraint(equalTo: banner.trailingAnchor, constant: -16),
             gem.centerYAnchor.constraint(equalTo: banner.centerYAnchor),
@@ -698,22 +743,59 @@ final class NightSocialMirrorRechargeBoard: UIViewController {
             grid.leadingAnchor.constraint(equalTo: banner.leadingAnchor),
             grid.trailingAnchor.constraint(equalTo: banner.trailingAnchor),
             grid.topAnchor.constraint(equalTo: banner.bottomAnchor, constant: 16),
-            go.leadingAnchor.constraint(equalTo: banner.leadingAnchor),
-            go.trailingAnchor.constraint(equalTo: banner.trailingAnchor),
-            go.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -28),
+            guideHead.leadingAnchor.constraint(equalTo: banner.leadingAnchor),
+            guideHead.topAnchor.constraint(equalTo: grid.bottomAnchor, constant: 22),
+            guide.leadingAnchor.constraint(equalTo: banner.leadingAnchor),
+            guide.trailingAnchor.constraint(equalTo: banner.trailingAnchor),
+            guide.topAnchor.constraint(equalTo: guideHead.bottomAnchor, constant: 8),
+            guide.bottomAnchor.constraint(equalTo: scroller.contentLayoutGuide.bottomAnchor, constant: -28),
+            busy.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            busy.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
+        NotificationCenter.default.addObserver(self, selector: #selector(paintPurse), name: .deskDrawerDidChange, object: nil)
         paintPurse()
     }
+
+    deinit { NotificationCenter.default.removeObserver(self) }
+
     @objc private func fold() { navigationController?.popViewController(animated: true) }
-    @objc private func pickPack(_ sender: UIButton) { picked = sender.tag }
-    @objc private func buyPack() {
-        let purse = NightSocialSessionDrawer.shared.diamondPurse
-        NightSocialSessionDrawer.shared.writeDiamondPurse(purse + 99)
-        paintPurse()
-        FoyerNotice.present(on: self, spokenTitle: "Diamonds added", spokenBody: "99 diamonds landed on this desk.")
-    }
-    private func paintPurse() {
+
+    @objc private func paintPurse() {
         pursePlate.text = "\(NightSocialSessionDrawer.shared.diamondPurse)"
+    }
+
+    @objc private func buyPack(_ sender: UIControl) {
+        let packs = NightSocialLampPack.allCases
+        guard sender.tag < packs.count else { return }
+        let pack = packs[sender.tag]
+        busy.startAnimating()
+        view.isUserInteractionEnabled = false
+        Task { @MainActor in
+            do {
+                try await NightSocialLampStore.buy(pack)
+                paintPurse()
+                FoyerNotice.present(
+                    on: self,
+                    spokenTitle: "\(pack.spokenTitle) landed",
+                    spokenBody: "\(pack.coins) night coins are on this desk now."
+                )
+            } catch NightSocialLampStoreIssue.cancelled {
+                breakBusy()
+                return
+            } catch {
+                FoyerNotice.present(
+                    on: self,
+                    spokenTitle: "The lamp held back",
+                    spokenBody: error.localizedDescription
+                )
+            }
+            breakBusy()
+        }
+    }
+
+    private func breakBusy() {
+        busy.stopAnimating()
+        view.isUserInteractionEnabled = true
     }
 }
 

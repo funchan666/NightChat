@@ -28,6 +28,8 @@ targets:
       - path: assets/videos
         type: folder
         buildPhase: resources
+    dependencies:
+      - sdk: StoreKit.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lampdesk.afterhours

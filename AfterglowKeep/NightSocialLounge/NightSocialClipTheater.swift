@@ -2,17 +2,41 @@ import UIKit
 
 final class NightSocialClipTheater: UIViewController {
     private let clipKey: String
+    private let asMusic: Bool
     private var liked = false
+    private var videoSurface: NightSocialVideoSurface?
+    private var playing = false
+    private var clock: Timer?
     private let likePlate = UILabel()
     private let commentPlate = UILabel()
     private let sharePlate = UILabel()
+    private let playMark = UIImageView()
+    private let progress = UIProgressView(progressViewStyle: .default)
+    private let elapsedPlate = UILabel()
+    private let remainPlate = UILabel()
 
-    init(clipKey: String) {
+    init(clipKey: String, asMusic: Bool = false) {
         self.clipKey = clipKey
+        self.asMusic = asMusic
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) { nil }
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        videoSurface?.start()
+        playing = videoSurface?.isPlaying == true
+        paintPlayMark()
+        if asMusic { startClock() }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        videoSurface?.stop()
+        clock?.invalidate()
+        clock = nil
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,14 +45,25 @@ final class NightSocialClipTheater: UIViewController {
         view.insetsLayoutMarginsFromSafeArea = false
         guard let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) else { return }
 
-        let cover = UIImageView(image: NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 420, height: 760)))
-        cover.contentMode = .scaleAspectFill
-        cover.clipsToBounds = true
+        let cover: UIView
+        if NightSocialMediaAssets.videoURL(for: clip.authorDeskKey) != nil {
+            let surface = NightSocialVideoSurface(ownerKey: clip.authorDeskKey)
+            videoSurface = surface
+            cover = surface
+        } else {
+            let still = UIImageView(image: NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 420, height: 760)))
+            still.contentMode = .scaleAspectFill
+            still.clipsToBounds = true
+            cover = still
+        }
         cover.translatesAutoresizingMaskIntoConstraints = false
+        cover.isUserInteractionEnabled = true
+        cover.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(flipPlayback)))
 
-        let play = UIImageView(image: UIImage(systemName: "play.circle.fill"))
-        play.tintColor = .white
-        play.translatesAutoresizingMaskIntoConstraints = false
+        playMark.image = UIImage(systemName: "play.circle.fill")
+        playMark.tintColor = .white
+        playMark.translatesAutoresizingMaskIntoConstraints = false
+        playMark.isUserInteractionEnabled = false
 
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
@@ -77,19 +112,60 @@ final class NightSocialClipTheater: UIViewController {
         namePlate.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openAuthor)))
         namePlate.translatesAutoresizingMaskIntoConstraints = false
         let meta = UILabel()
-        meta.text = "\(clip.timePhrase)   \(clip.placeLabel)"
+        meta.text = asMusic ? clip.authorSpokenName : "\(clip.timePhrase)   \(clip.placeLabel)"
         meta.font = AfterHoursType.foyerCaption(11)
         meta.textColor = UIColor.white.withAlphaComponent(0.75)
         meta.translatesAutoresizingMaskIntoConstraints = false
         let caption = UILabel()
-        caption.text = clip.caption
-        caption.font = AfterHoursType.foyerBody(13)
+        caption.text = asMusic ? clip.musicTitle : clip.caption
+        caption.font = asMusic ? AfterHoursType.foyerHeadline(22) : AfterHoursType.foyerBody(13)
         caption.textColor = .white
         caption.numberOfLines = 0
         caption.translatesAutoresizingMaskIntoConstraints = false
 
+        progress.progressTintColor = AfterHoursPalette.loungePink
+        progress.trackTintColor = UIColor.white.withAlphaComponent(0.22)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        progress.isHidden = !asMusic
+        elapsedPlate.font = AfterHoursType.foyerCaption(11)
+        elapsedPlate.textColor = UIColor.white.withAlphaComponent(0.8)
+        elapsedPlate.text = "0:00"
+        elapsedPlate.translatesAutoresizingMaskIntoConstraints = false
+        elapsedPlate.isHidden = !asMusic
+        remainPlate.font = AfterHoursType.foyerCaption(11)
+        remainPlate.textColor = UIColor.white.withAlphaComponent(0.8)
+        remainPlate.text = clip.durationPhrase
+        remainPlate.textAlignment = .right
+        remainPlate.translatesAutoresizingMaskIntoConstraints = false
+        remainPlate.isHidden = !asMusic
+
+        let album = UIImageView(image: NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 280, height: 280)))
+        album.contentMode = .scaleAspectFill
+        album.clipsToBounds = true
+        album.layer.cornerRadius = 24
+        album.translatesAutoresizingMaskIntoConstraints = false
+        album.isHidden = !asMusic
+        album.isUserInteractionEnabled = false
+
+        let dim = UIView()
+        dim.backgroundColor = UIColor.black.withAlphaComponent(asMusic ? 0.38 : 0)
+        dim.isUserInteractionEnabled = false
+        dim.translatesAutoresizingMaskIntoConstraints = false
+        dim.isHidden = !asMusic
+
+        if asMusic {
+            namePlate.text = clip.musicTitle
+            namePlate.font = AfterHoursType.foyerHeadline(20)
+            meta.text = "\(clip.authorSpokenName)  ·  \(clip.durationPhrase)"
+            caption.text = clip.caption
+            caption.font = AfterHoursType.foyerCaption(13)
+            caption.textColor = UIColor.white.withAlphaComponent(0.78)
+        }
+
         view.addSubview(cover)
-        view.addSubview(play)
+        view.addSubview(dim)
+        view.addSubview(album)
+        view.addSubview(playMark)
         view.addSubview(back)
         view.addSubview(more)
         view.addSubview(heart)
@@ -102,16 +178,27 @@ final class NightSocialClipTheater: UIViewController {
         view.addSubview(namePlate)
         view.addSubview(meta)
         view.addSubview(caption)
+        view.addSubview(progress)
+        view.addSubview(elapsedPlate)
+        view.addSubview(remainPlate)
 
         NSLayoutConstraint.activate([
             cover.topAnchor.constraint(equalTo: view.topAnchor),
             cover.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             cover.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             cover.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            play.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            play.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            play.widthAnchor.constraint(equalToConstant: 64),
-            play.heightAnchor.constraint(equalToConstant: 64),
+            dim.topAnchor.constraint(equalTo: view.topAnchor),
+            dim.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dim.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            dim.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            album.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            album.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -48),
+            album.widthAnchor.constraint(equalToConstant: 220),
+            album.heightAnchor.constraint(equalToConstant: 220),
+            playMark.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            playMark.centerYAnchor.constraint(equalTo: asMusic ? album.bottomAnchor : view.centerYAnchor, constant: asMusic ? 28 : 0),
+            playMark.widthAnchor.constraint(equalToConstant: 64),
+            playMark.heightAnchor.constraint(equalToConstant: 64),
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
             more.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
@@ -128,22 +215,31 @@ final class NightSocialClipTheater: UIViewController {
             likePlate.bottomAnchor.constraint(equalTo: bubble.topAnchor, constant: -16),
             heart.centerXAnchor.constraint(equalTo: sharePlate.centerXAnchor),
             heart.bottomAnchor.constraint(equalTo: likePlate.topAnchor, constant: -4),
+            progress.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            progress.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -72),
+            progress.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: asMusic ? -92 : -36),
+            elapsedPlate.leadingAnchor.constraint(equalTo: progress.leadingAnchor),
+            elapsedPlate.bottomAnchor.constraint(equalTo: progress.topAnchor, constant: -6),
+            remainPlate.trailingAnchor.constraint(equalTo: progress.trailingAnchor),
+            remainPlate.centerYAnchor.constraint(equalTo: elapsedPlate.centerYAnchor),
+            caption.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            caption.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -72),
+            caption.bottomAnchor.constraint(equalTo: asMusic ? elapsedPlate.topAnchor : view.bottomAnchor, constant: asMusic ? -10 : -36),
             portrait.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             portrait.bottomAnchor.constraint(equalTo: caption.topAnchor, constant: -8),
             portrait.widthAnchor.constraint(equalToConstant: 36),
             portrait.heightAnchor.constraint(equalToConstant: 36),
             namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 8),
+            namePlate.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -72),
             namePlate.topAnchor.constraint(equalTo: portrait.topAnchor),
             meta.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
             meta.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 2),
-            caption.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            caption.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -72),
-            caption.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -36),
         ])
         likePlate.text = "\(clip.likeCount)"
         commentPlate.text = "\(NightSocialSessionDrawer.shared.discussLines(for: clipKey).count)"
         sharePlate.text = "\(clip.shareCount)"
         NotificationCenter.default.addObserver(self, selector: #selector(refreshCounts), name: .deskDrawerDidChange, object: nil)
+        paintPlayMark()
     }
 
     deinit { NotificationCenter.default.removeObserver(self) }
@@ -157,6 +253,53 @@ final class NightSocialClipTheater: UIViewController {
     }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
+
+    @objc private func flipPlayback() {
+        if videoSurface != nil {
+            if videoSurface?.isPlaying == true {
+                videoSurface?.pausePlayback()
+                playing = false
+            } else {
+                videoSurface?.start()
+                playing = true
+            }
+        } else {
+            playing.toggle()
+        }
+        paintPlayMark()
+    }
+
+    private func paintPlayMark() {
+        playMark.alpha = playing ? 0 : 1
+    }
+
+    private func startClock() {
+        clock?.invalidate()
+        clock = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            let fallback = Double(NightSocialLoungeCatalog.clip(clipKey: self.clipKey)?.trackSeconds ?? 1)
+            let current: Double
+            let duration: Double
+            if let surface = self.videoSurface, surface.hasVideo {
+                let pair = surface.progress()
+                current = pair.current
+                duration = max(pair.duration, 1)
+            } else {
+                duration = fallback
+                let stepped = Double(self.progress.progress) * duration + (self.playing ? 0.25 : 0)
+                current = min(duration, stepped)
+            }
+            self.progress.progress = Float(min(1, current / duration))
+            self.elapsedPlate.text = Self.clockPhrase(current)
+            self.remainPlate.text = Self.clockPhrase(max(0, duration - current))
+        }
+    }
+
+    private static func clockPhrase(_ seconds: Double) -> String {
+        let total = max(0, Int(seconds))
+        return String(format: "%d:%02d", total / 60, total % 60)
+    }
+
     @objc private func openAuthor() {
         if let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) {
             NightSocialDeskGate.revealDesk(from: self, deskKey: clip.authorDeskKey)

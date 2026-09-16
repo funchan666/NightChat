@@ -27,6 +27,7 @@ final class NightSocialStageShellController: UIViewController, UINavigationContr
     }()
     private let dock = NightSocialStageDock()
     private var litLane = 0
+    private var didOfferLampWelcome = false
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     override var childForStatusBarStyle: UIViewController? {
@@ -69,6 +70,13 @@ final class NightSocialStageShellController: UIViewController, UINavigationContr
             dock.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         showLane(0)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !didOfferLampWelcome else { return }
+        didOfferLampWelcome = true
+        NightSocialLampWelcomePane.offer(from: self)
     }
 
     private func visibleLane() -> UIViewController {

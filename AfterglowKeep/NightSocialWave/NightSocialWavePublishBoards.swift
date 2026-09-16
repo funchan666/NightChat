@@ -145,12 +145,12 @@ final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewController
             FoyerNotice.present(on: self, spokenTitle: "Pick a label", spokenBody: "Choose at least one label so people can find the sitting.")
             return
         }
-        let purse = NightSocialSessionDrawer.shared.diamondPurse
-        if purse < 120 {
-            present(NightSocialDiamondPrompt(cost: 120, quantity: 1, giftTitle: "Go Live"), animated: true)
-            return
+        NightSocialLampStore.spend(.hostVoice, from: self) { [weak self] in
+            self?.openHostedSitting(title: title, tags: pickedTags)
         }
-        NightSocialSessionDrawer.shared.writeDiamondPurse(purse - 120)
+    }
+
+    private func openHostedSitting(title: String, tags: [String]) {
         let host = NightSocialSessionDrawer.shared.restoredSession()?.deskHolderId ?? "me.desk"
         let key = "wave.hosted.\(UUID().uuidString)"
         NightSocialSessionDrawer.shared.rememberHostedChamber([
@@ -158,7 +158,7 @@ final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewController
             "title": title,
             "mood": "Hosted sitting",
             "host": host,
-            "tags": pickedTags.joined(separator: ","),
+            "tags": tags.joined(separator: ","),
         ])
         NightSocialSessionDrawer.shared.rememberVisitedChamber(key)
         navigationController?.pushViewController(NightSocialWaveVoiceStage(chamberKey: key), animated: true)
@@ -198,7 +198,7 @@ final class NightSocialWavePostBoard: UIViewController, PHPickerViewControllerDe
         plus.textAlignment = .center
         plus.tag = 45
         plus.translatesAutoresizingMaskIntoConstraints = false
-        costPlate.text = "Spend 10 Diamonds to post this video?"
+        costPlate.text = "Spend 68 night coins to post this clip. Chat stays free."
         costPlate.font = AfterHoursType.foyerCaption(12)
         costPlate.textColor = UIColor.white.withAlphaComponent(0.75)
         costPlate.translatesAutoresizingMaskIntoConstraints = false
@@ -273,15 +273,11 @@ final class NightSocialWavePostBoard: UIViewController, PHPickerViewControllerDe
             FoyerNotice.present(on: self, spokenTitle: "Clip still empty", spokenBody: "Add a photo or video placeholder before you post.")
             return
         }
-        let purse = NightSocialSessionDrawer.shared.diamondPurse
-        if purse < 10 {
-            present(NightSocialDiamondPrompt(cost: 10, quantity: 1, giftTitle: "Post"), animated: true)
-            return
-        }
-        NightSocialSessionDrawer.shared.writeDiamondPurse(purse - 10)
-        NightSocialSessionDrawer.shared.rememberPendingClip(caption: body)
-        NightSocialLampNotices.presentReviewHold(from: self) { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+        NightSocialLampStore.spend(.postClip, from: self) { [weak self] in
+            NightSocialSessionDrawer.shared.rememberPendingClip(caption: body)
+            NightSocialLampNotices.presentReviewHold(from: self) {
+                self?.navigationController?.popViewController(animated: true)
+            }
         }
     }
 }

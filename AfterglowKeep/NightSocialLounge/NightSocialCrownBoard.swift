@@ -6,6 +6,8 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
     private let table = UITableView()
     private var rows: [LoungeCreatorDesk] = []
     private let spanRow = UIStackView()
+    private let podium = UIView()
+    private var podiumSeats: [CrownPodiumSeat] = []
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
@@ -31,29 +33,37 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
         spanRow.spacing = 8
         spanRow.translatesAutoresizingMaskIntoConstraints = false
         for item in [("Daily", 0), ("Weekly", 1), ("Monthly", 2)] {
-            let chip = UIButton(type: .system)
+            let chip = UIButton(type: .custom)
             chip.setTitle("  \(item.0)  ", for: .normal)
+            chip.titleLabel?.font = AfterHoursType.foyerCaption(13)
             chip.tag = item.1
-            chip.layer.cornerRadius = 14
+            chip.layer.cornerRadius = 16
             chip.addTarget(self, action: #selector(pickSpan(_:)), for: .touchUpInside)
+            chip.translatesAutoresizingMaskIntoConstraints = false
+            chip.heightAnchor.constraint(equalToConstant: 32).isActive = true
             spanRow.addArrangedSubview(chip)
         }
 
-        let podium = UIStackView()
-        podium.axis = .horizontal
-        podium.distribution = .fillEqually
-        podium.alignment = .bottom
         podium.translatesAutoresizingMaskIntoConstraints = false
+        let second = CrownPodiumSeat(rank: 2)
+        let first = CrownPodiumSeat(rank: 1)
+        let third = CrownPodiumSeat(rank: 3)
+        podiumSeats = [first, second, third]
+        podium.addSubview(second)
+        podium.addSubview(third)
+        podium.addSubview(first)
 
-        table.backgroundColor = UIColor.white.withAlphaComponent(0.96)
-        table.layer.cornerRadius = 24
+        table.backgroundColor = .white
+        table.layer.cornerRadius = 28
         table.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "crown")
+        table.rowHeight = 76
+        table.register(CrownListRow.self, forCellReuseIdentifier: CrownListRow.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
         table.contentInsetAdjustmentBehavior = .never
+        table.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 24, right: 0)
 
         view.addSubview(wash)
         view.addSubview(back)
@@ -72,20 +82,26 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
             title.centerYAnchor.constraint(equalTo: back.centerYAnchor),
             spanRow.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             spanRow.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 12),
-            podium.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            podium.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            podium.topAnchor.constraint(equalTo: spanRow.bottomAnchor, constant: 12),
-            podium.heightAnchor.constraint(equalToConstant: 140),
-            table.topAnchor.constraint(equalTo: podium.bottomAnchor, constant: 12),
+            podium.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            podium.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            podium.topAnchor.constraint(equalTo: spanRow.bottomAnchor, constant: 8),
+            podium.heightAnchor.constraint(equalToConstant: 236),
+            first.centerXAnchor.constraint(equalTo: podium.centerXAnchor),
+            first.topAnchor.constraint(equalTo: podium.topAnchor),
+            first.widthAnchor.constraint(equalToConstant: 128),
+            second.leadingAnchor.constraint(equalTo: podium.leadingAnchor),
+            second.trailingAnchor.constraint(equalTo: first.leadingAnchor),
+            second.bottomAnchor.constraint(equalTo: podium.bottomAnchor, constant: -6),
+            third.leadingAnchor.constraint(equalTo: first.trailingAnchor),
+            third.trailingAnchor.constraint(equalTo: podium.trailingAnchor),
+            third.bottomAnchor.constraint(equalTo: podium.bottomAnchor, constant: -6),
+            table.topAnchor.constraint(equalTo: podium.bottomAnchor, constant: 4),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-        self.podiumStack = podium
         reloadRanks()
     }
-
-    private var podiumStack: UIStackView?
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
 
@@ -94,62 +110,28 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
         reloadRanks()
     }
 
+    private func factor() -> Int {
+        span == .daily ? 1 : (span == .weekly ? 4 : 12)
+    }
+
     private func reloadRanks() {
-        let factor = span == .daily ? 1 : (span == .weekly ? 4 : 12)
-        rows = NightSocialLoungeCatalog.visibleCreators().sorted { $0.activityScore * factor > $1.activityScore * factor }
+        let mul = factor()
+        rows = NightSocialLoungeCatalog.visibleCreators().sorted { $0.activityScore * mul > $1.activityScore * mul }
         for (index, chip) in spanRow.arrangedSubviews.enumerated() {
             guard let button = chip as? UIButton else { continue }
             let on = index == span.rawValue
-            button.backgroundColor = on ? AfterHoursPalette.loungePink : UIColor.white.withAlphaComponent(0.35)
-            button.setTitleColor(on ? .white : AfterHoursPalette.inkOnSnow, for: .normal)
+            button.backgroundColor = on ? AfterHoursPalette.loungePink : UIColor.white.withAlphaComponent(0.38)
+            button.setTitleColor(on ? .white : UIColor.white.withAlphaComponent(0.92), for: .normal)
         }
-        podiumStack?.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let order = [1, 0, 2]
-        for index in order where index < rows.count {
-            let desk = rows[index]
-            let col = UIView()
-            let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 100, height: 100)))
-            pic.layer.cornerRadius = 28
-            pic.clipsToBounds = true
-            pic.translatesAutoresizingMaskIntoConstraints = false
-            let name = UILabel()
-            name.text = desk.spokenName
-            name.font = AfterHoursType.foyerCaption(11)
-            name.textColor = AfterHoursPalette.inkOnSnow
-            name.textAlignment = .center
-            name.translatesAutoresizingMaskIntoConstraints = false
-            let score = UILabel()
-            score.text = "\(desk.activityScore * factor)"
-            score.font = AfterHoursType.foyerPill(12)
-            score.textColor = AfterHoursPalette.loungePink
-            score.textAlignment = .center
-            score.translatesAutoresizingMaskIntoConstraints = false
-            let tap = UIControl()
-            tap.translatesAutoresizingMaskIntoConstraints = false
-            tap.addAction(UIAction { [weak self] _ in
+        let seats = [1, 2, 3]
+        for rank in seats where rank - 1 < rows.count {
+            let desk = rows[rank - 1]
+            let seat = podiumSeats.first { $0.rank == rank }
+            seat?.paint(desk: desk, score: desk.activityScore * mul)
+            seat?.onPick = { [weak self] in
                 guard let self else { return }
                 NightSocialDeskGate.revealDesk(from: self, deskKey: desk.deskKey)
-            }, for: .touchUpInside)
-            col.addSubview(pic)
-            col.addSubview(name)
-            col.addSubview(score)
-            col.addSubview(tap)
-            let size: CGFloat = index == 0 ? 64 : 52
-            NSLayoutConstraint.activate([
-                pic.centerXAnchor.constraint(equalTo: col.centerXAnchor),
-                pic.topAnchor.constraint(equalTo: col.topAnchor, constant: index == 0 ? 0 : 16),
-                pic.widthAnchor.constraint(equalToConstant: size),
-                pic.heightAnchor.constraint(equalToConstant: size),
-                name.topAnchor.constraint(equalTo: pic.bottomAnchor, constant: 6),
-                name.centerXAnchor.constraint(equalTo: col.centerXAnchor),
-                score.topAnchor.constraint(equalTo: name.bottomAnchor, constant: 2),
-                score.centerXAnchor.constraint(equalTo: col.centerXAnchor),
-                tap.topAnchor.constraint(equalTo: col.topAnchor),
-                tap.leadingAnchor.constraint(equalTo: col.leadingAnchor),
-                tap.trailingAnchor.constraint(equalTo: col.trailingAnchor),
-                tap.bottomAnchor.constraint(equalTo: col.bottomAnchor),
-            ])
-            podiumStack?.addArrangedSubview(col)
+            }
         }
         table.reloadData()
     }
@@ -157,26 +139,200 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         max(0, rows.count - 3)
     }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "crown", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: CrownListRow.reuseId, for: indexPath) as! CrownListRow
         let desk = rows[indexPath.row + 3]
-        cell.backgroundColor = .clear
-        cell.textLabel?.text = "\(indexPath.row + 4)   \(desk.spokenName)"
-        cell.detailTextLabel?.text = nil
-        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
-        cell.accessoryType = .none
-        let score = UILabel()
-        score.text = "\(desk.activityScore)"
-        score.textColor = AfterHoursPalette.loungePink
-        score.font = AfterHoursType.foyerPill(13)
-        score.sizeToFit()
-        cell.accessoryView = score
-        cell.selectionStyle = .none
+        cell.paint(rank: indexPath.row + 4, desk: desk, score: desk.activityScore * factor())
         return cell
     }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let desk = rows[indexPath.row + 3]
-        NightSocialDeskGate.revealDesk(from: self, deskKey: desk.deskKey)
+        NightSocialDeskGate.revealDesk(from: self, deskKey: rows[indexPath.row + 3].deskKey)
+    }
+}
+
+final class CrownPodiumSeat: UIControl {
+    let rank: Int
+    var onPick: (() -> Void)?
+    private let pic = UIImageView()
+    private let frameMark = UIImageView()
+    private let namePlate = UILabel()
+    private let scorePlate = UILabel()
+    private let spark = UIImageView()
+    private let levelHost = UIView()
+
+    init(rank: Int) {
+        self.rank = rank
+        super.init(frame: .zero)
+        translatesAutoresizingMaskIntoConstraints = false
+        addTarget(self, action: #selector(tap), for: .touchUpInside)
+
+        pic.contentMode = .scaleAspectFill
+        pic.clipsToBounds = true
+        pic.isUserInteractionEnabled = false
+        pic.translatesAutoresizingMaskIntoConstraints = false
+        frameMark.contentMode = .scaleAspectFit
+        frameMark.isUserInteractionEnabled = false
+        frameMark.image = Self.frameImage(rank)
+        frameMark.translatesAutoresizingMaskIntoConstraints = false
+        namePlate.font = AfterHoursType.foyerPill(rank == 1 ? 14 : 12)
+        namePlate.textColor = AfterHoursPalette.inkOnSnow
+        namePlate.textAlignment = .center
+        namePlate.translatesAutoresizingMaskIntoConstraints = false
+        scorePlate.font = AfterHoursType.foyerPill(rank == 1 ? 15 : 13)
+        scorePlate.textColor = UIColor(red: 0.95, green: 0.62, blue: 0.08, alpha: 1)
+        scorePlate.textAlignment = .center
+        scorePlate.translatesAutoresizingMaskIntoConstraints = false
+        spark.image = NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle")
+        spark.contentMode = .scaleAspectFit
+        spark.translatesAutoresizingMaskIntoConstraints = false
+        levelHost.translatesAutoresizingMaskIntoConstraints = false
+
+        addSubview(pic)
+        addSubview(frameMark)
+        addSubview(namePlate)
+        addSubview(levelHost)
+        addSubview(spark)
+        addSubview(scorePlate)
+
+        let frameEdge: CGFloat = rank == 1 ? 118 : 96
+        let faceEdge: CGFloat = rank == 1 ? 62 : 50
+        NSLayoutConstraint.activate([
+            frameMark.topAnchor.constraint(equalTo: topAnchor),
+            frameMark.centerXAnchor.constraint(equalTo: centerXAnchor),
+            frameMark.widthAnchor.constraint(equalToConstant: frameEdge),
+            frameMark.heightAnchor.constraint(equalToConstant: frameEdge),
+            pic.centerXAnchor.constraint(equalTo: frameMark.centerXAnchor),
+            pic.centerYAnchor.constraint(equalTo: frameMark.centerYAnchor, constant: -7),
+            pic.widthAnchor.constraint(equalToConstant: faceEdge),
+            pic.heightAnchor.constraint(equalToConstant: faceEdge),
+            namePlate.topAnchor.constraint(equalTo: frameMark.bottomAnchor, constant: -6),
+            namePlate.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            namePlate.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            levelHost.centerXAnchor.constraint(equalTo: centerXAnchor),
+            levelHost.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 4),
+            levelHost.widthAnchor.constraint(equalToConstant: 52),
+            levelHost.heightAnchor.constraint(equalToConstant: 18),
+            spark.trailingAnchor.constraint(equalTo: scorePlate.leadingAnchor, constant: -3),
+            spark.centerYAnchor.constraint(equalTo: scorePlate.centerYAnchor),
+            spark.widthAnchor.constraint(equalToConstant: 12),
+            spark.heightAnchor.constraint(equalToConstant: 12),
+            scorePlate.centerXAnchor.constraint(equalTo: centerXAnchor, constant: 7),
+            scorePlate.topAnchor.constraint(equalTo: levelHost.bottomAnchor, constant: 6),
+            scorePlate.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+        pic.layer.cornerRadius = faceEdge / 2
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    func paint(desk: LoungeCreatorDesk, score: Int) {
+        pic.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 120, height: 120))
+        namePlate.text = desk.spokenName
+        scorePlate.text = Self.scorePhrase(score)
+        levelHost.subviews.forEach { $0.removeFromSuperview() }
+        let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
+        levelHost.addSubview(level)
+        NSLayoutConstraint.activate([
+            level.topAnchor.constraint(equalTo: levelHost.topAnchor),
+            level.leadingAnchor.constraint(equalTo: levelHost.leadingAnchor),
+            level.trailingAnchor.constraint(equalTo: levelHost.trailingAnchor),
+            level.bottomAnchor.constraint(equalTo: levelHost.bottomAnchor),
+        ])
+    }
+
+    @objc private func tap() { onPick?() }
+
+    private static func frameImage(_ rank: Int) -> UIImage? {
+        switch rank {
+        case 1: return NightSocialImageCabinet.named("RankFrameGold", fallback: "image_623")
+        case 2: return NightSocialImageCabinet.named("RankFrameSilver", fallback: "image_625")
+        default: return NightSocialImageCabinet.named("RankFrameBronze", fallback: "image_626")
+        }
+    }
+
+    private static func scorePhrase(_ n: Int) -> String {
+        if n >= 1000 { return String(format: "%.2fK", Double(n) / 1000.0) }
+        return "\(n)"
+    }
+}
+
+final class CrownListRow: UITableViewCell {
+    static let reuseId = "CrownListRow"
+    private let rankDisc = UILabel()
+    private let pic = UIImageView()
+    private let namePlate = UILabel()
+    private let scorePlate = UILabel()
+    private let spark = UIImageView()
+    private var levelWrap: UIView?
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
+        selectionStyle = .none
+        rankDisc.font = AfterHoursType.foyerPill(13)
+        rankDisc.textAlignment = .center
+        rankDisc.textColor = AfterHoursPalette.inkOnSnow
+        rankDisc.backgroundColor = UIColor(red: 1.00, green: 0.82, blue: 0.28, alpha: 1)
+        rankDisc.layer.cornerRadius = 14
+        rankDisc.clipsToBounds = true
+        rankDisc.translatesAutoresizingMaskIntoConstraints = false
+        pic.contentMode = .scaleAspectFill
+        pic.clipsToBounds = true
+        pic.layer.cornerRadius = 22
+        pic.layer.borderWidth = 2
+        pic.layer.borderColor = AfterHoursPalette.loungePink.cgColor
+        pic.translatesAutoresizingMaskIntoConstraints = false
+        namePlate.font = AfterHoursType.foyerPill(15)
+        namePlate.textColor = AfterHoursPalette.inkOnSnow
+        namePlate.translatesAutoresizingMaskIntoConstraints = false
+        scorePlate.font = AfterHoursType.foyerPill(14)
+        scorePlate.textColor = UIColor(red: 0.95, green: 0.62, blue: 0.08, alpha: 1)
+        scorePlate.translatesAutoresizingMaskIntoConstraints = false
+        spark.image = NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle")
+        spark.contentMode = .scaleAspectFit
+        spark.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(rankDisc)
+        contentView.addSubview(pic)
+        contentView.addSubview(namePlate)
+        contentView.addSubview(spark)
+        contentView.addSubview(scorePlate)
+        NSLayoutConstraint.activate([
+            rankDisc.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            rankDisc.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            rankDisc.widthAnchor.constraint(equalToConstant: 28),
+            rankDisc.heightAnchor.constraint(equalToConstant: 28),
+            pic.leadingAnchor.constraint(equalTo: rankDisc.trailingAnchor, constant: 12),
+            pic.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            pic.widthAnchor.constraint(equalToConstant: 44),
+            pic.heightAnchor.constraint(equalToConstant: 44),
+            namePlate.leadingAnchor.constraint(equalTo: pic.trailingAnchor, constant: 10),
+            namePlate.topAnchor.constraint(equalTo: pic.topAnchor, constant: 2),
+            spark.trailingAnchor.constraint(equalTo: scorePlate.leadingAnchor, constant: -4),
+            spark.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            spark.widthAnchor.constraint(equalToConstant: 12),
+            spark.heightAnchor.constraint(equalToConstant: 12),
+            scorePlate.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -18),
+            scorePlate.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+        ])
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    func paint(rank: Int, desk: LoungeCreatorDesk, score: Int) {
+        rankDisc.text = "\(rank)"
+        pic.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 88, height: 88))
+        namePlate.text = desk.spokenName
+        scorePlate.text = score >= 1000 ? String(format: "%.2fK", Double(score) / 1000.0) : "\(score)"
+        levelWrap?.removeFromSuperview()
+        let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
+        levelWrap = level
+        contentView.addSubview(level)
+        NSLayoutConstraint.activate([
+            level.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
+            level.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 4),
+        ])
     }
 }

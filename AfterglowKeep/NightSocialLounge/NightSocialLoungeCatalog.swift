@@ -86,6 +86,14 @@ struct LoungeClipReel: Equatable {
     let shareCount: Int
     let meridian: LoungeMeridianLane
     let musicTitle: String
+
+    var trackSeconds: Int {
+        95 + abs(clipKey.hashValue % 140)
+    }
+
+    var durationPhrase: String {
+        String(format: "%d:%02d", trackSeconds / 60, trackSeconds % 60)
+    }
 }
 
 struct LoungeGiftToken: Equatable {
@@ -180,14 +188,14 @@ enum NightSocialLoungeCatalog {
     ]
 
     static let gifts: [LoungeGiftToken] = [
-        LoungeGiftToken(giftKey: "gift.wand", spokenTitle: "Wand", diamondCost: 50, glyphCatalog: "GiftWand"),
-        LoungeGiftToken(giftKey: "gift.fist", spokenTitle: "Fist", diamondCost: 50, glyphCatalog: "GiftFist"),
-        LoungeGiftToken(giftKey: "gift.heart", spokenTitle: "Heart", diamondCost: 50, glyphCatalog: "GiftHeart"),
-        LoungeGiftToken(giftKey: "gift.bolt", spokenTitle: "Bolt", diamondCost: 50, glyphCatalog: "GiftBolt"),
-        LoungeGiftToken(giftKey: "gift.laugh", spokenTitle: "Cheer", diamondCost: 100, glyphCatalog: "GiftLaugh"),
-        LoungeGiftToken(giftKey: "gift.balloons", spokenTitle: "Lift", diamondCost: 100, glyphCatalog: "GiftBalloons"),
-        LoungeGiftToken(giftKey: "gift.cake", spokenTitle: "Cake", diamondCost: 100, glyphCatalog: "GiftCake"),
-        LoungeGiftToken(giftKey: "gift.whistle", spokenTitle: "Whistle", diamondCost: 100, glyphCatalog: "GiftWhistle"),
+        LoungeGiftToken(giftKey: "gift.wand", spokenTitle: "Wand", diamondCost: 99, glyphCatalog: "GiftWand"),
+        LoungeGiftToken(giftKey: "gift.fist", spokenTitle: "Fist", diamondCost: 99, glyphCatalog: "GiftFist"),
+        LoungeGiftToken(giftKey: "gift.heart", spokenTitle: "Heart", diamondCost: 99, glyphCatalog: "GiftHeart"),
+        LoungeGiftToken(giftKey: "gift.bolt", spokenTitle: "Bolt", diamondCost: 99, glyphCatalog: "GiftBolt"),
+        LoungeGiftToken(giftKey: "gift.laugh", spokenTitle: "Cheer", diamondCost: 199, glyphCatalog: "GiftLaugh"),
+        LoungeGiftToken(giftKey: "gift.balloons", spokenTitle: "Lift", diamondCost: 199, glyphCatalog: "GiftBalloons"),
+        LoungeGiftToken(giftKey: "gift.cake", spokenTitle: "Cake", diamondCost: 199, glyphCatalog: "GiftCake"),
+        LoungeGiftToken(giftKey: "gift.whistle", spokenTitle: "Whistle", diamondCost: 199, glyphCatalog: "GiftWhistle"),
     ]
 
     static func creator(deskKey: String) -> LoungeCreatorDesk? {

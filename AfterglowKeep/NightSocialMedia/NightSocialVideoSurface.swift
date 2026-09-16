@@ -47,10 +47,25 @@ final class NightSocialVideoSurface: UIView {
         CATransaction.commit()
     }
 
+    var isPlaying: Bool { (player?.rate ?? 0) > 0.01 }
+
+    var hasVideo: Bool { url != nil }
+
+    func progress() -> (current: Double, duration: Double) {
+        guard let item = player?.currentItem else { return (0, 1) }
+        let duration = item.duration.seconds
+        let current = player?.currentTime().seconds ?? 0
+        guard duration.isFinite, duration > 0 else { return (0, 1) }
+        return (current, duration)
+    }
+
     func start() {
         wantsPlayback = true
         guard window != nil, UIApplication.shared.applicationState == .active, let url else { return }
-        guard !hasStarted else { return }
+        if hasStarted {
+            player?.play()
+            return
+        }
         Self.activeSurface?.stop()
         Self.activeSurface = self
         hasStarted = true
@@ -69,6 +84,10 @@ final class NightSocialVideoSurface: UIView {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         try? AVAudioSession.sharedInstance().setActive(true)
         queue.play()
+    }
+
+    func pausePlayback() {
+        player?.pause()
     }
 
     func stop() {

@@ -220,6 +220,7 @@ final class LoungeClipTile: UICollectionViewCell {
     static let reuseId = "LoungeClipTile"
     private let cover = UIImageView()
     private let playDisc = UIImageView()
+    private let captionBar = UIView()
     private let captionPlate = UILabel()
 
     override init(frame: CGRect) {
@@ -231,14 +232,17 @@ final class LoungeClipTile: UICollectionViewCell {
         playDisc.image = UIImage(systemName: "play.circle.fill")
         playDisc.tintColor = .white
         playDisc.translatesAutoresizingMaskIntoConstraints = false
+        captionBar.backgroundColor = AfterHoursPalette.loungePink.withAlphaComponent(0.92)
+        captionBar.translatesAutoresizingMaskIntoConstraints = false
         captionPlate.font = AfterHoursType.foyerCaption(11)
         captionPlate.textColor = .white
-        captionPlate.numberOfLines = 3
-        captionPlate.backgroundColor = AfterHoursPalette.loungePink.withAlphaComponent(0.92)
+        captionPlate.numberOfLines = 2
+        captionPlate.lineBreakMode = .byTruncatingTail
         captionPlate.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(cover)
         contentView.addSubview(playDisc)
-        contentView.addSubview(captionPlate)
+        contentView.addSubview(captionBar)
+        captionBar.addSubview(captionPlate)
         NSLayoutConstraint.activate([
             cover.topAnchor.constraint(equalTo: contentView.topAnchor),
             cover.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -248,9 +252,13 @@ final class LoungeClipTile: UICollectionViewCell {
             playDisc.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -12),
             playDisc.widthAnchor.constraint(equalToConstant: 36),
             playDisc.heightAnchor.constraint(equalToConstant: 36),
-            captionPlate.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            captionPlate.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            captionPlate.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            captionBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            captionBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            captionBar.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            captionPlate.leadingAnchor.constraint(equalTo: captionBar.leadingAnchor, constant: 10),
+            captionPlate.trailingAnchor.constraint(equalTo: captionBar.trailingAnchor, constant: -10),
+            captionPlate.topAnchor.constraint(equalTo: captionBar.topAnchor, constant: 8),
+            captionPlate.bottomAnchor.constraint(equalTo: captionBar.bottomAnchor, constant: -8),
         ])
     }
 
@@ -258,6 +266,61 @@ final class LoungeClipTile: UICollectionViewCell {
 
     func paint(_ clip: LoungeClipReel, musicMode: Bool) {
         cover.image = NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 320, height: 400))
-        captionPlate.text = "  " + (musicMode ? clip.musicTitle : clip.caption) + "  "
+        captionPlate.text = musicMode ? clip.musicTitle : clip.caption
+    }
+}
+
+final class LoungeMusicTile: UICollectionViewCell {
+    static let reuseId = "LoungeMusicTile"
+    private let cover = UIImageView()
+    private let titlePlate = UILabel()
+    private let metaPlate = UILabel()
+    private let playMark = UIImageView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.backgroundColor = AfterHoursPalette.loungeCard
+        contentView.layer.cornerRadius = 16
+        cover.contentMode = .scaleAspectFill
+        cover.clipsToBounds = true
+        cover.layer.cornerRadius = 10
+        cover.translatesAutoresizingMaskIntoConstraints = false
+        titlePlate.font = AfterHoursType.foyerPill(15)
+        titlePlate.textColor = .white
+        titlePlate.translatesAutoresizingMaskIntoConstraints = false
+        metaPlate.font = AfterHoursType.foyerCaption(12)
+        metaPlate.textColor = UIColor.white.withAlphaComponent(0.62)
+        metaPlate.translatesAutoresizingMaskIntoConstraints = false
+        playMark.image = UIImage(systemName: "play.circle.fill")
+        playMark.tintColor = AfterHoursPalette.loungePink
+        playMark.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(cover)
+        contentView.addSubview(titlePlate)
+        contentView.addSubview(metaPlate)
+        contentView.addSubview(playMark)
+        NSLayoutConstraint.activate([
+            cover.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            cover.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            cover.widthAnchor.constraint(equalToConstant: 56),
+            cover.heightAnchor.constraint(equalToConstant: 56),
+            playMark.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            playMark.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            playMark.widthAnchor.constraint(equalToConstant: 32),
+            playMark.heightAnchor.constraint(equalToConstant: 32),
+            titlePlate.leadingAnchor.constraint(equalTo: cover.trailingAnchor, constant: 12),
+            titlePlate.trailingAnchor.constraint(equalTo: playMark.leadingAnchor, constant: -10),
+            titlePlate.topAnchor.constraint(equalTo: cover.topAnchor, constant: 8),
+            metaPlate.leadingAnchor.constraint(equalTo: titlePlate.leadingAnchor),
+            metaPlate.trailingAnchor.constraint(equalTo: titlePlate.trailingAnchor),
+            metaPlate.topAnchor.constraint(equalTo: titlePlate.bottomAnchor, constant: 4),
+        ])
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    func paint(_ clip: LoungeClipReel) {
+        cover.image = NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 120, height: 120))
+        titlePlate.text = clip.musicTitle
+        metaPlate.text = "\(clip.authorSpokenName)  ·  \(clip.durationPhrase)"
     }
 }

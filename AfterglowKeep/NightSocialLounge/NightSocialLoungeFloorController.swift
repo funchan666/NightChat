@@ -87,6 +87,7 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
         collection.register(LoungeCreatorTile.self, forCellWithReuseIdentifier: LoungeCreatorTile.reuseId)
         collection.register(LoungeBoothTile.self, forCellWithReuseIdentifier: LoungeBoothTile.reuseId)
         collection.register(LoungeClipTile.self, forCellWithReuseIdentifier: LoungeClipTile.reuseId)
+        collection.register(LoungeMusicTile.self, forCellWithReuseIdentifier: LoungeMusicTile.reuseId)
         collection.register(LoungeSectionHead.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: LoungeSectionHead.reuseId)
         collection.translatesAutoresizingMaskIntoConstraints = false
 
@@ -212,9 +213,13 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeBoothTile.reuseId, for: indexPath) as! LoungeBoothTile
             cell.paint(boothItems[indexPath.item])
             return cell
-        case .fresh, .music:
+        case .fresh:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeClipTile.reuseId, for: indexPath) as! LoungeClipTile
-            cell.paint(clipItems[indexPath.item], musicMode: browseLane == .music)
+            cell.paint(clipItems[indexPath.item], musicMode: false)
+            return cell
+        case .music:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeMusicTile.reuseId, for: indexPath) as! LoungeMusicTile
+            cell.paint(clipItems[indexPath.item])
             return cell
         }
     }
@@ -227,9 +232,11 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
             return CGSize(width: col, height: col * 1.28)
         case .live:
             return CGSize(width: width, height: 118)
-        case .fresh, .music:
+        case .fresh:
             let col = (width - 10) / 2
             return CGSize(width: col, height: col * 1.35)
+        case .music:
+            return CGSize(width: width, height: 76)
         }
     }
 
@@ -247,7 +254,10 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
             navigationController?.pushViewController(NightSocialLiveBoothStage(boothKey: booth.boothKey), animated: true)
         case .fresh, .music:
             let clip = clipItems[indexPath.item]
-            navigationController?.pushViewController(NightSocialClipTheater(clipKey: clip.clipKey), animated: true)
+            navigationController?.pushViewController(
+                NightSocialClipTheater(clipKey: clip.clipKey, asMusic: browseLane == .music),
+                animated: true
+            )
         }
     }
 

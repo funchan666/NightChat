@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B7D42E18F2C15D0B9E3A7C22 /* NightSocialLampStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C31F07E1B04C9A8D2F6B11 /* NightSocialLampStore.swift */; };
 		00FD8F14940536DB4EB932E6 /* Group_135@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CB816B26A60C505BBD1D99C /* Group_135@2x.png */; };
 		042DF2F8418B09367D1AA3A2 /* Frame@2x(22).png in Resources */ = {isa = PBXBuildFile; fileRef = 7C70AF965F249915E8CADDED /* Frame@2x(22).png */; };
 		046BD7689769DB6151F88298 /* Rectangle_1113@2x(1).png in Resources */ = {isa = PBXBuildFile; fileRef = 52F97D0375E6CCC96C5C08F7 /* Rectangle_1113@2x(1).png */; };
@@ -158,6 +159,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A8C31F07E1B04C9A8D2F6B11 /* NightSocialLampStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLampStore.swift; sourceTree = "<group>"; };
 		00BF60C8AEDBC0A2F401C8AC /* Rectangle_1116@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle_1116@2x.png"; sourceTree = "<group>"; };
 		01D1475D45B2D680E1A34830 /* Rectangle_1197@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle_1197@2x.png"; sourceTree = "<group>"; };
 		038D9CB57FD2D8DF591E2B1F /* Frame@2x(49).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Frame@2x(49).png"; sourceTree = "<group>"; };
@@ -416,6 +418,7 @@
 				C9982E70A4E36569DEB8AFDE /* NightSocialMotionLoaders.swift */,
 				51CE29552CE50EBCAC6C6384 /* NightSocialPortraitIntake.swift */,
 				3398D1AFEAAC6EC26A6E0E85 /* NightSocialSessionDrawer.swift */,
+				A8C31F07E1B04C9A8D2F6B11 /* NightSocialLampStore.swift */,
 			);
 			path = NightSocialFoyer;
 			sourceTree = "<group>";
@@ -783,6 +786,7 @@
 				E0158B77B6735C30C7C0512E /* NightSocialPortraitIntake.swift in Sources */,
 				39C8976D26EB65E227873E81 /* NightSocialSafetyFlow.swift in Sources */,
 				16DFF564B5D39C778516B69B /* NightSocialSessionDrawer.swift in Sources */,
+				B7D42E18F2C15D0B9E3A7C22 /* NightSocialLampStore.swift in Sources */,
 				AF28C76722E82AC9F3E00A0A /* NightSocialStageDock.swift in Sources */,
 				82BE2C04C797630824888EE4 /* NightSocialStageShellController.swift in Sources */,
 				7AE0F9F97B078586841D4265 /* NightSocialTributeTray.swift in Sources */,

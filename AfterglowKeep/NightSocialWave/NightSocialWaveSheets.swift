@@ -85,7 +85,7 @@ final class NightSocialWaveGoalSheet: UIViewController {
         row.spacing = 10
         row.distribution = .fillEqually
         row.translatesAutoresizingMaskIntoConstraints = false
-        let recharge = NightSocialLoungeChrome.pinkPill(title: "Recharge Diamonds")
+        let recharge = NightSocialLoungeChrome.pinkPill(title: "Open night purse")
         recharge.addTarget(self, action: #selector(rechargePurse), for: .touchUpInside)
         view.addSubview(title)
         view.addSubview(body)
@@ -133,9 +133,7 @@ final class NightSocialWaveGoalSheet: UIViewController {
         return wrap
     }
     @objc private func rechargePurse() {
-        let purse = NightSocialSessionDrawer.shared.diamondPurse
-        NightSocialSessionDrawer.shared.writeDiamondPurse(purse + 500)
-        dismiss(animated: true)
+        NightSocialLampStore.revealRecharge(from: self)
     }
 }
 

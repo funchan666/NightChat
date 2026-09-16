@@ -96,6 +96,8 @@ final class NightSocialSessionDrawer {
         static let houseCovenant = "lampdesk.nightSocial.houseCovenant.v1"
         static let seatedFlag = "lampdesk.nightSocial.seatedAtLounge.v1"
         static let diamondPurse = "lampdesk.nightSocial.diamondPurse.v1"
+        static let lampWelcome = "lampdesk.nightSocial.lampWelcome.v1"
+        static let lampReceipts = "lampdesk.nightSocial.lampReceipts.v1"
         static let followedDesks = "lampdesk.nightSocial.followedDesks.v2"
         static let followerDesks = "lampdesk.nightSocial.followerDesks.v1"
         static let blockedDesks = "lampdesk.nightSocial.blockedDesks.v1"
@@ -252,12 +254,29 @@ final class NightSocialSessionDrawer {
     }
 
     var diamondPurse: Int {
-        if defaults.object(forKey: DrawerSlot.diamondPurse) == nil { return 369 }
+        if defaults.object(forKey: DrawerSlot.diamondPurse) == nil { return 0 }
         return defaults.integer(forKey: DrawerSlot.diamondPurse)
     }
 
     func writeDiamondPurse(_ amount: Int) {
         defaults.set(max(0, amount), forKey: DrawerSlot.diamondPurse)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func grantNightLampWelcomeIfNeeded() -> Int {
+        if defaults.bool(forKey: DrawerSlot.lampWelcome) { return 0 }
+        defaults.set(true, forKey: DrawerSlot.lampWelcome)
+        writeDiamondPurse(diamondPurse + NightSocialLampStore.welcomeGrant)
+        return NightSocialLampStore.welcomeGrant
+    }
+
+    func creditLampPack(productId: String, transactionId: String) {
+        var receipts = defaults.stringArray(forKey: DrawerSlot.lampReceipts) ?? []
+        if receipts.contains(transactionId) { return }
+        guard let pack = NightSocialLampPack.allCases.first(where: { $0.productId == productId }) else { return }
+        receipts.append(transactionId)
+        defaults.set(receipts, forKey: DrawerSlot.lampReceipts)
+        writeDiamondPurse(diamondPurse + pack.coins)
     }
 
     func followedDeskKeys() -> Set<String> {

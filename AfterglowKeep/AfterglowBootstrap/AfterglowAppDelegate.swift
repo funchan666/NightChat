@@ -8,6 +8,7 @@ final class AfterglowAppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         NightSocialSessionDrawer.shared.openDrawer()
         AfterglowRootCoordinator.applyChrome()
+        NightSocialLampStore.startListening()
         return true
     }
 
