@@ -117,6 +117,7 @@ final class NightSocialSessionDrawer {
         static let platformRead = "lampdesk.nightSocial.platformRead.v1"
         static let likesRead = "lampdesk.nightSocial.likesRead.v1"
         static let spokenTongue = "lampdesk.nightSocial.spokenTongue.v1"
+        static let homeCountry = "lampdesk.nightSocial.homeCountry.v1"
         static let checkInDays = "lampdesk.nightSocial.checkInDays.v1"
         static let coverFile = "night-social-desk-cover.jpg"
         static let inviteCode = "lampdesk.nightSocial.inviteCode.v1"
@@ -228,16 +229,34 @@ final class NightSocialSessionDrawer {
         defaults.set(true, forKey: DrawerSlot.seatedFlag)
     }
 
-    func finishDeskCard(nightAlias: String, nightSignature: String, portrait: UIImage?) {
+    func finishDeskCard(
+        nightAlias: String,
+        nightSignature: String,
+        portrait: UIImage?,
+        birthMeridianPhrase: String? = nil,
+        homeCountryCode: String? = nil,
+        spokenTongue: String? = nil
+    ) {
         guard var card = liveSession else { return }
         card.nightAlias = NightSocialFoyerGuard.trimmed(nightAlias)
         card.nightSignature = NightSocialFoyerGuard.trimmed(nightSignature)
+        if let birthMeridianPhrase { card.birthMeridianPhrase = birthMeridianPhrase }
         card.deskCardCompleted = true
         persist(card)
         defaults.set(true, forKey: DrawerSlot.seatedFlag)
+        if let homeCountryCode { writeHomeCountry(homeCountryCode) }
+        if let spokenTongue { writeSpokenTongue(spokenTongue) }
         if let portrait {
             writePortrait(portrait)
         }
+    }
+
+    var homeCountryCode: String {
+        defaults.string(forKey: DrawerSlot.homeCountry) ?? "US"
+    }
+
+    func writeHomeCountry(_ value: String) {
+        defaults.set(value, forKey: DrawerSlot.homeCountry)
     }
 
     func markSeatedAfterReturn() {
@@ -574,7 +593,7 @@ final class NightSocialSessionDrawer {
             DrawerSlot.sentFriendAsks, DrawerSlot.incomingFriendAsks, DrawerSlot.acceptedFriends,
             DrawerSlot.recentChambers, DrawerSlot.hostedChambers, DrawerSlot.seatedChamber,
             DrawerSlot.chimeLines, DrawerSlot.chimeRead, DrawerSlot.platformRead,
-            DrawerSlot.likesRead, DrawerSlot.spokenTongue, DrawerSlot.checkInDays,
+            DrawerSlot.likesRead, DrawerSlot.spokenTongue, DrawerSlot.homeCountry, DrawerSlot.checkInDays,
             DrawerSlot.inviteCode,
         ]
         keys.forEach { defaults.removeObject(forKey: $0) }
