@@ -35,6 +35,13 @@ final class NightDeskEnrollmentBoardController: NightSocialWashController, UITex
         headline.textAlignment = .center
         headline.translatesAutoresizingMaskIntoConstraints = false
 
+        let kicker = UILabel()
+        kicker.text = "A name, a mailbox, and a secret."
+        kicker.textColor = UIColor.white.withAlphaComponent(0.82)
+        kicker.font = AfterHoursType.foyerBody(15)
+        kicker.textAlignment = .center
+        kicker.translatesAutoresizingMaskIntoConstraints = false
+
         spokenNameField.autocapitalizationType = .words
         spokenNameField.textContentType = .name
         spokenNameField.delegate = self
@@ -55,6 +62,7 @@ final class NightDeskEnrollmentBoardController: NightSocialWashController, UITex
 
         scroller.addSubview(mark)
         scroller.addSubview(headline)
+        scroller.addSubview(kicker)
         scroller.addSubview(cluster)
         view.addSubview(enter)
         view.addSubview(covenantBar)
@@ -68,10 +76,14 @@ final class NightDeskEnrollmentBoardController: NightSocialWashController, UITex
 
             headline.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             headline.topAnchor.constraint(equalTo: mark.bottomAnchor, constant: 16),
+            kicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            kicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 36),
+            kicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -36),
+            kicker.topAnchor.constraint(equalTo: headline.bottomAnchor, constant: 8),
 
             cluster.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 28),
             cluster.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -28),
-            cluster.topAnchor.constraint(equalTo: headline.bottomAnchor, constant: 28),
+            cluster.topAnchor.constraint(equalTo: kicker.bottomAnchor, constant: 24),
 
             footer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             footer.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -28),
