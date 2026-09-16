@@ -146,7 +146,7 @@ final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewController
             return
         }
         NightSocialLampStore.spend(.hostVoice, from: self) { [weak self] in
-            self?.openHostedSitting(title: title, tags: pickedTags)
+            self?.openHostedSitting(title: title, tags: Array(pickedTags))
         }
     }
 
@@ -274,8 +274,9 @@ final class NightSocialWavePostBoard: UIViewController, PHPickerViewControllerDe
             return
         }
         NightSocialLampStore.spend(.postClip, from: self) { [weak self] in
+            guard let self else { return }
             NightSocialSessionDrawer.shared.rememberPendingClip(caption: body)
-            NightSocialLampNotices.presentReviewHold(from: self) {
+            NightSocialLampNotices.presentReviewHold(from: self) { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             }
         }
