@@ -12,16 +12,25 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
         self.boothKey = boothKey
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .pageSheet
-        sheetPresentationController?.detents = [.medium()]
+        sheetPresentationController?.detents = [
+            .custom(identifier: .init("gifts")) { _ in 348 }
+        ]
+        sheetPresentationController?.prefersGrabberVisible = true
+        sheetPresentationController?.preferredCornerRadius = 24
     }
     required init?(coder: NSCoder) { nil }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeCard
+        let title = UILabel()
+        title.text = "Send a gift"
+        title.font = AfterHoursType.foyerHeadline(18)
+        title.textColor = .white
+        title.translatesAutoresizingMaskIntoConstraints = false
         let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 12
-        layout.minimumLineSpacing = 16
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 12
         collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.backgroundColor = .clear
         collection.dataSource = self
@@ -52,6 +61,7 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
         send.addTarget(self, action: #selector(offerGift), for: .touchUpInside)
         send.translatesAutoresizingMaskIntoConstraints = false
 
+        view.addSubview(title)
         view.addSubview(collection)
         view.addSubview(pursePlate)
         view.addSubview(minus)
@@ -59,14 +69,16 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
         view.addSubview(plus)
         view.addSubview(send)
         NSLayoutConstraint.activate([
-            collection.topAnchor.constraint(equalTo: view.topAnchor, constant: 18),
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
+            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 18),
+            collection.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 12),
             collection.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             collection.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            collection.bottomAnchor.constraint(equalTo: send.topAnchor, constant: -12),
+            collection.heightAnchor.constraint(equalToConstant: 196),
             pursePlate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             pursePlate.centerYAnchor.constraint(equalTo: send.centerYAnchor),
             send.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            send.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -18),
+            send.topAnchor.constraint(equalTo: collection.bottomAnchor, constant: 14),
             send.widthAnchor.constraint(equalToConstant: 84),
             send.heightAnchor.constraint(equalToConstant: 36),
             plus.trailingAnchor.constraint(equalTo: send.leadingAnchor, constant: -10),
@@ -109,7 +121,18 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
     @objc private func offerGift() {
         guard let gift = picked else { return }
         let cost = gift.diamondCost * quantity
-        present(NightSocialDiamondPrompt(cost: cost, quantity: quantity, giftTitle: gift.spokenTitle), animated: true)
+        present(NightSocialDiamondPrompt(cost: cost, quantity: quantity, giftTitle: gift.spokenTitle) { [weak self] in
+            NotificationCenter.default.post(
+                name: .liveGiftOffered,
+                object: nil,
+                userInfo: [
+                    "title": gift.spokenTitle,
+                    "quantity": quantity,
+                    "glyph": gift.glyphCatalog,
+                ]
+            )
+            self?.dismiss(animated: true)
+        }, animated: true)
     }
 }
 
@@ -152,10 +175,12 @@ final class NightSocialDiamondPrompt: UIViewController {
     private let cost: Int
     private let quantity: Int
     private let giftTitle: String
-    init(cost: Int, quantity: Int, giftTitle: String) {
+    private let onPaid: (() -> Void)?
+    init(cost: Int, quantity: Int, giftTitle: String, onPaid: (() -> Void)? = nil) {
         self.cost = cost
         self.quantity = quantity
         self.giftTitle = giftTitle
+        self.onPaid = onPaid
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .overFullScreen
         modalTransitionStyle = .crossDissolve
@@ -210,7 +235,8 @@ final class NightSocialDiamondPrompt: UIViewController {
         let purse = NightSocialSessionDrawer.shared.diamondPurse
         if purse >= cost {
             NightSocialSessionDrawer.shared.writeDiamondPurse(purse - cost)
-            dismiss(animated: true)
+            let paid = onPaid
+            dismiss(animated: true) { paid?() }
         } else {
             NightSocialSessionDrawer.shared.writeDiamondPurse(purse + 1000)
             dismiss(animated: true)

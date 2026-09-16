@@ -238,21 +238,110 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         let body = NightSocialFoyerGuard.trimmed(field.text)
         guard !body.isEmpty else { return }
         let me = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "You"
-        chatLines.append(LoungeDiscussLine(speakerName: me, spokenBody: body))
+        pushLine(speaker: me, body: body, deskKey: "")
         field.text = ""
-        table.reloadData()
-        table.scrollToRow(at: IndexPath(row: chatLines.count - 1, section: 0), at: .bottom, animated: true)
     }
+
+    private func seedOpeningChat() {
+        guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
+        let others = NightSocialLoungeCatalog.visibleCreators().filter { $0.deskKey != booth.hostDeskKey }
+        guard !others.isEmpty else { return }
+        let opening = [
+            "The lighting on this sitting is unreal.",
+            "Just walked in. Stay a minute.",
+            "Send a wand if the talk lands.",
+        ]
+        for (index, phrase) in opening.enumerated() {
+            let speaker = others[index % others.count]
+            chatLines.append(LoungeDiscussLine(speakerDeskKey: speaker.deskKey, speakerName: speaker.spokenName, spokenBody: phrase))
+        }
+        table.reloadData()
+    }
+
+    private func startAtmosphere() {
+        chatter?.invalidate()
+        chatter = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: true) { [weak self] _ in
+            self?.spillAtmosphere()
+        }
+        if let first = chatLines.first {
+            danmaku.fire("\(first.speakerName): \(first.spokenBody)")
+        }
+    }
+
+    private func spillAtmosphere() {
+        guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
+        let others = NightSocialLoungeCatalog.visibleCreators().filter { $0.deskKey != booth.hostDeskKey }
+        guard let speaker = others.randomElement() else { return }
+        let phrases = [
+            "This room is warm tonight.",
+            "The talk landed.",
+            "Stay, don't fold yet.",
+            "That shot is cinematic.",
+            "Hi from the back row.",
+            "Gift a heart if you're still here.",
+            "The night desk is kind.",
+            "Keep the lamp low.",
+        ]
+        let phrase = phrases.randomElement() ?? "Hello."
+        pushLine(speaker: speaker.spokenName, body: phrase, deskKey: speaker.deskKey)
+        if Int.random(in: 0...4) == 0, let gift = NightSocialLoungeCatalog.gifts.randomElement() {
+            paintGift(
+                speaker: speaker.spokenName,
+                deskKey: speaker.deskKey,
+                title: gift.spokenTitle,
+                quantity: 1,
+                glyphName: gift.glyphCatalog
+            )
+        }
+    }
+
+    private func pushLine(speaker: String, body: String, deskKey: String) {
+        chatLines.append(LoungeDiscussLine(speakerDeskKey: deskKey, speakerName: speaker, spokenBody: body))
+        if chatLines.count > 36 { chatLines.removeFirst(chatLines.count - 36) }
+        table.reloadData()
+        let last = IndexPath(row: chatLines.count - 1, section: 0)
+        table.scrollToRow(at: last, at: .bottom, animated: true)
+        danmaku.fire("\(speaker): \(body)")
+    }
+
+    @objc private func catchGift(_ note: Notification) {
+        let title = note.userInfo?["title"] as? String ?? "Gift"
+        let quantity = note.userInfo?["quantity"] as? Int ?? 1
+        let glyph = note.userInfo?["glyph"] as? String ?? ""
+        let me = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "You"
+        paintGift(speaker: me, deskKey: "", title: title, quantity: quantity, glyphName: glyph)
+        pushLine(speaker: me, body: "sent \(title)×\(quantity)", deskKey: "")
+    }
+
+    private func paintGift(speaker: String, deskKey: String, title: String, quantity: Int, glyphName: String) {
+        let portrait = deskKey.isEmpty
+            ? NightSocialMediaAssets.localPortrait(size: CGSize(width: 64, height: 64))
+            : NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 64, height: 64))
+        giftRibbon.reveal(
+            speaker: speaker,
+            giftTitle: title,
+            quantity: quantity,
+            portrait: portrait,
+            glyphImage: UIImage(named: glyphName)
+        )
+        giftBurst.image = UIImage(named: glyphName)
+        giftBurst.alpha = 0
+        giftBurst.transform = CGAffineTransform(scaleX: 0.4, y: 0.4)
+        UIView.animate(withDuration: 0.28, delay: 0, usingSpringWithDamping: 0.62, initialSpringVelocity: 0.8) {
+            self.giftBurst.alpha = 1
+            self.giftBurst.transform = CGAffineTransform(scaleX: 1.15, y: 1.15)
+        } completion: { _ in
+            UIView.animate(withDuration: 0.35, delay: 0.55, options: [.curveEaseIn]) {
+                self.giftBurst.alpha = 0
+                self.giftBurst.transform = CGAffineTransform(translationX: 0, y: -36).scaledBy(x: 0.7, y: 0.7)
+            }
+        }
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { chatLines.count }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "chat", for: indexPath)
-        cell.backgroundColor = .clear
-        cell.textLabel?.textColor = .white
-        cell.textLabel?.font = AfterHoursType.foyerCaption(12)
-        cell.textLabel?.numberOfLines = 0
-        let line = chatLines[indexPath.row]
-        cell.textLabel?.text = "\(line.speakerName): \(line.spokenBody)"
-        cell.selectionStyle = .none
+        let cell = tableView.dequeueReusableCell(withIdentifier: LiveChatLineCell.reuseId, for: indexPath) as! LiveChatLineCell
+        cell.paint(chatLines[indexPath.row])
         return cell
     }
 }
@@ -357,7 +446,12 @@ final class NightSocialBoothLadderSheet: UIViewController, UITableViewDataSource
         self.rows = NightSocialLoungeCatalog.visibleCreators().sorted { $0.activityScore > $1.activityScore }
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .pageSheet
-        sheetPresentationController?.detents = [.medium(), .large()]
+        sheetPresentationController?.detents = [
+            .custom(identifier: .init("rank")) { _ in 520 },
+            .large(),
+        ]
+        sheetPresentationController?.prefersGrabberVisible = true
+        sheetPresentationController?.preferredCornerRadius = 24
     }
     required init?(coder: NSCoder) { nil }
     override func viewDidLoad() {
@@ -365,22 +459,31 @@ final class NightSocialBoothLadderSheet: UIViewController, UITableViewDataSource
         view.backgroundColor = AfterHoursPalette.loungeCard
         let title = UILabel()
         title.text = "Room Ranking"
-        title.font = AfterHoursType.foyerHeadline(20)
+        title.font = AfterHoursType.foyerHeadline(22)
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
+        let kicker = UILabel()
+        kicker.text = "Top gifters in this sitting"
+        kicker.font = AfterHoursType.foyerCaption(13)
+        kicker.textColor = UIColor.white.withAlphaComponent(0.65)
+        kicker.translatesAutoresizingMaskIntoConstraints = false
         let table = UITableView()
         table.backgroundColor = .clear
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "rank")
+        table.rowHeight = 72
+        table.register(LiveRankRow.self, forCellReuseIdentifier: LiveRankRow.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(title)
+        view.addSubview(kicker)
         view.addSubview(table)
         NSLayoutConstraint.activate([
             title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            table.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 8),
+            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 22),
+            kicker.leadingAnchor.constraint(equalTo: title.leadingAnchor),
+            kicker.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 4),
+            table.topAnchor.constraint(equalTo: kicker.bottomAnchor, constant: 12),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -388,13 +491,8 @@ final class NightSocialBoothLadderSheet: UIViewController, UITableViewDataSource
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { min(rows.count, 8) }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "rank", for: indexPath)
-        cell.backgroundColor = .clear
-        cell.textLabel?.textColor = .white
-        let desk = rows[indexPath.row]
-        cell.textLabel?.text = "\(indexPath.row + 1)  \(desk.spokenName)    \(desk.activityScore)"
-        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
-        cell.selectionStyle = .none
+        let cell = tableView.dequeueReusableCell(withIdentifier: LiveRankRow.reuseId, for: indexPath) as! LiveRankRow
+        cell.paint(rank: indexPath.row + 1, desk: rows[indexPath.row])
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
