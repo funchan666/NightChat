@@ -145,6 +145,7 @@ final class MirrorPersonRow: UITableViewCell {
         selectionStyle = .none
         contentView.backgroundColor = AfterHoursPalette.loungeCard
         contentView.layer.cornerRadius = 16
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 20
         portrait.clipsToBounds = true
         portrait.translatesAutoresizingMaskIntoConstraints = false

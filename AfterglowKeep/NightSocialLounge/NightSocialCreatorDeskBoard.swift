@@ -44,6 +44,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         card.translatesAutoresizingMaskIntoConstraints = false
 
         let portrait = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 160, height: 160)))
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 28
         portrait.clipsToBounds = true
         portrait.translatesAutoresizingMaskIntoConstraints = false

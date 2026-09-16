@@ -42,6 +42,7 @@ final class NightSocialChimeCallStage: UIViewController {
         namePlate.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openDesk)))
         namePlate.translatesAutoresizingMaskIntoConstraints = false
         avatar.image = NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 220, height: 220))
+        avatar.contentMode = .scaleAspectFill
         avatar.layer.cornerRadius = 70
         avatar.clipsToBounds = true
         avatar.layer.borderWidth = 3

@@ -39,6 +39,7 @@ final class NightSocialDeskMirrorController: UIViewController {
         let gear = magentaChip(symbol: "gearshape.fill")
         gear.addTarget(self, action: #selector(openSettings), for: .touchUpInside)
 
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 38
         portrait.clipsToBounds = true
         portrait.layer.borderWidth = 3

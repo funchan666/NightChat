@@ -194,6 +194,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             wrap.translatesAutoresizingMaskIntoConstraints = false
             wrap.widthAnchor.constraint(equalToConstant: 64).isActive = true
             let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 96, height: 96)))
+            pic.contentMode = .scaleAspectFill
             pic.layer.cornerRadius = 24
             pic.clipsToBounds = true
             pic.translatesAutoresizingMaskIntoConstraints = false
@@ -295,6 +296,7 @@ final class ChimeThreadRow: UITableViewCell {
         selectionStyle = .none
         contentView.backgroundColor = AfterHoursPalette.loungeCard
         contentView.layer.cornerRadius = 16
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 22
         portrait.clipsToBounds = true
         portrait.isUserInteractionEnabled = true
@@ -381,6 +383,7 @@ final class ChimeFollowRow: UITableViewCell {
         selectionStyle = .none
         contentView.backgroundColor = AfterHoursPalette.loungeCard
         contentView.layer.cornerRadius = 16
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 22
         portrait.clipsToBounds = true
         portrait.translatesAutoresizingMaskIntoConstraints = false

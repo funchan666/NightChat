@@ -94,6 +94,7 @@ final class LookupDeskRow: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         selectionStyle = .none
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 22
         portrait.clipsToBounds = true
         portrait.translatesAutoresizingMaskIntoConstraints = false

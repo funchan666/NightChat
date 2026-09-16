@@ -233,6 +233,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         button.translatesAutoresizingMaskIntoConstraints = false
         let pic = UIImageView()
         pic.tag = 800 + index
+        pic.contentMode = .scaleAspectFill
         pic.layer.cornerRadius = 28
         pic.clipsToBounds = true
         pic.translatesAutoresizingMaskIntoConstraints = false
