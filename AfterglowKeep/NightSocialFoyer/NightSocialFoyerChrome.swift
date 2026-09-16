@@ -109,6 +109,18 @@ class NightSocialWashController: UIViewController {
         view.addSubview(plate)
         return plate
     }
+
+    func attachKicker(_ spoken: String) -> UILabel {
+        let plate = UILabel()
+        plate.text = spoken
+        plate.textColor = UIColor.white.withAlphaComponent(0.82)
+        plate.font = AfterHoursType.foyerBody(15)
+        plate.textAlignment = .center
+        plate.numberOfLines = 2
+        plate.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(plate)
+        return plate
+    }
 }
 
 enum FoyerStagePillKind {
@@ -413,16 +425,16 @@ final class FoyerContinueSpine: UIView {
         translatesAutoresizingMaskIntoConstraints = false
 
         let spoken = UILabel()
-        spoken.text = "OR CONTINUE WITH"
-        spoken.textColor = AfterHoursPalette.titleSnow.withAlphaComponent(0.92)
-        spoken.font = AfterHoursType.foyerCaption(11)
+        spoken.text = "or continue with"
+        spoken.textColor = UIColor.white.withAlphaComponent(0.78)
+        spoken.font = AfterHoursType.foyerCaption(12)
         spoken.textAlignment = .center
         spoken.translatesAutoresizingMaskIntoConstraints = false
 
         let leading = UIView()
         let trailing = UIView()
-        leading.backgroundColor = UIColor.white.withAlphaComponent(0.55)
-        trailing.backgroundColor = UIColor.white.withAlphaComponent(0.55)
+        leading.backgroundColor = UIColor.white.withAlphaComponent(0.32)
+        trailing.backgroundColor = UIColor.white.withAlphaComponent(0.32)
         leading.translatesAutoresizingMaskIntoConstraints = false
         trailing.translatesAutoresizingMaskIntoConstraints = false
 

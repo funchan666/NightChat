@@ -11,14 +11,19 @@ final class AfterglowWelcomeGateController: NightSocialWashController {
 
         let mark = attachStageMark(edge: 92, topOffset: 148)
         let headline = attachHeadline("Welcome")
+        let kicker = attachKicker("Live rooms. Night talk. New friends.")
         NSLayoutConstraint.activate([
             headline.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            headline.topAnchor.constraint(equalTo: mark.bottomAnchor, constant: 18),
+            headline.topAnchor.constraint(equalTo: mark.bottomAnchor, constant: 16),
+            kicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            kicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 36),
+            kicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -36),
+            kicker.topAnchor.constraint(equalTo: headline.bottomAnchor, constant: 8),
         ])
 
         let accountReturn = SnowPillControl(spokenTitle: "Account login")
-        let openEnrollment = SnowPillControl(spokenTitle: "Create Account")
-        let appleEnter = makeApplePill()
+        let openEnrollment = FoyerStagePill(spokenTitle: "Create Account", kind: .frost)
+        let appleEnter = FoyerStagePill(spokenTitle: "Sign in with Apple", kind: .apple, glyphName: "apple.logo")
         let spine = FoyerContinueSpine()
 
         accountReturn.addTarget(self, action: #selector(openReturnBoard), for: .touchUpInside)
@@ -27,7 +32,7 @@ final class AfterglowWelcomeGateController: NightSocialWashController {
 
         let stack = UIStackView(arrangedSubviews: [accountReturn, openEnrollment, spine, appleEnter])
         stack.axis = .vertical
-        stack.spacing = 14
+        stack.spacing = 12
         stack.setCustomSpacing(18, after: openEnrollment)
         stack.setCustomSpacing(18, after: spine)
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -46,19 +51,6 @@ final class AfterglowWelcomeGateController: NightSocialWashController {
             stack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -28),
             stack.bottomAnchor.constraint(equalTo: covenantBar.topAnchor, constant: -16),
         ])
-    }
-
-    private func makeApplePill() -> UIButton {
-        let pill = SnowPillControl(spokenTitle: "  Sign in with Apple")
-        let symbol = UIImage(
-            systemName: "apple.logo",
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
-        )
-        pill.setImage(symbol, for: .normal)
-        pill.tintColor = AfterHoursPalette.inkOnSnow
-        pill.imageView?.contentMode = .scaleAspectFit
-        pill.semanticContentAttribute = .forceLeftToRight
-        return pill
     }
 
     @objc private func openReturnBoard() {
