@@ -372,6 +372,146 @@ final class NightSocialWaveOpenRoomsSheet: UIViewController, UITableViewDataSour
     }
 }
 
+final class NightSocialWaveRoomListSheet: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    enum Kind {
+        case followingLive, startingSoon, returnRooms, activeAgain
+
+        var spokenTitle: String {
+            switch self {
+            case .followingLive: return "Following Live"
+            case .startingSoon: return "Starting Soon"
+            case .returnRooms: return "Return to Rooms"
+            case .activeAgain: return "Active Again"
+            }
+        }
+
+        var kicker: String {
+            switch self {
+            case .followingLive: return "Live rooms from desks you follow"
+            case .startingSoon: return "Rooms about to open the lamp"
+            case .returnRooms: return "Rooms you sat in recently"
+            case .activeAgain: return "Recent rooms that are live now"
+            }
+        }
+    }
+
+    private let kind: Kind
+    private weak var nav: UINavigationController?
+    private let table = UITableView()
+    private let rows: [WaveVoiceChamber]
+
+    init(kind: Kind, nav: UINavigationController?) {
+        self.kind = kind
+        self.nav = nav
+        let followed = NightSocialSessionDrawer.shared.followedDeskKeys()
+        let recent = NightSocialSessionDrawer.shared.recentChamberKeys().compactMap { NightSocialWaveCatalog.chamber($0) }
+        switch kind {
+        case .followingLive:
+            rows = NightSocialWaveCatalog.chambers.filter { $0.isLive && followed.contains($0.hostDeskKey) && !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
+        case .startingSoon:
+            rows = NightSocialWaveCatalog.chambers.filter { $0.isUpcoming && !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
+        case .returnRooms:
+            rows = recent.filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
+        case .activeAgain:
+            rows = recent.filter { $0.isLive && !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
+        }
+        super.init(nibName: nil, bundle: nil)
+        modalPresentationStyle = .pageSheet
+        sheetPresentationController?.detents = [.large()]
+        sheetPresentationController?.prefersGrabberVisible = true
+        sheetPresentationController?.preferredCornerRadius = 24
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = AfterHoursPalette.loungeCard
+        let title = UILabel()
+        title.text = kind.spokenTitle
+        title.font = AfterHoursType.foyerHeadline(22)
+        title.textColor = .white
+        title.translatesAutoresizingMaskIntoConstraints = false
+        let kicker = UILabel()
+        kicker.text = kind.kicker
+        kicker.font = AfterHoursType.foyerCaption(12)
+        kicker.textColor = UIColor.white.withAlphaComponent(0.55)
+        kicker.translatesAutoresizingMaskIntoConstraints = false
+        let listeners = rows.reduce(0) { $0 + $1.listenerCount }
+        let heat = rows.reduce(0) { $0 + $1.heatScore }
+        let metrics = WaveSheetMetricsRow(items: [
+            ("\(rows.count)", kind == .startingSoon ? "Soon" : "Rooms"),
+            ("\(listeners)", "Listeners"),
+            (heat >= 1000 ? String(format: "%.1fk", Double(heat) / 1000) : "\(heat)", "Heat"),
+        ])
+        table.backgroundColor = .clear
+        table.separatorStyle = .none
+        table.dataSource = self
+        table.delegate = self
+        table.rowHeight = 118
+        table.register(WaveOpenRoomRow.self, forCellReuseIdentifier: WaveOpenRoomRow.reuseId)
+        table.translatesAutoresizingMaskIntoConstraints = false
+        let host = rows.first.map { NightSocialWaveCatalog.hostName($0) } ?? "a host"
+        let first = host.split(separator: " ").first.map(String.init) ?? host
+        let join = NightSocialLoungeChrome.pinkPill(title: rows.isEmpty ? "Find a room" : "Join \(first)'s room")
+        join.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        join.addTarget(self, action: #selector(joinFirst), for: .touchUpInside)
+        view.addSubview(title)
+        view.addSubview(kicker)
+        view.addSubview(metrics)
+        view.addSubview(table)
+        view.addSubview(join)
+        NSLayoutConstraint.activate([
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
+            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 18),
+            kicker.leadingAnchor.constraint(equalTo: title.leadingAnchor),
+            kicker.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 4),
+            metrics.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            metrics.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            metrics.topAnchor.constraint(equalTo: kicker.bottomAnchor, constant: 14),
+            metrics.heightAnchor.constraint(equalToConstant: 64),
+            table.topAnchor.constraint(equalTo: metrics.bottomAnchor, constant: 10),
+            table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            table.bottomAnchor.constraint(equalTo: join.topAnchor, constant: -12),
+            join.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            join.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            join.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
+        ])
+        if rows.isEmpty {
+            let empty = NightSocialEmptyPane(spoken: "No rooms in this list yet.")
+            table.backgroundView = empty
+        }
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { rows.count }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: WaveOpenRoomRow.reuseId, for: indexPath) as! WaveOpenRoomRow
+        cell.paint(rows[indexPath.row])
+        cell.onJoin = { [weak self] in
+            guard let self else { return }
+            self.open(self.rows[indexPath.row])
+        }
+        return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        open(rows[indexPath.row])
+    }
+    @objc private func joinFirst() {
+        if let first = rows.first {
+            open(first)
+        } else {
+            dismiss(animated: true)
+        }
+    }
+    private func open(_ chamber: WaveVoiceChamber) {
+        let nav = self.nav
+        dismiss(animated: true) {
+            nav?.pushViewController(NightSocialWaveVoiceStage(chamberKey: chamber.chamberKey), animated: true)
+        }
+    }
+}
+
 final class WaveSheetMetricsRow: UIStackView {
     init(items: [(String, String)]) {
         super.init(frame: .zero)
@@ -429,6 +569,7 @@ final class WaveHostPickRow: UITableViewCell {
         card.backgroundColor = AfterHoursPalette.loungeInk.withAlphaComponent(0.35)
         card.layer.cornerRadius = 18
         card.translatesAutoresizingMaskIntoConstraints = false
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 28
         portrait.clipsToBounds = true
         portrait.layer.borderWidth = 2
@@ -535,6 +676,7 @@ final class WaveOpenRoomRow: UITableViewCell {
         card.backgroundColor = AfterHoursPalette.loungeInk.withAlphaComponent(0.35)
         card.layer.cornerRadius = 18
         card.translatesAutoresizingMaskIntoConstraints = false
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 28
         portrait.clipsToBounds = true
         portrait.layer.borderWidth = 2

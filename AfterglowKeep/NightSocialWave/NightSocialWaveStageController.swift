@@ -250,12 +250,9 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         case .party:
             present(NightSocialWaveHostPicksSheet(nav: navigationController), animated: true)
         case .follow:
-            partyLane = .follow
-            reloadRows()
+            present(NightSocialWaveRoomListSheet(kind: .followingLive, nav: navigationController), animated: true)
         case .recent:
-            if let key = NightSocialSessionDrawer.shared.recentChamberKeys().first, let chamber = NightSocialWaveCatalog.chamber(key) {
-                enterChamber(chamber)
-            }
+            present(NightSocialWaveRoomListSheet(kind: .returnRooms, nav: navigationController), animated: true)
         }
     }
 
@@ -264,13 +261,9 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         case .party:
             present(NightSocialWaveOpenRoomsSheet(nav: navigationController), animated: true)
         case .follow:
-            let soon = NightSocialWaveCatalog.chambers.filter { $0.isUpcoming }
-            if let first = soon.first {
-                enterChamber(first)
-            }
+            present(NightSocialWaveRoomListSheet(kind: .startingSoon, nav: navigationController), animated: true)
         case .recent:
-            let liveRecent = rows.filter { $0.isLive }
-            if let first = liveRecent.first { enterChamber(first) }
+            present(NightSocialWaveRoomListSheet(kind: .activeAgain, nav: navigationController), animated: true)
         }
     }
 }
@@ -374,6 +367,7 @@ final class WaveChamberRow: UITableViewCell {
         card.backgroundColor = AfterHoursPalette.loungeCard
         card.layer.cornerRadius = 20
         card.translatesAutoresizingMaskIntoConstraints = false
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 32
         portrait.clipsToBounds = true
         portrait.layer.borderWidth = 2
@@ -399,6 +393,7 @@ final class WaveChamberRow: UITableViewCell {
         tagRow.spacing = 6
         tagRow.translatesAutoresizingMaskIntoConstraints = false
         for mark in [stackA, stackB, stackC] {
+            mark.contentMode = .scaleAspectFill
             mark.layer.cornerRadius = 10
             mark.clipsToBounds = true
             mark.layer.borderWidth = 1.4
