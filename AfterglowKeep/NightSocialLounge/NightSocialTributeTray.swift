@@ -123,7 +123,6 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
 
     @objc private func offerGift() {
         guard let gift = picked else { return }
-        let cost = gift.diamondCost * quantity
         let count = quantity
         NightSocialLampStore.spend(.liveGift(gift, quantity: count), from: self) { [weak self] in
             NotificationCenter.default.post(

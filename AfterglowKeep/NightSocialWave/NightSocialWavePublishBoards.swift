@@ -145,8 +145,9 @@ final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewController
             FoyerNotice.present(on: self, spokenTitle: "Pick a label", spokenBody: "Choose at least one label so people can find the sitting.")
             return
         }
+        let tags = Array(pickedTags)
         NightSocialLampStore.spend(.hostVoice, from: self) { [weak self] in
-            self?.openHostedSitting(title: title, tags: Array(pickedTags))
+            self?.openHostedSitting(title: title, tags: tags)
         }
     }
 

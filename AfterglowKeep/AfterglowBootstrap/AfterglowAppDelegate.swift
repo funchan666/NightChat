@@ -7,6 +7,7 @@ final class AfterglowAppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         NightSocialSessionDrawer.shared.openDrawer()
+        AfterHoursType.registerLampFaces()
         AfterglowRootCoordinator.applyChrome()
         NightSocialLampStore.startListening()
         return true

@@ -1,3 +1,4 @@
+import CoreText
 import UIKit
 
 enum AfterHoursPalette {
@@ -21,20 +22,60 @@ enum AfterHoursPalette {
 }
 
 enum AfterHoursType {
+    private static var facesReady = false
+
+    static func registerLampFaces() {
+        guard !facesReady else { return }
+        facesReady = true
+        let files = ["Syne.ttf", "Outfit-Regular.ttf", "Outfit-Medium.ttf", "Outfit-SemiBold.ttf"]
+        for file in files {
+            let stem = (file as NSString).deletingPathExtension
+            let ext = (file as NSString).pathExtension
+            let url = Bundle.main.url(forResource: stem, withExtension: ext)
+                ?? Bundle.main.url(forResource: stem, withExtension: ext, subdirectory: "Fonts")
+            guard let url else { continue }
+            CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+        }
+    }
+
     static func foyerHeadline(_ size: CGFloat) -> UIFont {
-        UIFont.systemFont(ofSize: size, weight: .medium)
+        syne(size, weight: 600, fallback: .semibold)
     }
 
     static func foyerPill(_ size: CGFloat) -> UIFont {
-        UIFont.systemFont(ofSize: size, weight: .semibold)
+        face("Outfit-SemiBold", size: size, fallback: .semibold)
     }
 
     static func foyerBody(_ size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
-        UIFont.systemFont(ofSize: size, weight: weight)
+        if weight.rawValue >= UIFont.Weight.semibold.rawValue {
+            return face("Outfit-SemiBold", size: size, fallback: weight)
+        }
+        if weight.rawValue >= UIFont.Weight.medium.rawValue {
+            return face("Outfit-Medium", size: size, fallback: weight)
+        }
+        return face("Outfit-Regular", size: size, fallback: weight)
     }
 
     static func foyerCaption(_ size: CGFloat) -> UIFont {
-        UIFont.systemFont(ofSize: size, weight: .medium)
+        face("Outfit-Medium", size: size, fallback: .medium)
+    }
+
+    private static func face(_ postscript: String, size: CGFloat, fallback: UIFont.Weight) -> UIFont {
+        registerLampFaces()
+        return UIFont(name: postscript, size: size) ?? UIFont.systemFont(ofSize: size, weight: fallback)
+    }
+
+    private static func syne(_ size: CGFloat, weight: CGFloat, fallback: UIFont.Weight) -> UIFont {
+        registerLampFaces()
+        guard let base = UIFont(name: "Syne-Regular", size: size) ?? UIFont(name: "Syne", size: size) else {
+            return UIFont.systemFont(ofSize: size, weight: fallback)
+        }
+        let descriptor = base.fontDescriptor.addingAttributes([
+            UIFontDescriptor.AttributeName(rawValue: kCTFontVariationAttribute as String): [
+                2003265652: weight,
+            ],
+        ])
+        return UIFont(descriptor: descriptor, size: size)
     }
 }
 
