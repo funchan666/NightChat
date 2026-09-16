@@ -4,6 +4,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     private let deskKey: String
     private let cover = UIImageView()
     private let followPill = NightSocialLoungeChrome.pinkPill(title: "+ Follow")
+    private let friendPill = NightSocialLoungeChrome.ghostPill(title: "Add friend")
     private let chatPill = UIButton(type: .custom)
     private var clips: [LoungeClipReel] = []
     private var collection: UICollectionView!
@@ -23,7 +24,9 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         additionalSafeAreaInsets = .zero
         view.insetsLayoutMarginsFromSafeArea = false
         guard let desk = NightSocialLoungeCatalog.creator(deskKey: deskKey) else { return }
-        clips = NightSocialLoungeCatalog.clips(for: deskKey)
+        clips = NightSocialLoungeCatalog.clips(for: deskKey).filter {
+            !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey)
+        }
 
         cover.image = NightSocialStandIn.plate(seed: desk.spokenName + "-cover", size: CGSize(width: 400, height: 640))
         cover.contentMode = .scaleAspectFill
@@ -74,6 +77,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
 
         followPill.addTarget(self, action: #selector(flipFollow), for: .touchUpInside)
+        friendPill.addTarget(self, action: #selector(askFriend), for: .touchUpInside)
         chatPill.setImage(NightSocialImageCabinet.named("LoungeChatPill", fallback: "Group_560"), for: .normal)
         chatPill.imageView?.contentMode = .scaleAspectFit
         chatPill.addTarget(self, action: #selector(openWhisper), for: .touchUpInside)
@@ -108,6 +112,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         card.addSubview(vibePlate)
         card.addSubview(tags)
         card.addSubview(followPill)
+        card.addSubview(friendPill)
         card.addSubview(chatPill)
         view.addSubview(videoHead)
         view.addSubview(collection)
@@ -143,11 +148,14 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
             tags.topAnchor.constraint(equalTo: vibePlate.bottomAnchor, constant: 6),
             followPill.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
             followPill.topAnchor.constraint(equalTo: tags.bottomAnchor, constant: 12),
-            followPill.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14),
-            followPill.widthAnchor.constraint(equalToConstant: 140),
-            chatPill.leadingAnchor.constraint(equalTo: followPill.trailingAnchor, constant: 10),
+            followPill.widthAnchor.constraint(equalToConstant: 100),
+            friendPill.leadingAnchor.constraint(equalTo: followPill.trailingAnchor, constant: 6),
+            friendPill.centerYAnchor.constraint(equalTo: followPill.centerYAnchor),
+            friendPill.widthAnchor.constraint(equalToConstant: 96),
+            friendPill.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14),
+            chatPill.leadingAnchor.constraint(equalTo: friendPill.trailingAnchor, constant: 6),
             chatPill.centerYAnchor.constraint(equalTo: followPill.centerYAnchor),
-            chatPill.widthAnchor.constraint(equalToConstant: 120),
+            chatPill.widthAnchor.constraint(equalToConstant: 88),
             chatPill.heightAnchor.constraint(equalToConstant: 36),
             videoHead.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             videoHead.topAnchor.constraint(equalTo: card.bottomAnchor, constant: 16),
@@ -157,6 +165,23 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
             collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         paintFollow()
+        paintFriend()
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDesk), name: .deskDrawerDidChange, object: nil)
+    }
+
+    deinit { NotificationCenter.default.removeObserver(self) }
+
+    @objc private func reloadDesk() {
+        if NightSocialSessionDrawer.shared.shouldHideDesk(deskKey) {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        clips = NightSocialLoungeCatalog.clips(for: deskKey).filter {
+            !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey)
+        }
+        collection.reloadData()
+        paintFollow()
+        paintFriend()
     }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
@@ -172,24 +197,37 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         followPill.backgroundColor = on ? UIColor.white.withAlphaComponent(0.22) : AfterHoursPalette.loungePink
     }
 
+    private func paintFriend() {
+        if NightSocialSessionDrawer.shared.isFriend(deskKey) {
+            friendPill.setTitle("Friends", for: .normal)
+            friendPill.isEnabled = false
+        } else if NightSocialSessionDrawer.shared.hasSentFriendAsk(deskKey) {
+            friendPill.setTitle("Asked", for: .normal)
+            friendPill.isEnabled = false
+        } else {
+            friendPill.setTitle("Add friend", for: .normal)
+            friendPill.isEnabled = true
+        }
+    }
+
+    @objc private func askFriend() {
+        NightSocialSessionDrawer.shared.sendFriendAsk(deskKey)
+        paintFriend()
+        NightSocialLampNotices.presentFriendAskSent(from: self)
+    }
+
     @objc private func openWhisper() {
-        guard let desk = NightSocialLoungeCatalog.creator(deskKey: deskKey) else { return }
-        navigationController?.pushViewController(NightSocialWhisperTrail(deskKey: desk.deskKey, spokenName: desk.spokenName), animated: true)
+        navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: deskKey), animated: true)
     }
 
     @objc private func openSafety() {
-        present(NightSocialSafetySheet(deskKey: deskKey), animated: true)
+        NightSocialSafetyFlow.presentChooser(from: self, target: .desk(deskKey))
     }
 
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { max(clips.count, 2) }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { clips.count }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeClipTile.reuseId, for: indexPath) as! LoungeClipTile
-        if indexPath.item < clips.count {
-            cell.paint(clips[indexPath.item], musicMode: false)
-        } else if let desk = NightSocialLoungeCatalog.creator(deskKey: deskKey) {
-            let fallback = LoungeClipReel(clipKey: "\(deskKey).standin.\(indexPath.item)", authorDeskKey: deskKey, authorSpokenName: desk.spokenName, caption: desk.clipCaptions[indexPath.item % max(desk.clipCaptions.count, 1)], placeLabel: desk.cityLabel, timePhrase: "", likeCount: desk.likeCount, commentCount: 12, shareCount: 4, meridian: desk.meridian, musicTitle: desk.musicTitle)
-            cell.paint(fallback, musicMode: false)
-        }
+        cell.paint(clips[indexPath.item], musicMode: false)
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -200,68 +238,6 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         UIEdgeInsets(top: 0, left: 16, bottom: 24, right: 16)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.item < clips.count {
-            navigationController?.pushViewController(NightSocialClipTheater(clipKey: clips[indexPath.item].clipKey), animated: true)
-        }
-    }
-}
-
-final class NightSocialSafetySheet: UIViewController {
-    private let deskKey: String
-    init(deskKey: String) {
-        self.deskKey = deskKey
-        super.init(nibName: nil, bundle: nil)
-        modalPresentationStyle = .overFullScreen
-        modalTransitionStyle = .crossDissolve
-    }
-    required init?(coder: NSCoder) { nil }
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.35)
-        let card = UIView()
-        card.backgroundColor = UIColor.white
-        card.layer.cornerRadius = 22
-        card.translatesAutoresizingMaskIntoConstraints = false
-        let block = UIButton(type: .custom)
-        block.setImage(NightSocialImageCabinet.named("LoungeBlockTile", fallback: "Group_136"), for: .normal)
-        block.imageView?.contentMode = .scaleAspectFit
-        block.addTarget(self, action: #selector(blockDesk), for: .touchUpInside)
-        let report = UIButton(type: .custom)
-        report.setImage(NightSocialImageCabinet.named("LoungeReportTile", fallback: "Group_135"), for: .normal)
-        report.imageView?.contentMode = .scaleAspectFit
-        report.addTarget(self, action: #selector(reportDesk), for: .touchUpInside)
-        block.translatesAutoresizingMaskIntoConstraints = false
-        report.translatesAutoresizingMaskIntoConstraints = false
-        let row = UIStackView(arrangedSubviews: [block, report])
-        row.axis = .horizontal
-        row.spacing = 18
-        row.distribution = .fillEqually
-        row.translatesAutoresizingMaskIntoConstraints = false
-        card.addSubview(row)
-        view.addSubview(card)
-        NSLayoutConstraint.activate([
-            card.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            card.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            card.widthAnchor.constraint(equalToConstant: 260),
-            row.topAnchor.constraint(equalTo: card.topAnchor, constant: 18),
-            row.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 18),
-            row.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -18),
-            row.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -18),
-            row.heightAnchor.constraint(equalToConstant: 92),
-        ])
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(fold)))
-    }
-    @objc private func fold() { dismiss(animated: true) }
-    @objc private func blockDesk() {
-        NightSocialSessionDrawer.shared.blockDesk(deskKey)
-        dismiss(animated: true) { [weak self] in
-            self?.presentingFold()
-        }
-    }
-    @objc private func reportDesk() {
-        dismiss(animated: true)
-    }
-    private func presentingFold() {
-        (presentingViewController as? UINavigationController)?.popViewController(animated: true)
+        navigationController?.pushViewController(NightSocialClipTheater(clipKey: clips[indexPath.item].clipKey), animated: true)
     }
 }

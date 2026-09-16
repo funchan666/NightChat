@@ -29,6 +29,8 @@ enum AfterglowRootCoordinator {
         let next: UIViewController
         if NightSocialSessionDrawer.shared.isSeatedAtLounge {
             next = NightSocialStageShellController()
+        } else if session?.deskCardCompleted == true {
+            next = wrapped(NightDeskReturnBoardController())
         } else if let session {
             next = wrapped(NightSocialDeskCardController(arrival: .fromSession(session)))
         } else {
@@ -40,6 +42,27 @@ enum AfterglowRootCoordinator {
     static func revealLoungeFloor(from host: UIViewController? = nil) {
         guard let window = host?.view.window ?? keyWindow() else { return }
         replaceRoot(in: window, with: NightSocialStageShellController())
+    }
+
+    static func revealFoyer(from host: UIViewController? = nil) {
+        guard let window = host?.view.window ?? keyWindow() else { return }
+        replaceRoot(in: window, with: wrapped(AfterglowWelcomeGateController()))
+    }
+
+    static func revealReturnDoor(from host: UIViewController? = nil) {
+        guard let window = host?.view.window ?? keyWindow() else { return }
+        replaceRoot(in: window, with: wrapped(NightDeskReturnBoardController()))
+    }
+
+    static func frontController() -> UIViewController? {
+        var node = keyWindow()?.rootViewController
+        while let presented = node?.presentedViewController {
+            node = presented
+        }
+        if let nav = node as? UINavigationController {
+            return nav.visibleViewController ?? nav
+        }
+        return node
     }
 
     static func replaceRoot(in window: UIWindow, with next: UIViewController) {

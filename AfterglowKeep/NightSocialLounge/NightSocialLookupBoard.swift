@@ -57,10 +57,9 @@ final class NightSocialLookupBoard: UIViewController, UITableViewDataSource, UIT
     @objc private func fold() { navigationController?.popViewController(animated: true) }
 
     @objc private func rewriteHits() {
-        let blocked = NightSocialSessionDrawer.shared.blockedDeskKeys()
         let query = NightSocialFoyerGuard.trimmed(field.text).lowercased()
         hits = NightSocialLoungeCatalog.creators.filter { desk in
-            guard !blocked.contains(desk.deskKey) else { return false }
+            guard !NightSocialSessionDrawer.shared.shouldHideDesk(desk.deskKey) else { return false }
             if query.isEmpty { return true }
             return desk.spokenName.lowercased().contains(query)
                 || desk.cityLabel.lowercased().contains(query)

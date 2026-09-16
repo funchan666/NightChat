@@ -95,9 +95,26 @@ struct LoungeGiftToken: Equatable {
     let glyphCatalog: String
 }
 
-struct LoungeDiscussLine: Equatable {
-    let speakerName: String
-    let spokenBody: String
+struct LoungeDiscussLine: Equatable, Codable {
+    var lineKey: String
+    var speakerDeskKey: String
+    var speakerName: String
+    var spokenBody: String
+    var spokenAt: TimeInterval
+
+    init(
+        lineKey: String = UUID().uuidString,
+        speakerDeskKey: String = "",
+        speakerName: String,
+        spokenBody: String,
+        spokenAt: TimeInterval = Date().timeIntervalSince1970
+    ) {
+        self.lineKey = lineKey
+        self.speakerDeskKey = speakerDeskKey
+        self.speakerName = speakerName
+        self.spokenBody = spokenBody
+        self.spokenAt = spokenAt
+    }
 }
 
 enum NightSocialLoungeCatalog {
@@ -146,13 +163,6 @@ enum NightSocialLoungeCatalog {
         LoungeGiftToken(giftKey: "gift.whistle", spokenTitle: "Whistle", diamondCost: 100, glyphCatalog: "GiftWhistle"),
     ]
 
-    static let discussSeed: [LoungeDiscussLine] = [
-        LoungeDiscussLine(speakerName: "Winnie Cole", spokenBody: "That sitting was really amazing."),
-        LoungeDiscussLine(speakerName: "Rhea Calder", spokenBody: "The lamp talk landed."),
-        LoungeDiscussLine(speakerName: "Tomasz Wójcik", spokenBody: "Saving this for the morning shift."),
-        LoungeDiscussLine(speakerName: "Callum Voss", spokenBody: "Send a cup next time."),
-    ]
-
     static func creator(deskKey: String) -> LoungeCreatorDesk? {
         creators.first { $0.deskKey == deskKey }
     }
@@ -167,5 +177,48 @@ enum NightSocialLoungeCatalog {
 
     static func clips(for deskKey: String) -> [LoungeClipReel] {
         clips.filter { $0.authorDeskKey == deskKey }
+    }
+
+    static func visibleCreators() -> [LoungeCreatorDesk] {
+        creators.filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.deskKey) }
+    }
+
+    static func visibleClips() -> [LoungeClipReel] {
+        clips.filter { !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey) }
+    }
+
+    static func visibleBooths() -> [LoungeLiveBooth] {
+        booths.filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
+    }
+
+    static func discussLines(for clipKey: String) -> [LoungeDiscussLine] {
+        guard let clip = clip(clipKey: clipKey) else { return [] }
+        let others = creators.filter { $0.deskKey != clip.authorDeskKey }
+        guard others.count >= 2 else { return [] }
+        let seed = abs(clipKey.hashValue)
+        let first = others[seed % others.count]
+        let second = others[(seed / 7) % others.count]
+        let phrases = [
+            "That sitting was really amazing.",
+            "The lamp talk landed.",
+            "Saving this for the morning shift.",
+            "Keep the roof lamp low.",
+        ]
+        return [
+            LoungeDiscussLine(
+                lineKey: "\(clipKey).seed.\(first.deskKey)",
+                speakerDeskKey: first.deskKey,
+                speakerName: first.spokenName,
+                spokenBody: phrases[seed % phrases.count],
+                spokenAt: Date().timeIntervalSince1970 - 3600
+            ),
+            LoungeDiscussLine(
+                lineKey: "\(clipKey).seed.\(second.deskKey).b",
+                speakerDeskKey: second.deskKey,
+                speakerName: second.spokenName,
+                spokenBody: phrases[(seed / 3) % phrases.count],
+                spokenAt: Date().timeIntervalSince1970 - 1800
+            ),
+        ]
     }
 }

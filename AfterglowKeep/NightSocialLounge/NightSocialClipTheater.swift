@@ -32,6 +32,8 @@ final class NightSocialClipTheater: UIViewController {
 
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
+        let more = NightSocialLoungeChrome.iconControl(catalog: "LoungeMoreDisc", fallback: "Frame@2x(24)")
+        more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
 
         likePlate.textColor = .white
         likePlate.font = AfterHoursType.foyerCaption(12)
@@ -64,11 +66,15 @@ final class NightSocialClipTheater: UIViewController {
         let portrait = UIImageView(image: NightSocialStandIn.plate(seed: clip.authorSpokenName, size: CGSize(width: 80, height: 80)))
         portrait.layer.cornerRadius = 18
         portrait.clipsToBounds = true
+        portrait.isUserInteractionEnabled = true
+        portrait.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openAuthor)))
         portrait.translatesAutoresizingMaskIntoConstraints = false
         let namePlate = UILabel()
         namePlate.text = clip.authorSpokenName
         namePlate.font = AfterHoursType.foyerPill(14)
         namePlate.textColor = .white
+        namePlate.isUserInteractionEnabled = true
+        namePlate.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openAuthor)))
         namePlate.translatesAutoresizingMaskIntoConstraints = false
         let meta = UILabel()
         meta.text = "\(clip.timePhrase)   \(clip.placeLabel)"
@@ -85,6 +91,7 @@ final class NightSocialClipTheater: UIViewController {
         view.addSubview(cover)
         view.addSubview(play)
         view.addSubview(back)
+        view.addSubview(more)
         view.addSubview(heart)
         view.addSubview(likePlate)
         view.addSubview(bubble)
@@ -107,6 +114,8 @@ final class NightSocialClipTheater: UIViewController {
             play.heightAnchor.constraint(equalToConstant: 64),
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
+            more.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            more.centerYAnchor.constraint(equalTo: back.centerYAnchor),
             sharePlate.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             sharePlate.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -48),
             send.centerXAnchor.constraint(equalTo: sharePlate.centerXAnchor),
@@ -132,11 +141,31 @@ final class NightSocialClipTheater: UIViewController {
             caption.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -36),
         ])
         likePlate.text = "\(clip.likeCount)"
-        commentPlate.text = "\(clip.commentCount)"
+        commentPlate.text = "\(NightSocialSessionDrawer.shared.discussLines(for: clipKey).count)"
         sharePlate.text = "\(clip.shareCount)"
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshCounts), name: .deskDrawerDidChange, object: nil)
+    }
+
+    deinit { NotificationCenter.default.removeObserver(self) }
+
+    @objc private func refreshCounts() {
+        if NightSocialSessionDrawer.shared.shouldHideClip(clipKey, authorDeskKey: NightSocialLoungeCatalog.clip(clipKey: clipKey)?.authorDeskKey ?? "") {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        commentPlate.text = "\(NightSocialSessionDrawer.shared.discussLines(for: clipKey).count)"
     }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
+    @objc private func openAuthor() {
+        if let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) {
+            NightSocialDeskGate.revealDesk(from: self, deskKey: clip.authorDeskKey)
+        }
+    }
+    @objc private func openSafety() {
+        guard let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) else { return }
+        NightSocialSafetyFlow.presentChooser(from: self, target: .clip(clipKey: clip.clipKey, authorDeskKey: clip.authorDeskKey))
+    }
     @objc private func flipLike() {
         liked.toggle()
         if let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) {
@@ -148,9 +177,9 @@ final class NightSocialClipTheater: UIViewController {
     }
 }
 
-final class NightSocialDiscussSheet: UIViewController, UITableViewDataSource {
+final class NightSocialDiscussSheet: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private let clipKey: String
-    private var lines = NightSocialLoungeCatalog.discussSeed
+    private var lines: [LoungeDiscussLine] = []
     private let table = UITableView()
     private let field = UITextField()
 
@@ -175,7 +204,8 @@ final class NightSocialDiscussSheet: UIViewController, UITableViewDataSource {
         table.backgroundColor = .clear
         table.separatorStyle = .none
         table.dataSource = self
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "line")
+        table.delegate = self
+        table.register(DiscussLineRow.self, forCellReuseIdentifier: DiscussLineRow.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
         field.placeholder = "Tell me your opinion..."
         field.backgroundColor = .white
@@ -204,17 +234,33 @@ final class NightSocialDiscussSheet: UIViewController, UITableViewDataSource {
             send.widthAnchor.constraint(equalToConstant: 84),
             field.trailingAnchor.constraint(equalTo: send.leadingAnchor, constant: -8),
         ])
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadLines), name: .deskDrawerDidChange, object: nil)
+        reloadLines()
+    }
+
+    deinit { NotificationCenter.default.removeObserver(self) }
+
+    @objc private func reloadLines() {
+        lines = NightSocialSessionDrawer.shared.discussLines(for: clipKey)
+        table.reloadData()
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { lines.count }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "line", for: indexPath)
-        cell.backgroundColor = .clear
-        cell.textLabel?.numberOfLines = 0
+        let cell = tableView.dequeueReusableCell(withIdentifier: DiscussLineRow.reuseId, for: indexPath) as! DiscussLineRow
         let line = lines[indexPath.row]
-        cell.textLabel?.text = "\(line.speakerName)\n\(line.spokenBody)"
-        cell.textLabel?.font = AfterHoursType.foyerBody(14)
-        cell.selectionStyle = .none
+        cell.paint(line)
+        cell.onReport = { [weak self] in
+            guard let self else { return }
+            NightSocialSafetyFlow.presentChooser(
+                from: self,
+                target: .comment(lineKey: line.lineKey, speakerDeskKey: line.speakerDeskKey)
+            )
+        }
+        cell.onOpenDesk = { [weak self] in
+            guard let self else { return }
+            NightSocialDeskGate.revealDesk(from: self, deskKey: line.speakerDeskKey)
+        }
         return cell
     }
 
@@ -222,11 +268,79 @@ final class NightSocialDiscussSheet: UIViewController, UITableViewDataSource {
         let body = NightSocialFoyerGuard.trimmed(field.text)
         guard !body.isEmpty else { return }
         let me = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "You"
-        lines.append(LoungeDiscussLine(speakerName: me, spokenBody: body))
+        let myKey = NightSocialSessionDrawer.shared.restoredSession()?.deskHolderId ?? "me.desk"
+        NightSocialSessionDrawer.shared.appendComment(
+            LoungeDiscussLine(speakerDeskKey: myKey, speakerName: me, spokenBody: body),
+            clipKey: clipKey
+        )
         field.text = ""
-        table.reloadData()
-        table.scrollToRow(at: IndexPath(row: lines.count - 1, section: 0), at: .bottom, animated: true)
+        reloadLines()
+        if !lines.isEmpty {
+            table.scrollToRow(at: IndexPath(row: lines.count - 1, section: 0), at: .bottom, animated: true)
+        }
     }
+}
+
+final class DiscussLineRow: UITableViewCell {
+    static let reuseId = "DiscussLineRow"
+    var onReport: (() -> Void)?
+    var onOpenDesk: (() -> Void)?
+    private let portrait = UIImageView()
+    private let namePlate = UILabel()
+    private let bodyPlate = UILabel()
+    private let flag = UIButton(type: .system)
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
+        selectionStyle = .none
+        portrait.layer.cornerRadius = 16
+        portrait.clipsToBounds = true
+        portrait.isUserInteractionEnabled = true
+        portrait.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openDesk)))
+        portrait.translatesAutoresizingMaskIntoConstraints = false
+        namePlate.font = AfterHoursType.foyerPill(13)
+        namePlate.textColor = AfterHoursPalette.inkOnSnow
+        namePlate.isUserInteractionEnabled = true
+        namePlate.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openDesk)))
+        namePlate.translatesAutoresizingMaskIntoConstraints = false
+        bodyPlate.font = AfterHoursType.foyerBody(13)
+        bodyPlate.textColor = AfterHoursPalette.inkOnSnow.withAlphaComponent(0.78)
+        bodyPlate.numberOfLines = 0
+        bodyPlate.translatesAutoresizingMaskIntoConstraints = false
+        flag.setImage(UIImage(systemName: "exclamationmark.bubble"), for: .normal)
+        flag.tintColor = AfterHoursPalette.loungePink
+        flag.addTarget(self, action: #selector(reportLine), for: .touchUpInside)
+        flag.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(portrait)
+        contentView.addSubview(namePlate)
+        contentView.addSubview(bodyPlate)
+        contentView.addSubview(flag)
+        NSLayoutConstraint.activate([
+            portrait.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            portrait.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            portrait.widthAnchor.constraint(equalToConstant: 32),
+            portrait.heightAnchor.constraint(equalToConstant: 32),
+            namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 8),
+            namePlate.topAnchor.constraint(equalTo: portrait.topAnchor),
+            flag.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            flag.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
+            bodyPlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
+            bodyPlate.trailingAnchor.constraint(equalTo: flag.leadingAnchor, constant: -8),
+            bodyPlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 2),
+            bodyPlate.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+        ])
+    }
+    required init?(coder: NSCoder) { nil }
+
+    func paint(_ line: LoungeDiscussLine) {
+        portrait.image = NightSocialStandIn.plate(seed: line.speakerName, size: CGSize(width: 64, height: 64))
+        namePlate.text = line.speakerName
+        bodyPlate.text = line.spokenBody
+    }
+
+    @objc private func reportLine() { onReport?() }
+    @objc private func openDesk() { onOpenDesk?() }
 }
 
 final class NightSocialWhisperTrail: UIViewController, UITableViewDataSource {

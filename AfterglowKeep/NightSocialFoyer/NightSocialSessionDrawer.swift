@@ -2,6 +2,10 @@ import CryptoKit
 import Foundation
 import UIKit
 
+extension Notification.Name {
+    static let deskDrawerDidChange = Notification.Name("lampdesk.afterglow.deskDrawer.didChange")
+}
+
 enum DeskCardArrival {
     case applePassage
     case mailboxEnrollment
@@ -92,8 +96,28 @@ final class NightSocialSessionDrawer {
         static let houseCovenant = "lampdesk.nightSocial.houseCovenant.v1"
         static let seatedFlag = "lampdesk.nightSocial.seatedAtLounge.v1"
         static let diamondPurse = "lampdesk.nightSocial.diamondPurse.v1"
-        static let followedDesks = "lampdesk.nightSocial.followedDesks.v1"
+        static let followedDesks = "lampdesk.nightSocial.followedDesks.v2"
+        static let followerDesks = "lampdesk.nightSocial.followerDesks.v1"
         static let blockedDesks = "lampdesk.nightSocial.blockedDesks.v1"
+        static let reportedDesks = "lampdesk.nightSocial.reportedDesks.v1"
+        static let reportedClips = "lampdesk.nightSocial.reportedClips.v1"
+        static let reportedLines = "lampdesk.nightSocial.reportedLines.v1"
+        static let clipComments = "lampdesk.nightSocial.clipComments.v1"
+        static let pendingClips = "lampdesk.nightSocial.pendingClips.v1"
+        static let sentFriendAsks = "lampdesk.nightSocial.sentFriendAsks.v1"
+        static let incomingFriendAsks = "lampdesk.nightSocial.incomingFriendAsks.v1"
+        static let acceptedFriends = "lampdesk.nightSocial.acceptedFriends.v1"
+        static let recentChambers = "lampdesk.nightSocial.recentVoiceChambers.v1"
+        static let hostedChambers = "lampdesk.nightSocial.hostedVoiceChambers.v1"
+        static let seatedChamber = "lampdesk.nightSocial.seatedVoiceChamber.v1"
+        static let chimeLines = "lampdesk.nightSocial.chimeLines.v2"
+        static let chimeRead = "lampdesk.nightSocial.chimeRead.v2"
+        static let platformRead = "lampdesk.nightSocial.platformRead.v1"
+        static let likesRead = "lampdesk.nightSocial.likesRead.v1"
+        static let spokenTongue = "lampdesk.nightSocial.spokenTongue.v1"
+        static let checkInDays = "lampdesk.nightSocial.checkInDays.v1"
+        static let coverFile = "night-social-desk-cover.jpg"
+        static let inviteCode = "lampdesk.nightSocial.inviteCode.v1"
     }
 
     private let defaults = UserDefaults.standard
@@ -116,7 +140,7 @@ final class NightSocialSessionDrawer {
     }
 
     var isSeatedAtLounge: Bool {
-        (liveSession?.deskCardCompleted ?? false) || defaults.bool(forKey: DrawerSlot.seatedFlag)
+        defaults.bool(forKey: DrawerSlot.seatedFlag) && (liveSession?.deskCardCompleted ?? false)
     }
 
     var houseCovenantAccepted: Bool {
@@ -212,11 +236,19 @@ final class NightSocialSessionDrawer {
     }
 
     func followedDeskKeys() -> Set<String> {
-        Set(defaults.stringArray(forKey: DrawerSlot.followedDesks) ?? ["desk.ellis.hart", "desk.kohei.tanaka", "desk.marisol.vega"])
+        Set(defaults.stringArray(forKey: DrawerSlot.followedDesks) ?? [])
+    }
+
+    func followerDeskKeys() -> Set<String> {
+        Set(defaults.stringArray(forKey: DrawerSlot.followerDesks) ?? [])
     }
 
     func isFollowing(_ deskKey: String) -> Bool {
         followedDeskKeys().contains(deskKey)
+    }
+
+    func isMutualFollow(_ deskKey: String) -> Bool {
+        followedDeskKeys().contains(deskKey) && followerDeskKeys().contains(deskKey)
     }
 
     func toggleFollow(_ deskKey: String) {
@@ -224,6 +256,135 @@ final class NightSocialSessionDrawer {
         if keys.contains(deskKey) { keys.remove(deskKey) } else { keys.insert(deskKey) }
         defaults.set(Array(keys), forKey: DrawerSlot.followedDesks)
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func sentFriendAskKeys() -> Set<String> {
+        Set(defaults.stringArray(forKey: DrawerSlot.sentFriendAsks) ?? [])
+    }
+
+    func incomingFriendAskKeys() -> Set<String> {
+        Set(defaults.stringArray(forKey: DrawerSlot.incomingFriendAsks) ?? [])
+    }
+
+    func acceptedFriendKeys() -> Set<String> {
+        Set(defaults.stringArray(forKey: DrawerSlot.acceptedFriends) ?? [])
+    }
+
+    func isFriend(_ deskKey: String) -> Bool {
+        acceptedFriendKeys().contains(deskKey)
+    }
+
+    func hasSentFriendAsk(_ deskKey: String) -> Bool {
+        sentFriendAskKeys().contains(deskKey)
+    }
+
+    func sendFriendAsk(_ deskKey: String) {
+        guard !isFriend(deskKey), !hasSentFriendAsk(deskKey) else { return }
+        var keys = sentFriendAskKeys()
+        keys.insert(deskKey)
+        defaults.set(Array(keys), forKey: DrawerSlot.sentFriendAsks)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func acceptFriendAsk(_ deskKey: String) {
+        var incoming = incomingFriendAskKeys()
+        guard incoming.contains(deskKey) else { return }
+        incoming.remove(deskKey)
+        defaults.set(Array(incoming), forKey: DrawerSlot.incomingFriendAsks)
+        var friends = acceptedFriendKeys()
+        friends.insert(deskKey)
+        defaults.set(Array(friends), forKey: DrawerSlot.acceptedFriends)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func reportedDeskKeys() -> Set<String> {
+        Set(defaults.stringArray(forKey: DrawerSlot.reportedDesks) ?? [])
+    }
+
+    func reportedClipKeys() -> Set<String> {
+        Set(defaults.stringArray(forKey: DrawerSlot.reportedClips) ?? [])
+    }
+
+    func reportedLineKeys() -> Set<String> {
+        Set(defaults.stringArray(forKey: DrawerSlot.reportedLines) ?? [])
+    }
+
+    func shouldHideDesk(_ deskKey: String) -> Bool {
+        isBlocked(deskKey) || reportedDeskKeys().contains(deskKey)
+    }
+
+    func shouldHideClip(_ clipKey: String, authorDeskKey: String) -> Bool {
+        shouldHideDesk(authorDeskKey) || reportedClipKeys().contains(clipKey)
+    }
+
+    func shouldHideLine(_ line: LoungeDiscussLine) -> Bool {
+        reportedLineKeys().contains(line.lineKey) || shouldHideDesk(line.speakerDeskKey)
+    }
+
+    func rememberReport(_ target: NightSocialSafetyTarget, kind: NightSocialReportKind) {
+        _ = kind
+        switch target {
+        case .desk(let key):
+            var keys = reportedDeskKeys()
+            keys.insert(key)
+            defaults.set(Array(keys), forKey: DrawerSlot.reportedDesks)
+        case .clip(let clipKey, _):
+            var keys = reportedClipKeys()
+            keys.insert(clipKey)
+            defaults.set(Array(keys), forKey: DrawerSlot.reportedClips)
+        case .comment(let lineKey, _):
+            var keys = reportedLineKeys()
+            keys.insert(lineKey)
+            defaults.set(Array(keys), forKey: DrawerSlot.reportedLines)
+        }
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func storedComments(for clipKey: String) -> [LoungeDiscussLine] {
+        let box = decode([String: [LoungeDiscussLine]].self, key: DrawerSlot.clipComments) ?? [:]
+        return box[clipKey] ?? []
+    }
+
+    func appendComment(_ line: LoungeDiscussLine, clipKey: String) {
+        var box = decode([String: [LoungeDiscussLine]].self, key: DrawerSlot.clipComments) ?? [:]
+        var rows = box[clipKey] ?? []
+        rows.append(line)
+        box[clipKey] = rows
+        persist(box, key: DrawerSlot.clipComments)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func discussLines(for clipKey: String) -> [LoungeDiscussLine] {
+        let seed = NightSocialLoungeCatalog.discussLines(for: clipKey)
+        let extra = storedComments(for: clipKey)
+        return (seed + extra).filter { !shouldHideLine($0) }
+    }
+
+    func rememberPendingClip(caption: String) {
+        var rows = decode([[String: String]].self, key: DrawerSlot.pendingClips) ?? []
+        rows.insert([
+            "key": "pending.\(UUID().uuidString)",
+            "caption": caption,
+            "state": "pending",
+            "at": "\(Date().timeIntervalSince1970)",
+        ], at: 0)
+        persist(rows, key: DrawerSlot.pendingClips)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func pendingClipRecords() -> [[String: String]] {
+        decode([[String: String]].self, key: DrawerSlot.pendingClips) ?? []
+    }
+
+    func chimeThreadKeys() -> [String] {
+        let box = decode([String: [ChimeLine]].self, key: DrawerSlot.chimeLines) ?? [:]
+        return box.keys.filter { key in
+            guard let rows = box[key], !rows.isEmpty else { return false }
+            if NightSocialDeskGate.isHouseDesk(key) { return true }
+            return !isBlocked(key)
+        }.sorted { a, b in
+            (box[a]?.last?.spokenAt ?? 0) > (box[b]?.last?.spokenAt ?? 0)
+        }
     }
 
     func blockedDeskKeys() -> Set<String> {
@@ -234,6 +395,181 @@ final class NightSocialSessionDrawer {
         blockedDeskKeys().contains(deskKey)
     }
 
+    func rememberVisitedChamber(_ chamberKey: String) {
+        var keys = recentChamberKeys()
+        keys.removeAll { $0 == chamberKey }
+        keys.insert(chamberKey, at: 0)
+        if keys.count > 12 { keys = Array(keys.prefix(12)) }
+        defaults.set(keys, forKey: DrawerSlot.recentChambers)
+    }
+
+    func recentChamberKeys() -> [String] {
+        defaults.stringArray(forKey: DrawerSlot.recentChambers) ?? []
+    }
+
+    func rememberSeatedChamber(_ chamberKey: String, seatIndex: Int) {
+        defaults.set(["key": chamberKey, "seat": "\(seatIndex)"], forKey: DrawerSlot.seatedChamber)
+    }
+
+    func seatedChamberSeat() -> (String, Int)? {
+        guard let box = defaults.dictionary(forKey: DrawerSlot.seatedChamber),
+              let key = box["key"] as? String,
+              let seat = (box["seat"] as? String).flatMap(Int.init) else { return nil }
+        return (key, seat)
+    }
+
+    func clearSeatedChamber() {
+        defaults.removeObject(forKey: DrawerSlot.seatedChamber)
+    }
+
+    func hostedChamberRecords() -> [[String: String]] {
+        defaults.array(forKey: DrawerSlot.hostedChambers) as? [[String: String]] ?? []
+    }
+
+    func chimeLines(for deskKey: String) -> [ChimeLine] {
+        let box = decode([String: [ChimeLine]].self, key: DrawerSlot.chimeLines) ?? [:]
+        return box[deskKey] ?? []
+    }
+
+    func chimeThreadExists(_ deskKey: String) -> Bool {
+        let box = decode([String: [ChimeLine]].self, key: DrawerSlot.chimeLines) ?? [:]
+        return box[deskKey] != nil
+    }
+
+    func appendChimeLine(_ line: ChimeLine, deskKey: String) {
+        var box = decode([String: [ChimeLine]].self, key: DrawerSlot.chimeLines) ?? [:]
+        var rows = box[deskKey] ?? []
+        rows.append(line)
+        box[deskKey] = rows
+        persist(box, key: DrawerSlot.chimeLines)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func clearChimeLines(deskKey: String) {
+        var box = decode([String: [ChimeLine]].self, key: DrawerSlot.chimeLines) ?? [:]
+        box[deskKey] = []
+        persist(box, key: DrawerSlot.chimeLines)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func markChimeRead(_ deskKey: String) {
+        var keys = Set(defaults.stringArray(forKey: DrawerSlot.chimeRead) ?? [])
+        keys.insert(deskKey)
+        defaults.set(Array(keys), forKey: DrawerSlot.chimeRead)
+    }
+
+    func chimeIsRead(_ deskKey: String) -> Bool {
+        Set(defaults.stringArray(forKey: DrawerSlot.chimeRead) ?? []).contains(deskKey)
+    }
+
+    func markPlatformRead() { defaults.set(true, forKey: DrawerSlot.platformRead) }
+    func platformIsRead() -> Bool { defaults.bool(forKey: DrawerSlot.platformRead) }
+    func markLikesRead() { defaults.set(true, forKey: DrawerSlot.likesRead) }
+    func likesAreRead() -> Bool { defaults.bool(forKey: DrawerSlot.likesRead) }
+
+    var spokenTongue: String {
+        defaults.string(forKey: DrawerSlot.spokenTongue) ?? "English"
+    }
+
+    func writeSpokenTongue(_ value: String) {
+        defaults.set(value, forKey: DrawerSlot.spokenTongue)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func checkInDays() -> Set<Int> {
+        Set(defaults.array(forKey: DrawerSlot.checkInDays) as? [Int] ?? [])
+    }
+
+    func markCheckInPreview(_ day: Int) {
+        var days = checkInDays()
+        days.insert(day)
+        defaults.set(Array(days), forKey: DrawerSlot.checkInDays)
+    }
+
+    func inviteCode() -> String {
+        if let existing = defaults.string(forKey: DrawerSlot.inviteCode), !existing.isEmpty {
+            return existing
+        }
+        let seed = (liveSession?.deskHolderId ?? "NIGHT")
+            .replacingOccurrences(of: "-", with: "")
+            .prefix(6)
+            .uppercased()
+        let code = "NIGHT\(seed)"
+        defaults.set(code, forKey: DrawerSlot.inviteCode)
+        return code
+    }
+
+    func loadCover() -> UIImage? {
+        let url = coverURL()
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return UIImage(data: data)
+    }
+
+    func writeCover(_ image: UIImage) {
+        guard let data = image.jpegData(compressionQuality: 0.86) else { return }
+        try? data.write(to: coverURL(), options: .atomic)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func parkDesk() {
+        defaults.set(false, forKey: DrawerSlot.seatedFlag)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func leaveDesk() {
+        parkDesk()
+    }
+
+    func eraseDesk() {
+        liveSession = nil
+        let keys = [
+            DrawerSlot.stageSession, DrawerSlot.houseCovenant, DrawerSlot.seatedFlag,
+            DrawerSlot.diamondPurse, DrawerSlot.followedDesks, DrawerSlot.followerDesks,
+            DrawerSlot.blockedDesks, DrawerSlot.reportedDesks, DrawerSlot.reportedClips,
+            DrawerSlot.reportedLines, DrawerSlot.clipComments, DrawerSlot.pendingClips,
+            DrawerSlot.sentFriendAsks, DrawerSlot.incomingFriendAsks, DrawerSlot.acceptedFriends,
+            DrawerSlot.recentChambers, DrawerSlot.hostedChambers, DrawerSlot.seatedChamber,
+            DrawerSlot.chimeLines, DrawerSlot.chimeRead, DrawerSlot.platformRead,
+            DrawerSlot.likesRead, DrawerSlot.spokenTongue, DrawerSlot.checkInDays,
+            DrawerSlot.inviteCode,
+        ]
+        keys.forEach { defaults.removeObject(forKey: $0) }
+        try? FileManager.default.removeItem(at: portraitURL())
+        try? FileManager.default.removeItem(at: coverURL())
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func unblockDesk(_ deskKey: String) {
+        var keys = blockedDeskKeys()
+        keys.remove(deskKey)
+        defaults.set(Array(keys), forKey: DrawerSlot.blockedDesks)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func fanDeskKeys() -> [String] {
+        Array(followerDeskKeys()).filter { !shouldHideDesk($0) }
+    }
+
+    private func coverURL() -> URL {
+        let folder = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        return folder.appendingPathComponent(DrawerSlot.coverFile)
+    }
+
+    private func persist<T: Encodable>(_ value: T, key: String) {
+        if let data = try? encoder.encode(value) {
+            defaults.set(data, forKey: key)
+        }
+    }
+
+    func rememberHostedChamber(_ record: [String: String]) {
+        var rows = hostedChamberRecords()
+        rows.insert(record, at: 0)
+        defaults.set(rows, forKey: DrawerSlot.hostedChambers)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
     func blockDesk(_ deskKey: String) {
         var keys = blockedDeskKeys()
         keys.insert(deskKey)
@@ -241,6 +577,12 @@ final class NightSocialSessionDrawer {
         var followed = followedDeskKeys()
         followed.remove(deskKey)
         defaults.set(Array(followed), forKey: DrawerSlot.followedDesks)
+        var sent = sentFriendAskKeys()
+        sent.remove(deskKey)
+        defaults.set(Array(sent), forKey: DrawerSlot.sentFriendAsks)
+        var friends = acceptedFriendKeys()
+        friends.remove(deskKey)
+        defaults.set(Array(friends), forKey: DrawerSlot.acceptedFriends)
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
     }
 

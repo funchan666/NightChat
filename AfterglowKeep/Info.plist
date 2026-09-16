@@ -25,7 +25,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>NightChat uses the camera when you take a portrait for your night desk card.</string>
+	<string>NightChat uses the camera for your desk portrait and for a local preview of yourself during video calls.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>NightChat uses the microphone during video calls and live voice rooms so you can be heard at the sitting.</string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
 	<key>UIRequiresFullScreen</key>

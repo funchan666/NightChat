@@ -166,19 +166,18 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
     }
 
     @objc private func reloadLane() {
-        let blocked = NightSocialSessionDrawer.shared.blockedDeskKeys()
         let followed = NightSocialSessionDrawer.shared.followedDeskKeys()
         func meridianOk<T>(_ itemMeridian: LoungeMeridianLane) -> Bool {
             meridianLane == .global || itemMeridian == meridianLane
         }
-        creatorItems = NightSocialLoungeCatalog.creators.filter { desk in
-            !blocked.contains(desk.deskKey) && meridianOk(desk.meridian) && (browseLane != .follow || followed.contains(desk.deskKey))
+        creatorItems = NightSocialLoungeCatalog.visibleCreators().filter { desk in
+            meridianOk(desk.meridian) && (browseLane != .follow || followed.contains(desk.deskKey))
         }
-        boothItems = NightSocialLoungeCatalog.booths.filter { booth in
-            !blocked.contains(booth.hostDeskKey) && meridianOk(booth.meridian)
+        boothItems = NightSocialLoungeCatalog.visibleBooths().filter { booth in
+            meridianOk(booth.meridian)
         }
-        clipItems = NightSocialLoungeCatalog.clips.filter { clip in
-            !blocked.contains(clip.authorDeskKey) && meridianOk(clip.meridian)
+        clipItems = NightSocialLoungeCatalog.visibleClips().filter { clip in
+            meridianOk(clip.meridian)
         }
         collection.reloadData()
     }
