@@ -120,12 +120,12 @@ enum NightSocialLampStore {
     static func startListening() {
         Task.detached {
             for await result in Transaction.updates {
-                await settle(result)
+                _ = try? await settle(result)
             }
         }
         Task {
             for await result in Transaction.unfinished {
-                await settle(result)
+                _ = try? await settle(result)
             }
         }
     }
