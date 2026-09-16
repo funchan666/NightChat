@@ -6,7 +6,7 @@ final class NightSocialPortraitIntake: UIViewController {
     var onPickedLibrary: (() -> Void)?
     var onPickedCamera: (() -> Void)?
 
-    override var preferredStatusBarStyle: UIStatusBarStyle { .darkContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -18,25 +18,27 @@ final class NightSocialPortraitIntake: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 0.18, green: 0.04, blue: 0.12, alpha: 0.46)
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.45)
 
         let card = UIView()
-        card.backgroundColor = AfterHoursPalette.snowCard
-        card.layer.cornerRadius = 28
+        card.backgroundColor = AfterHoursPalette.foyerNightCard
+        card.layer.cornerRadius = 30
+        card.layer.borderWidth = 1
+        card.layer.borderColor = UIColor.white.withAlphaComponent(0.16).cgColor
         card.translatesAutoresizingMaskIntoConstraints = false
 
         let headline = UILabel()
         headline.text = "Set your night portrait"
-        headline.textColor = AfterHoursPalette.midnightPill
+        headline.textColor = .white
         headline.font = AfterHoursType.foyerHeadline(20)
         headline.textAlignment = .center
         headline.translatesAutoresizingMaskIntoConstraints = false
 
         let camera = MidnightPillControl(spokenTitle: "Take a photo")
-        let library = MidnightPillControl(spokenTitle: "Choose from library")
+        let library = FoyerStagePill(spokenTitle: "Choose from library", kind: .frost)
         let cancel = UIButton(type: .system)
         cancel.setTitle("Not now", for: .normal)
-        cancel.setTitleColor(AfterHoursPalette.magentaPeak, for: .normal)
+        cancel.setTitleColor(UIColor.white.withAlphaComponent(0.86), for: .normal)
         cancel.titleLabel?.font = AfterHoursType.foyerBody(15, weight: .semibold)
         cancel.translatesAutoresizingMaskIntoConstraints = false
 

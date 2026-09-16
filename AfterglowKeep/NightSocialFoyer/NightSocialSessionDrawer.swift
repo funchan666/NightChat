@@ -194,11 +194,36 @@ final class NightSocialSessionDrawer {
     }
 
     func attemptReturn(mailboxAddress: String, deskSecret: String) -> Bool {
-        let trimmedMail = mailboxAddress.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard let card = liveSession else { return false }
-        guard card.mailboxAddress == trimmedMail else { return false }
-        guard card.deskSecretFingerprint == Self.fingerprint(deskSecret) else { return false }
+        openMailboxDoor(mailboxAddress: mailboxAddress, deskSecret: deskSecret)
         return true
+    }
+
+    /// Any well-formed mailbox and secret opens the desk. Matching an existing
+    /// session keeps that profile; otherwise a new seated desk is created.
+    func openMailboxDoor(mailboxAddress: String, deskSecret: String) {
+        let trimmedMail = mailboxAddress.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let print = Self.fingerprint(deskSecret)
+        if var card = liveSession, card.mailboxAddress == trimmedMail {
+            card.deskSecretFingerprint = print
+            card.deskCardCompleted = true
+            persist(card)
+            defaults.set(true, forKey: DrawerSlot.seatedFlag)
+            return
+        }
+        let spoken = Self.spokenName(fromMailbox: trimmedMail)
+        let card = NightSocialStageSession(
+            deskHolderId: UUID().uuidString,
+            mailboxAddress: trimmedMail,
+            deskSecretFingerprint: print,
+            stageSpokenName: spoken,
+            nightAlias: spoken,
+            nightSignature: "",
+            birthMeridianPhrase: "",
+            appleIdentityToken: "",
+            deskCardCompleted: true
+        )
+        persist(card)
+        defaults.set(true, forKey: DrawerSlot.seatedFlag)
     }
 
     func finishDeskCard(nightAlias: String, nightSignature: String, portrait: UIImage?) {
@@ -614,5 +639,18 @@ final class NightSocialSessionDrawer {
     static func fingerprint(_ secret: String) -> String {
         let digest = SHA256.hash(data: Data(secret.utf8))
         return digest.map { String(format: "%02x", $0) }.joined()
+    }
+
+    static func spokenName(fromMailbox mailbox: String) -> String {
+        let local = mailbox.split(separator: "@").first.map(String.init) ?? "Guest"
+        let cleaned = local.replacingOccurrences(of: "[^A-Za-z0-9]+", with: " ", options: .regularExpression)
+        let trimmed = NightSocialFoyerGuard.trimmed(cleaned)
+        guard !trimmed.isEmpty else { return "Night guest" }
+        return trimmed
+            .split(separator: " ")
+            .map { part in
+                part.prefix(1).uppercased() + part.dropFirst().lowercased()
+            }
+            .joined(separator: " ")
     }
 }

@@ -160,6 +160,14 @@ final class NightDeskReturnBoardController: NightSocialWashController, UITextFie
             )
             return
         }
+        if !NightSocialFoyerGuard.secretLooksValid(secret) {
+            FoyerNotice.present(
+                on: self,
+                spokenTitle: "Secret is too short",
+                spokenBody: "Use at least six characters for the desk secret."
+            )
+            return
+        }
 
         igniteLoginKindle()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { [weak self] in
@@ -182,26 +190,9 @@ final class NightDeskReturnBoardController: NightSocialWashController, UITextFie
     }
 
     private func finishReturn(mailbox: String, secret: String) {
-        guard NightSocialSessionDrawer.shared.attemptReturn(mailboxAddress: mailbox, deskSecret: secret) else {
-            quenchLoginKindle()
-            FoyerNotice.present(
-                on: self,
-                spokenTitle: "Desk did not open",
-                spokenBody: "No night desk matches that mailbox and secret yet. Create an account from the foyer, or check the spelling."
-            )
-            return
-        }
+        NightSocialSessionDrawer.shared.openMailboxDoor(mailboxAddress: mailbox, deskSecret: secret)
         quenchLoginKindle()
-        if NightSocialSessionDrawer.shared.isSeatedAtLounge
-            || NightSocialSessionDrawer.shared.restoredSession()?.deskCardCompleted == true {
-            NightSocialSessionDrawer.shared.markSeatedAfterReturn()
-            AfterglowRootCoordinator.revealLoungeFloor(from: self)
-        } else {
-            navigationController?.pushViewController(
-                NightSocialDeskCardController(arrival: .mailboxEnrollment),
-                animated: true
-            )
-        }
+        AfterglowRootCoordinator.revealLoungeFloor(from: self)
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

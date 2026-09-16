@@ -14,7 +14,7 @@ final class NightSocialCovenantBar: UIView, UITextViewDelegate {
         translatesAutoresizingMaskIntoConstraints = false
 
         markControl.translatesAutoresizingMaskIntoConstraints = false
-        markControl.layer.cornerRadius = 8
+        markControl.layer.cornerRadius = 11
         markControl.layer.borderWidth = 1.5
         markControl.layer.borderColor = UIColor.white.withAlphaComponent(0.92).cgColor
         markControl.backgroundColor = UIColor.white.withAlphaComponent(0.12)

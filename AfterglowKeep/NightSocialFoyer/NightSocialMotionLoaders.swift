@@ -108,10 +108,10 @@ final class VelvetNoticePane: UIViewController {
     private let glyphName: String
     private let dim = UIView()
     private let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
+    private let stage = UIView()
     private let card = UIView()
-    private let cardWash = CAGradientLayer()
-    private let disc = UIView()
-    private let discWash = CAGradientLayer()
+    private let header = UIView()
+    private let headerWash = CAGradientLayer()
 
     init(spokenTitle: String, spokenBody: String, settleTitle: String, glyphName: String) {
         self.spokenTitle = spokenTitle
@@ -132,50 +132,82 @@ final class VelvetNoticePane: UIViewController {
         view.backgroundColor = .clear
 
         blur.translatesAutoresizingMaskIntoConstraints = false
-        dim.backgroundColor = UIColor.black.withAlphaComponent(0.28)
+        dim.backgroundColor = UIColor.black.withAlphaComponent(0.38)
         dim.translatesAutoresizingMaskIntoConstraints = false
         dim.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(foldPane)))
 
-        card.backgroundColor = AfterHoursPalette.foyerNightCard
-        card.layer.cornerRadius = 30
-        card.layer.borderWidth = 1
-        card.layer.borderColor = UIColor.white.withAlphaComponent(0.16).cgColor
-        card.layer.shadowColor = AfterHoursPalette.magentaPeak.cgColor
-        card.layer.shadowOpacity = 0.55
-        card.layer.shadowRadius = 28
-        card.layer.shadowOffset = CGSize(width: 0, height: 14)
+        stage.translatesAutoresizingMaskIntoConstraints = false
+        stage.layer.shadowColor = AfterHoursPalette.magentaPeak.cgColor
+        stage.layer.shadowOpacity = 0.55
+        stage.layer.shadowRadius = 30
+        stage.layer.shadowOffset = CGSize(width: 0, height: 16)
+
         card.translatesAutoresizingMaskIntoConstraints = false
+        card.backgroundColor = UIColor(red: 1, green: 0.97, blue: 0.985, alpha: 1)
+        card.layer.cornerRadius = 32
+        card.clipsToBounds = true
+        card.isOpaque = true
 
-        cardWash.colors = [
-            AfterHoursPalette.loungePink.withAlphaComponent(0.28).cgColor,
-            UIColor.clear.cgColor,
+        header.translatesAutoresizingMaskIntoConstraints = false
+        header.clipsToBounds = true
+        headerWash.colors = [
+            AfterHoursPalette.magentaPeak.cgColor,
+            AfterHoursPalette.foyerGlowPink.cgColor,
+            AfterHoursPalette.loungePink.cgColor,
         ]
-        cardWash.startPoint = CGPoint(x: 0.5, y: 0)
-        cardWash.endPoint = CGPoint(x: 0.5, y: 0.55)
-        cardWash.cornerRadius = 30
-        card.layer.insertSublayer(cardWash, at: 0)
+        headerWash.startPoint = CGPoint(x: 0, y: 0)
+        headerWash.endPoint = CGPoint(x: 1, y: 1)
+        header.layer.insertSublayer(headerWash, at: 0)
 
-        disc.translatesAutoresizingMaskIntoConstraints = false
-        disc.clipsToBounds = true
-        disc.layer.cornerRadius = 28
-        discWash.colors = [AfterHoursPalette.foyerGlowPink.cgColor, AfterHoursPalette.magentaPeak.cgColor]
-        discWash.startPoint = CGPoint(x: 0, y: 0)
-        discWash.endPoint = CGPoint(x: 1, y: 1)
-        disc.layer.insertSublayer(discWash, at: 0)
+        let washCloth = UIImageView(image: NightSocialImageCabinet.stageWash)
+        washCloth.contentMode = .scaleAspectFill
+        washCloth.alpha = 0.35
+        washCloth.translatesAutoresizingMaskIntoConstraints = false
+
+        let sparkA = makeSpark(alpha: 0.95, edge: 28)
+        let sparkB = makeSpark(alpha: 0.7, edge: 18)
+        let sparkC = makeSpark(alpha: 0.55, edge: 14)
+
+        let close = UIButton(type: .custom)
+        close.translatesAutoresizingMaskIntoConstraints = false
+        close.setImage(
+            UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)),
+            for: .normal
+        )
+        close.tintColor = .white
+        close.backgroundColor = UIColor.white.withAlphaComponent(0.22)
+        close.layer.cornerRadius = 14
+        close.addTarget(self, action: #selector(foldPane), for: .touchUpInside)
+
+        let badge = UIView()
+        badge.translatesAutoresizingMaskIntoConstraints = false
+        badge.backgroundColor = .white
+        badge.layer.cornerRadius = 36
+        badge.layer.borderWidth = 3
+        badge.layer.borderColor = UIColor.white.cgColor
+
+        let mark = UIImageView(image: NightSocialImageCabinet.stageMark)
+        mark.contentMode = .scaleAspectFill
+        mark.clipsToBounds = true
+        mark.layer.cornerRadius = 28
+        mark.translatesAutoresizingMaskIntoConstraints = false
 
         let glyph = UIImageView(
             image: UIImage(
                 systemName: glyphName,
-                withConfiguration: UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)
             )
         )
-        glyph.tintColor = .white
-        glyph.contentMode = .scaleAspectFit
         glyph.translatesAutoresizingMaskIntoConstraints = false
+        glyph.tintColor = .white
+        glyph.backgroundColor = AfterHoursPalette.loungePink
+        glyph.layer.cornerRadius = 12
+        glyph.clipsToBounds = true
+        glyph.contentMode = .center
 
         let headline = UILabel()
         headline.text = spokenTitle
-        headline.textColor = .white
+        headline.textColor = AfterHoursPalette.inkOnSnow
         headline.font = AfterHoursType.foyerHeadline(22)
         headline.textAlignment = .center
         headline.numberOfLines = 0
@@ -183,7 +215,7 @@ final class VelvetNoticePane: UIViewController {
 
         let body = UILabel()
         body.text = spokenBody
-        body.textColor = UIColor.white.withAlphaComponent(0.78)
+        body.textColor = AfterHoursPalette.inkOnSnow.withAlphaComponent(0.68)
         body.font = AfterHoursType.foyerBody(15)
         body.textAlignment = .center
         body.numberOfLines = 0
@@ -194,12 +226,20 @@ final class VelvetNoticePane: UIViewController {
 
         view.addSubview(blur)
         view.addSubview(dim)
-        view.addSubview(card)
-        card.addSubview(disc)
-        disc.addSubview(glyph)
+        view.addSubview(stage)
+        stage.addSubview(card)
+        card.addSubview(header)
+        header.addSubview(washCloth)
+        header.addSubview(sparkA)
+        header.addSubview(sparkB)
+        header.addSubview(sparkC)
+        header.addSubview(close)
         card.addSubview(headline)
         card.addSubview(body)
         card.addSubview(settle)
+        card.addSubview(badge)
+        badge.addSubview(mark)
+        card.addSubview(glyph)
 
         NSLayoutConstraint.activate([
             blur.topAnchor.constraint(equalTo: view.topAnchor),
@@ -211,58 +251,83 @@ final class VelvetNoticePane: UIViewController {
             dim.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             dim.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-            card.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 28),
-            card.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -28),
-            card.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            stage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 26),
+            stage.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -26),
+            stage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            card.topAnchor.constraint(equalTo: stage.topAnchor),
+            card.leadingAnchor.constraint(equalTo: stage.leadingAnchor),
+            card.trailingAnchor.constraint(equalTo: stage.trailingAnchor),
+            card.bottomAnchor.constraint(equalTo: stage.bottomAnchor),
 
-            disc.topAnchor.constraint(equalTo: card.topAnchor, constant: 24),
-            disc.centerXAnchor.constraint(equalTo: card.centerXAnchor),
-            disc.widthAnchor.constraint(equalToConstant: 56),
-            disc.heightAnchor.constraint(equalToConstant: 56),
-            glyph.centerXAnchor.constraint(equalTo: disc.centerXAnchor),
-            glyph.centerYAnchor.constraint(equalTo: disc.centerYAnchor),
+            header.topAnchor.constraint(equalTo: card.topAnchor),
+            header.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            header.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            header.heightAnchor.constraint(equalToConstant: 118),
+            washCloth.topAnchor.constraint(equalTo: header.topAnchor),
+            washCloth.leadingAnchor.constraint(equalTo: header.leadingAnchor),
+            washCloth.trailingAnchor.constraint(equalTo: header.trailingAnchor),
+            washCloth.bottomAnchor.constraint(equalTo: header.bottomAnchor),
+
+            sparkA.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 22),
+            sparkA.topAnchor.constraint(equalTo: header.topAnchor, constant: 28),
+            sparkB.trailingAnchor.constraint(equalTo: header.trailingAnchor, constant: -54),
+            sparkB.topAnchor.constraint(equalTo: header.topAnchor, constant: 22),
+            sparkC.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 78),
+            sparkC.bottomAnchor.constraint(equalTo: header.bottomAnchor, constant: -16),
+
+            close.trailingAnchor.constraint(equalTo: header.trailingAnchor, constant: -14),
+            close.topAnchor.constraint(equalTo: header.topAnchor, constant: 14),
+            close.widthAnchor.constraint(equalToConstant: 28),
+            close.heightAnchor.constraint(equalToConstant: 28),
+
+            badge.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+            badge.centerYAnchor.constraint(equalTo: header.bottomAnchor),
+            badge.widthAnchor.constraint(equalToConstant: 72),
+            badge.heightAnchor.constraint(equalToConstant: 72),
+            mark.centerXAnchor.constraint(equalTo: badge.centerXAnchor),
+            mark.centerYAnchor.constraint(equalTo: badge.centerYAnchor),
+            mark.widthAnchor.constraint(equalToConstant: 56),
+            mark.heightAnchor.constraint(equalToConstant: 56),
+            glyph.trailingAnchor.constraint(equalTo: badge.trailingAnchor, constant: 4),
+            glyph.bottomAnchor.constraint(equalTo: badge.bottomAnchor, constant: 2),
             glyph.widthAnchor.constraint(equalToConstant: 24),
             glyph.heightAnchor.constraint(equalToConstant: 24),
 
-            headline.topAnchor.constraint(equalTo: disc.bottomAnchor, constant: 16),
-            headline.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 22),
-            headline.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -22),
-
+            headline.topAnchor.constraint(equalTo: badge.bottomAnchor, constant: 18),
+            headline.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 24),
+            headline.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -24),
             body.topAnchor.constraint(equalTo: headline.bottomAnchor, constant: 8),
             body.leadingAnchor.constraint(equalTo: headline.leadingAnchor),
             body.trailingAnchor.constraint(equalTo: headline.trailingAnchor),
-
             settle.topAnchor.constraint(equalTo: body.bottomAnchor, constant: 22),
             settle.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 22),
             settle.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -22),
             settle.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -22),
         ])
 
-        card.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-        card.alpha = 0
+        stage.transform = CGAffineTransform(translationX: 0, y: 24).scaledBy(x: 0.94, y: 0.94)
+        stage.alpha = 0
         dim.alpha = 0
         blur.alpha = 0
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        cardWash.frame = card.bounds
-        cardWash.cornerRadius = 30
-        discWash.frame = disc.bounds
-        discWash.cornerRadius = disc.bounds.height / 2
+        headerWash.frame = header.bounds
+        stage.layer.shadowPath = UIBezierPath(roundedRect: stage.bounds, cornerRadius: 32).cgPath
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         UIView.animate(
-            withDuration: 0.44,
+            withDuration: 0.48,
             delay: 0,
-            usingSpringWithDamping: 0.78,
+            usingSpringWithDamping: 0.8,
             initialSpringVelocity: 0.7,
             options: [.allowUserInteraction]
         ) {
-            self.card.transform = .identity
-            self.card.alpha = 1
+            self.stage.transform = .identity
+            self.stage.alpha = 1
             self.dim.alpha = 1
             self.blur.alpha = 1
         }
@@ -270,13 +335,23 @@ final class VelvetNoticePane: UIViewController {
 
     @objc private func foldPane() {
         UIView.animate(withDuration: 0.2, animations: {
-            self.card.transform = CGAffineTransform(scaleX: 0.94, y: 0.94)
-            self.card.alpha = 0
+            self.stage.transform = CGAffineTransform(translationX: 0, y: 16).scaledBy(x: 0.96, y: 0.96)
+            self.stage.alpha = 0
             self.dim.alpha = 0
             self.blur.alpha = 0
         }, completion: { _ in
             self.dismiss(animated: false)
         })
+    }
+
+    private func makeSpark(alpha: CGFloat, edge: CGFloat) -> UIImageView {
+        let spark = UIImageView(image: NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle"))
+        spark.alpha = alpha
+        spark.contentMode = .scaleAspectFit
+        spark.translatesAutoresizingMaskIntoConstraints = false
+        spark.widthAnchor.constraint(equalToConstant: edge).isActive = true
+        spark.heightAnchor.constraint(equalToConstant: edge).isActive = true
+        return spark
     }
 }
 
