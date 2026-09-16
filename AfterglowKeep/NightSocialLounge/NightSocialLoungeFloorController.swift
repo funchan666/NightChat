@@ -237,7 +237,11 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
         switch browseLane {
         case .all, .follow:
             let desk = creatorItems[indexPath.item]
-            navigationController?.pushViewController(NightSocialCreatorDeskBoard(deskKey: desk.deskKey), animated: true)
+            if desk.isLive, let booth = NightSocialLoungeCatalog.booth(hostedBy: desk.deskKey) {
+                navigationController?.pushViewController(NightSocialLiveBoothStage(boothKey: booth.boothKey), animated: true)
+            } else {
+                navigationController?.pushViewController(NightSocialCreatorDeskBoard(deskKey: desk.deskKey), animated: true)
+            }
         case .live:
             let booth = boothItems[indexPath.item]
             navigationController?.pushViewController(NightSocialLiveBoothStage(boothKey: booth.boothKey), animated: true)

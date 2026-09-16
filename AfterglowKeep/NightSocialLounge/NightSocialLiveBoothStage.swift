@@ -6,6 +6,10 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     private var chatLines: [LoungeDiscussLine] = []
     private let table = UITableView()
     private let field = UITextField()
+    private let danmaku = LiveDanmakuLane()
+    private let giftRibbon = LiveGiftRibbon()
+    private let giftBurst = UIImageView()
+    private var chatter: Timer?
 
     init(boothKey: String) {
         self.boothKey = boothKey
@@ -17,11 +21,14 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         videoSurface?.start()
+        startAtmosphere()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         videoSurface?.stop()
+        chatter?.invalidate()
+        chatter = nil
     }
 
     override func viewDidLoad() {
@@ -77,10 +84,18 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         stats.addTarget(self, action: #selector(openLadder), for: .touchUpInside)
         stats.translatesAutoresizingMaskIntoConstraints = false
 
+        danmaku.clipsToBounds = true
+        danmaku.isUserInteractionEnabled = false
+        danmaku.translatesAutoresizingMaskIntoConstraints = false
+        giftBurst.contentMode = .scaleAspectFit
+        giftBurst.alpha = 0
+        giftBurst.translatesAutoresizingMaskIntoConstraints = false
         table.backgroundColor = .clear
         table.separatorStyle = .none
         table.dataSource = self
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "chat")
+        table.rowHeight = UITableView.automaticDimension
+        table.estimatedRowHeight = 28
+        table.register(LiveChatLineCell.self, forCellReuseIdentifier: LiveChatLineCell.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
 
         field.placeholder = "Tell me your opinion..."
@@ -102,6 +117,8 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         crown.addTarget(self, action: #selector(openLadder), for: .touchUpInside)
 
         view.addSubview(cover)
+        view.addSubview(danmaku)
+        view.addSubview(giftBurst)
         view.addSubview(hostChip)
         hostChip.addSubview(hostPic)
         hostChip.addSubview(hostName)
@@ -111,6 +128,7 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         view.addSubview(close)
         view.addSubview(stats)
         view.addSubview(table)
+        view.addSubview(giftRibbon)
         view.addSubview(field)
         view.addSubview(send)
         view.addSubview(gift)
@@ -144,6 +162,17 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
             stats.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             stats.topAnchor.constraint(equalTo: hostChip.bottomAnchor, constant: 8),
             stats.heightAnchor.constraint(equalToConstant: 24),
+            danmaku.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            danmaku.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            danmaku.topAnchor.constraint(equalTo: stats.bottomAnchor, constant: 18),
+            danmaku.heightAnchor.constraint(equalToConstant: 110),
+            giftBurst.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            giftBurst.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -24),
+            giftBurst.widthAnchor.constraint(equalToConstant: 88),
+            giftBurst.heightAnchor.constraint(equalToConstant: 88),
+            giftRibbon.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            giftRibbon.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -90),
+            giftRibbon.bottomAnchor.constraint(equalTo: table.topAnchor, constant: -8),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -90),
             table.bottomAnchor.constraint(equalTo: field.topAnchor, constant: -10),
@@ -159,7 +188,11 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
             send.centerYAnchor.constraint(equalTo: field.centerYAnchor),
             field.trailingAnchor.constraint(equalTo: send.leadingAnchor, constant: -8),
         ])
+        NotificationCenter.default.addObserver(self, selector: #selector(catchGift(_:)), name: .liveGiftOffered, object: nil)
+        seedOpeningChat()
     }
+
+    deinit { NotificationCenter.default.removeObserver(self) }
 
     private func formatCount(_ n: Int) -> String {
         if n >= 1000 { return String(format: "%.1fk", Double(n) / 1000) }

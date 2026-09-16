@@ -198,6 +198,10 @@ enum NightSocialLoungeCatalog {
         booths.first { $0.boothKey == boothKey }
     }
 
+    static func booth(hostedBy deskKey: String) -> LoungeLiveBooth? {
+        booths.first { $0.hostDeskKey == deskKey }
+    }
+
     static func clip(clipKey: String) -> LoungeClipReel? {
         clips.first { $0.clipKey == clipKey }
     }

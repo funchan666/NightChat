@@ -64,9 +64,7 @@ final class NightSocialStageDock: UIView {
         let row = UIStackView()
         row.axis = .horizontal
         row.distribution = .fillEqually
-        row.alignment = .top
-        row.isLayoutMarginsRelativeArrangement = true
-        row.layoutMargins = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
+        row.alignment = .fill
         row.translatesAutoresizingMaskIntoConstraints = false
         addSubview(row)
         NSLayoutConstraint.activate([
@@ -78,14 +76,15 @@ final class NightSocialStageDock: UIView {
         ])
 
         for (index, glyph) in glyphs.enumerated() {
-            glyph.tag = index
-            glyph.addTarget(self, action: #selector(pickGlyph(_:)), for: .touchUpInside)
-            let well = UIView()
+            glyph.isUserInteractionEnabled = false
+            let well = UIControl()
+            well.tag = index
             well.translatesAutoresizingMaskIntoConstraints = false
+            well.addTarget(self, action: #selector(pickGlyph(_:)), for: .touchUpInside)
             well.addSubview(glyph)
             NSLayoutConstraint.activate([
                 glyph.centerXAnchor.constraint(equalTo: well.centerXAnchor),
-                glyph.topAnchor.constraint(equalTo: well.topAnchor),
+                glyph.topAnchor.constraint(equalTo: well.topAnchor, constant: 16),
             ])
             row.addArrangedSubview(well)
         }
@@ -100,7 +99,7 @@ final class NightSocialStageDock: UIView {
         }
     }
 
-    @objc private func pickGlyph(_ sender: NightSocialStageGlyph) {
+    @objc private func pickGlyph(_ sender: UIControl) {
         lightLane(sender.tag)
         onPickLane?(sender.tag)
     }

@@ -1,16 +1,40 @@
 import UIKit
 
+private final class CoverScrimView: UIView {
+    private let wash = CAGradientLayer()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        wash.colors = [
+            UIColor.clear.cgColor,
+            UIColor.clear.cgColor,
+            UIColor.black.withAlphaComponent(0.32).cgColor,
+        ]
+        wash.locations = [0, 0.58, 1]
+        layer.addSublayer(wash)
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        wash.frame = bounds
+    }
+}
+
 final class LoungeCreatorTile: UICollectionViewCell {
     static let reuseId = "LoungeCreatorTile"
     private let cover = UIImageView()
-    private let dim = UIView()
+    private let dim = CoverScrimView()
+    private let liveMark = UIImageView()
     private let hotMark = UIImageView()
     private let likePlate = UILabel()
     private let namePlate = UILabel()
     private let cityPlate = UILabel()
     private let tagPlate = UILabel()
-    private let playMark = UIImageView()
     private var levelWrap: UIView?
+    private var hotBesideLive: NSLayoutConstraint!
+    private var hotAtEdge: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -18,8 +42,11 @@ final class LoungeCreatorTile: UICollectionViewCell {
         contentView.clipsToBounds = true
         cover.contentMode = .scaleAspectFill
         cover.translatesAutoresizingMaskIntoConstraints = false
-        dim.backgroundColor = UIColor.black.withAlphaComponent(0.28)
+        dim.isUserInteractionEnabled = false
         dim.translatesAutoresizingMaskIntoConstraints = false
+        liveMark.image = NightSocialImageCabinet.named("LoungeLiveBadge", fallback: "Group_668@2x(1)")
+        liveMark.contentMode = .scaleAspectFit
+        liveMark.translatesAutoresizingMaskIntoConstraints = false
         hotMark.image = NightSocialImageCabinet.named("LoungeHotBadge", fallback: "Group_734")
         hotMark.contentMode = .scaleAspectFit
         hotMark.translatesAutoresizingMaskIntoConstraints = false
@@ -35,17 +62,16 @@ final class LoungeCreatorTile: UICollectionViewCell {
         tagPlate.font = AfterHoursType.foyerCaption(10)
         tagPlate.textColor = AfterHoursPalette.loungePink
         tagPlate.translatesAutoresizingMaskIntoConstraints = false
-        playMark.image = UIImage(systemName: "play.rectangle.fill")
-        playMark.tintColor = .white
-        playMark.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(cover)
         contentView.addSubview(dim)
+        contentView.addSubview(liveMark)
         contentView.addSubview(hotMark)
         contentView.addSubview(likePlate)
         contentView.addSubview(namePlate)
         contentView.addSubview(cityPlate)
         contentView.addSubview(tagPlate)
-        contentView.addSubview(playMark)
+        hotBesideLive = hotMark.leadingAnchor.constraint(equalTo: liveMark.trailingAnchor, constant: 6)
+        hotAtEdge = hotMark.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8)
         NSLayoutConstraint.activate([
             cover.topAnchor.constraint(equalTo: contentView.topAnchor),
             cover.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -55,16 +81,16 @@ final class LoungeCreatorTile: UICollectionViewCell {
             dim.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             dim.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             dim.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            hotMark.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            liveMark.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            liveMark.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            liveMark.heightAnchor.constraint(equalToConstant: 18),
+            liveMark.widthAnchor.constraint(equalToConstant: 44),
+            hotAtEdge,
             hotMark.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             hotMark.heightAnchor.constraint(equalToConstant: 18),
             hotMark.widthAnchor.constraint(equalToConstant: 44),
             likePlate.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             likePlate.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            playMark.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            playMark.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            playMark.widthAnchor.constraint(equalToConstant: 18),
-            playMark.heightAnchor.constraint(equalToConstant: 14),
             tagPlate.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             tagPlate.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             cityPlate.leadingAnchor.constraint(equalTo: tagPlate.leadingAnchor),
@@ -78,7 +104,10 @@ final class LoungeCreatorTile: UICollectionViewCell {
 
     func paint(_ desk: LoungeCreatorDesk) {
         cover.image = NightSocialMediaAssets.cover(for: desk.deskKey, size: CGSize(width: 320, height: 420))
+        liveMark.isHidden = !desk.isLive
         hotMark.isHidden = !desk.isHot
+        hotBesideLive.isActive = desk.isLive
+        hotAtEdge.isActive = !desk.isLive
         likePlate.text = "♡ \(desk.likeCount)"
         namePlate.text = desk.spokenName
         cityPlate.text = desk.cityLabel
