@@ -217,7 +217,7 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { rows.count }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 108 }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 128 }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: WaveChamberRow.reuseId, for: indexPath) as! WaveChamberRow
         cell.paint(rows[indexPath.row])
@@ -360,6 +360,7 @@ final class WaveChamberRow: UITableViewCell {
     private let hostPlate = UILabel()
     private let heatMark = UIImageView()
     private let heatPlate = UILabel()
+    private let listenMark = UIImageView()
     private let listenPlate = UILabel()
     private let tagRow = UIStackView()
     private let stackA = UIImageView()
@@ -371,16 +372,16 @@ final class WaveChamberRow: UITableViewCell {
         backgroundColor = .clear
         selectionStyle = .none
         card.backgroundColor = AfterHoursPalette.loungeCard
-        card.layer.cornerRadius = 18
+        card.layer.cornerRadius = 20
         card.translatesAutoresizingMaskIntoConstraints = false
-        portrait.layer.cornerRadius = 28
+        portrait.layer.cornerRadius = 32
         portrait.clipsToBounds = true
+        portrait.layer.borderWidth = 2
+        portrait.layer.borderColor = AfterHoursPalette.loungePink.cgColor
         portrait.translatesAutoresizingMaskIntoConstraints = false
         titlePlate.font = AfterHoursType.foyerPill(16)
         titlePlate.textColor = .white
         titlePlate.translatesAutoresizingMaskIntoConstraints = false
-        hostPlate.font = AfterHoursType.foyerCaption(12)
-        hostPlate.textColor = UIColor.white.withAlphaComponent(0.7)
         hostPlate.translatesAutoresizingMaskIntoConstraints = false
         heatMark.image = NightSocialImageCabinet.named("WaveHeatMark", fallback: "Frame@2x(7)")
         heatMark.contentMode = .scaleAspectFit
@@ -388,8 +389,11 @@ final class WaveChamberRow: UITableViewCell {
         heatPlate.font = AfterHoursType.foyerCaption(12)
         heatPlate.textColor = UIColor(red: 1, green: 0.62, blue: 0.22, alpha: 1)
         heatPlate.translatesAutoresizingMaskIntoConstraints = false
-        listenPlate.font = AfterHoursType.foyerCaption(11)
-        listenPlate.textColor = UIColor.white.withAlphaComponent(0.75)
+        listenMark.image = UIImage(systemName: "person.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold))
+        listenMark.tintColor = UIColor.white.withAlphaComponent(0.55)
+        listenMark.translatesAutoresizingMaskIntoConstraints = false
+        listenPlate.font = AfterHoursType.foyerCaption(12)
+        listenPlate.textColor = UIColor.white.withAlphaComponent(0.7)
         listenPlate.translatesAutoresizingMaskIntoConstraints = false
         tagRow.axis = .horizontal
         tagRow.spacing = 6
@@ -397,8 +401,8 @@ final class WaveChamberRow: UITableViewCell {
         for mark in [stackA, stackB, stackC] {
             mark.layer.cornerRadius = 10
             mark.clipsToBounds = true
-            mark.layer.borderWidth = 1
-            mark.layer.borderColor = UIColor.white.withAlphaComponent(0.4).cgColor
+            mark.layer.borderWidth = 1.4
+            mark.layer.borderColor = UIColor.white.cgColor
             mark.translatesAutoresizingMaskIntoConstraints = false
         }
         contentView.addSubview(card)
@@ -411,42 +415,47 @@ final class WaveChamberRow: UITableViewCell {
         card.addSubview(stackA)
         card.addSubview(stackB)
         card.addSubview(stackC)
+        card.addSubview(listenMark)
         card.addSubview(listenPlate)
         NSLayoutConstraint.activate([
             card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
-            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
+            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
             portrait.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
             portrait.centerYAnchor.constraint(equalTo: card.centerYAnchor),
-            portrait.widthAnchor.constraint(equalToConstant: 56),
-            portrait.heightAnchor.constraint(equalToConstant: 56),
-            titlePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 10),
-            titlePlate.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
+            portrait.widthAnchor.constraint(equalToConstant: 64),
+            portrait.heightAnchor.constraint(equalToConstant: 64),
+            titlePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 12),
+            titlePlate.trailingAnchor.constraint(lessThanOrEqualTo: heatMark.leadingAnchor, constant: -8),
+            titlePlate.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
             hostPlate.leadingAnchor.constraint(equalTo: titlePlate.leadingAnchor),
-            hostPlate.topAnchor.constraint(equalTo: titlePlate.bottomAnchor, constant: 2),
-            heatPlate.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+            hostPlate.trailingAnchor.constraint(lessThanOrEqualTo: heatPlate.leadingAnchor, constant: -8),
+            hostPlate.topAnchor.constraint(equalTo: titlePlate.bottomAnchor, constant: 3),
+            heatPlate.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
             heatPlate.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
             heatMark.trailingAnchor.constraint(equalTo: heatPlate.leadingAnchor, constant: -4),
             heatMark.centerYAnchor.constraint(equalTo: heatPlate.centerYAnchor),
-            heatMark.widthAnchor.constraint(equalToConstant: 14),
-            heatMark.heightAnchor.constraint(equalToConstant: 16),
+            heatMark.widthAnchor.constraint(equalToConstant: 13),
+            heatMark.heightAnchor.constraint(equalToConstant: 15),
             tagRow.leadingAnchor.constraint(equalTo: titlePlate.leadingAnchor),
-            tagRow.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -12),
-            listenPlate.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
-            listenPlate.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -12),
-            stackC.trailingAnchor.constraint(equalTo: listenPlate.leadingAnchor, constant: -6),
-            stackC.centerYAnchor.constraint(equalTo: listenPlate.centerYAnchor),
-            stackC.widthAnchor.constraint(equalToConstant: 20),
-            stackC.heightAnchor.constraint(equalToConstant: 20),
-            stackB.trailingAnchor.constraint(equalTo: stackC.leadingAnchor, constant: 6),
-            stackB.centerYAnchor.constraint(equalTo: stackC.centerYAnchor),
-            stackB.widthAnchor.constraint(equalToConstant: 20),
-            stackB.heightAnchor.constraint(equalToConstant: 20),
-            stackA.trailingAnchor.constraint(equalTo: stackB.leadingAnchor, constant: 6),
-            stackA.centerYAnchor.constraint(equalTo: stackC.centerYAnchor),
+            tagRow.topAnchor.constraint(equalTo: hostPlate.bottomAnchor, constant: 6),
+            stackA.leadingAnchor.constraint(equalTo: titlePlate.leadingAnchor),
+            stackA.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -12),
             stackA.widthAnchor.constraint(equalToConstant: 20),
             stackA.heightAnchor.constraint(equalToConstant: 20),
+            stackB.leadingAnchor.constraint(equalTo: stackA.leadingAnchor, constant: 14),
+            stackB.centerYAnchor.constraint(equalTo: stackA.centerYAnchor),
+            stackB.widthAnchor.constraint(equalToConstant: 20),
+            stackB.heightAnchor.constraint(equalToConstant: 20),
+            stackC.leadingAnchor.constraint(equalTo: stackB.leadingAnchor, constant: 14),
+            stackC.centerYAnchor.constraint(equalTo: stackA.centerYAnchor),
+            stackC.widthAnchor.constraint(equalToConstant: 20),
+            stackC.heightAnchor.constraint(equalToConstant: 20),
+            listenPlate.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
+            listenPlate.centerYAnchor.constraint(equalTo: stackA.centerYAnchor),
+            listenMark.trailingAnchor.constraint(equalTo: listenPlate.leadingAnchor, constant: -4),
+            listenMark.centerYAnchor.constraint(equalTo: listenPlate.centerYAnchor),
         ])
     }
 
@@ -454,9 +463,24 @@ final class WaveChamberRow: UITableViewCell {
 
     func paint(_ chamber: WaveVoiceChamber) {
         let host = NightSocialWaveCatalog.hostName(chamber)
-        portrait.image = NightSocialMediaAssets.portrait(for: chamber.hostDeskKey, size: CGSize(width: 120, height: 120))
+        let first = host.split(separator: " ").first.map(String.init) ?? host
+        portrait.image = NightSocialMediaAssets.portrait(for: chamber.hostDeskKey, size: CGSize(width: 128, height: 128))
         titlePlate.text = chamber.chamberTitle
-        hostPlate.text = "\(host)  \(chamber.moodLine)"
+        let line = NSMutableAttributedString(
+            string: first,
+            attributes: [
+                .foregroundColor: AfterHoursPalette.loungePink,
+                .font: AfterHoursType.foyerCaption(12),
+            ]
+        )
+        line.append(NSAttributedString(
+            string: "  ·  \(chamber.moodLine)",
+            attributes: [
+                .foregroundColor: UIColor.white.withAlphaComponent(0.55),
+                .font: AfterHoursType.foyerCaption(12),
+            ]
+        ))
+        hostPlate.attributedText = line
         heatPlate.text = "\(chamber.heatScore)"
         listenPlate.text = "\(chamber.listenerCount)"
         tagRow.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -464,9 +488,9 @@ final class WaveChamberRow: UITableViewCell {
             let plate = UILabel()
             plate.text = "  \(tag)  "
             plate.font = AfterHoursType.foyerCaption(10)
-            plate.textColor = AfterHoursPalette.loungePink
-            plate.backgroundColor = AfterHoursPalette.loungePink.withAlphaComponent(0.15)
-            plate.layer.cornerRadius = 8
+            plate.textColor = .white
+            plate.backgroundColor = AfterHoursPalette.loungePink.withAlphaComponent(0.78)
+            plate.layer.cornerRadius = 9
             plate.clipsToBounds = true
             tagRow.addArrangedSubview(plate)
         }
@@ -474,5 +498,8 @@ final class WaveChamberRow: UITableViewCell {
         stackA.image = seats.indices.contains(0) ? NightSocialMediaAssets.portrait(for: seats[0], size: CGSize(width: 40, height: 40)) : nil
         stackB.image = seats.indices.contains(1) ? NightSocialMediaAssets.portrait(for: seats[1], size: CGSize(width: 40, height: 40)) : nil
         stackC.image = seats.indices.contains(2) ? NightSocialMediaAssets.portrait(for: seats[2], size: CGSize(width: 40, height: 40)) : nil
+        stackA.isHidden = seats.isEmpty
+        stackB.isHidden = seats.count < 2
+        stackC.isHidden = seats.count < 3
     }
 }
