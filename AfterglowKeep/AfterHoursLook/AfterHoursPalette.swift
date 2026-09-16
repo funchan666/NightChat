@@ -15,6 +15,8 @@ enum AfterHoursPalette {
     static let loungeInk = UIColor(red: 0.165, green: 0.035, blue: 0.145, alpha: 1)
     static let loungeCard = UIColor(red: 0.31, green: 0.08, blue: 0.27, alpha: 1)
     static let loungePink = UIColor(red: 1.00, green: 0.29, blue: 0.62, alpha: 1)
+    static let foyerGlowPink = UIColor(red: 1.00, green: 0.42, blue: 0.72, alpha: 1)
+    static let foyerNightCard = UIColor(red: 0.17, green: 0.05, blue: 0.16, alpha: 0.94)
     static let levelMint = UIColor(red: 0.49, green: 0.98, blue: 0.70, alpha: 1)
 }
 

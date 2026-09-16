@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -192,7 +192,7 @@
 		34A32E68B2FCF9556F3EC044 /* NightSocialChimeCallStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialChimeCallStage.swift; sourceTree = "<group>"; };
 		366A776F47330540629D034C /* NightSocialFoyerChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialFoyerChrome.swift; sourceTree = "<group>"; };
 		3672AAA2734844116C36F52F /* NightSocialLoungeChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLoungeChrome.swift; sourceTree = "<group>"; };
-		3A2434E28BF225CA9C3358F6 /* NightChat.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NightChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A2434E28BF225CA9C3358F6 /* NightChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NightChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A943A1BA782186A14044104 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3BB2B213ED4580C46BF1A407 /* Group_912@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_912@2x.png"; sourceTree = "<group>"; };
 		3BC0DAFEDC2449349A125223 /* NightSocialDeskMirrorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialDeskMirrorController.swift; sourceTree = "<group>"; };
@@ -280,7 +280,7 @@
 		BDED38E25925A35C0BF53AB3 /* Rectangle_1114@2x(1).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle_1114@2x(1).png"; sourceTree = "<group>"; };
 		BF2B7B548A4A73DE0B7EB98B /* Group_904@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_904@2x.png"; sourceTree = "<group>"; };
 		BFE1D2325A81167BE2F40BA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C205FC2D0960C56F1CC8C58B /* Frame@2x(39).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Frame@2x(39).png"; sourceTree = "<group>"; };
 		C3C3E749AA6643F91B246022 /* Group_656@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_656@2x.png"; sourceTree = "<group>"; };
 		C51AEE7D02BD06F0610BE7B3 /* Group_917@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_917@2x.png"; sourceTree = "<group>"; };
@@ -621,7 +621,6 @@
 			);
 			mainGroup = 42D8D929BF7E95B0EA44265C;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -881,6 +880,7 @@
 				CODE_SIGN_ENTITLEMENTS = AfterglowKeep/NightChat.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPTS6M4T5B;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AfterglowKeep/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NightChat;
@@ -964,6 +964,7 @@
 				CODE_SIGN_ENTITLEMENTS = AfterglowKeep/NightChat.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = JPTS6M4T5B;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AfterglowKeep/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NightChat;

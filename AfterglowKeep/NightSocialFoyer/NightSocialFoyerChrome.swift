@@ -111,37 +111,189 @@ class NightSocialWashController: UIViewController {
     }
 }
 
-final class SnowPillControl: UIButton {
-    init(spokenTitle: String) {
+enum FoyerStagePillKind {
+    case snow
+    case frost
+    case magenta
+    case apple
+}
+
+/// Capsule control drawn with its own layers so iOS 26 glass does not wash it out.
+class FoyerStagePill: UIControl {
+    private let cloth = UIView()
+    private let wash = CAGradientLayer()
+    private let shine = CAGradientLayer()
+    private let titlePlate = UILabel()
+    private let glyphView = UIImageView()
+    private let row = UIStackView()
+    private let kind: FoyerStagePillKind
+
+    init(spokenTitle: String, kind: FoyerStagePillKind, glyphName: String? = nil) {
+        self.kind = kind
         super.init(frame: .zero)
-        setTitle(spokenTitle, for: .normal)
-        setTitleColor(AfterHoursPalette.inkOnSnow, for: .normal)
-        titleLabel?.font = AfterHoursType.foyerPill(16)
-        backgroundColor = AfterHoursPalette.snowCard
-        layer.cornerRadius = 26
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.10
-        layer.shadowRadius = 10
-        layer.shadowOffset = CGSize(width: 0, height: 4)
         translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: 52).isActive = true
+        heightAnchor.constraint(equalToConstant: 54).isActive = true
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+        accessibilityLabel = spokenTitle
+
+        cloth.isUserInteractionEnabled = false
+        cloth.translatesAutoresizingMaskIntoConstraints = false
+        cloth.clipsToBounds = true
+        insertSubview(cloth, at: 0)
+        NSLayoutConstraint.activate([
+            cloth.topAnchor.constraint(equalTo: topAnchor),
+            cloth.leadingAnchor.constraint(equalTo: leadingAnchor),
+            cloth.trailingAnchor.constraint(equalTo: trailingAnchor),
+            cloth.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+        cloth.layer.insertSublayer(wash, at: 0)
+        cloth.layer.addSublayer(shine)
+
+        titlePlate.text = spokenTitle
+        titlePlate.font = AfterHoursType.foyerPill(16)
+        titlePlate.textAlignment = .center
+
+        glyphView.contentMode = .scaleAspectFit
+        glyphView.translatesAutoresizingMaskIntoConstraints = false
+        glyphView.widthAnchor.constraint(equalToConstant: 18).isActive = true
+        glyphView.heightAnchor.constraint(equalToConstant: 18).isActive = true
+        if let glyphName {
+            glyphView.image = UIImage(
+                systemName: glyphName,
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+            )
+        } else {
+            glyphView.isHidden = true
+        }
+
+        row.axis = .horizontal
+        row.alignment = .center
+        row.spacing = 8
+        row.isUserInteractionEnabled = false
+        row.translatesAutoresizingMaskIntoConstraints = false
+        row.addArrangedSubview(glyphView)
+        row.addArrangedSubview(titlePlate)
+        addSubview(row)
+        NSLayoutConstraint.activate([
+            row.centerXAnchor.constraint(equalTo: centerXAnchor),
+            row.centerYAnchor.constraint(equalTo: centerYAnchor),
+            row.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 18),
+            row.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -18),
+        ])
+        paintKind()
     }
 
     required init?(coder: NSCoder) { nil }
-}
 
-final class MidnightPillControl: UIButton {
-    init(spokenTitle: String) {
-        super.init(frame: .zero)
-        setTitle(spokenTitle, for: .normal)
-        setTitleColor(AfterHoursPalette.titleSnow, for: .normal)
-        titleLabel?.font = AfterHoursType.foyerPill(17)
-        backgroundColor = AfterHoursPalette.midnightPill
-        layer.cornerRadius = 26
-        translatesAutoresizingMaskIntoConstraints = false
-        heightAnchor.constraint(equalToConstant: 54).isActive = true
+    func setTitle(_ title: String?, for state: UIControl.State) {
+        titlePlate.text = title
+        titlePlate.isHidden = (title ?? "").isEmpty
+        if let title, !title.isEmpty { accessibilityLabel = title }
     }
 
+    override var isHighlighted: Bool {
+        didSet { press(isHighlighted) }
+    }
+
+    override var isEnabled: Bool {
+        didSet { alpha = isEnabled ? 1 : 0.55 }
+    }
+
+    private func press(_ on: Bool) {
+        UIView.animate(withDuration: 0.16, delay: 0, options: [.allowUserInteraction, .beginFromCurrentState]) {
+            self.transform = on ? CGAffineTransform(scaleX: 0.98, y: 0.98) : .identity
+            self.alpha = on ? 0.9 : (self.isEnabled ? 1 : 0.55)
+        }
+    }
+
+    private func paintKind() {
+        wash.startPoint = CGPoint(x: 0, y: 0.5)
+        wash.endPoint = CGPoint(x: 1, y: 1)
+        shine.startPoint = CGPoint(x: 0.5, y: 0)
+        shine.endPoint = CGPoint(x: 0.5, y: 1)
+        switch kind {
+        case .snow:
+            wash.colors = [
+                UIColor.white.cgColor,
+                UIColor(red: 1.00, green: 0.94, blue: 0.97, alpha: 1).cgColor,
+            ]
+            titlePlate.textColor = AfterHoursPalette.inkOnSnow
+            glyphView.tintColor = AfterHoursPalette.inkOnSnow
+            layer.shadowColor = UIColor.black.cgColor
+            layer.shadowOpacity = 0.22
+            layer.shadowRadius = 14
+            layer.shadowOffset = CGSize(width: 0, height: 8)
+            shine.colors = [
+                UIColor.white.withAlphaComponent(0.7).cgColor,
+                UIColor.white.withAlphaComponent(0).cgColor,
+            ]
+        case .frost:
+            wash.colors = [
+                UIColor.white.withAlphaComponent(0.22).cgColor,
+                UIColor.white.withAlphaComponent(0.08).cgColor,
+            ]
+            cloth.layer.borderWidth = 1.2
+            cloth.layer.borderColor = UIColor.white.withAlphaComponent(0.9).cgColor
+            titlePlate.textColor = .white
+            glyphView.tintColor = .white
+            layer.shadowOpacity = 0
+            shine.colors = [
+                UIColor.white.withAlphaComponent(0.28).cgColor,
+                UIColor.white.withAlphaComponent(0).cgColor,
+            ]
+        case .magenta:
+            wash.colors = [
+                AfterHoursPalette.foyerGlowPink.cgColor,
+                AfterHoursPalette.magentaPeak.cgColor,
+            ]
+            titlePlate.textColor = .white
+            glyphView.tintColor = .white
+            layer.shadowColor = AfterHoursPalette.magentaPeak.cgColor
+            layer.shadowOpacity = 0.48
+            layer.shadowRadius = 16
+            layer.shadowOffset = CGSize(width: 0, height: 8)
+            shine.colors = [
+                UIColor.white.withAlphaComponent(0.34).cgColor,
+                UIColor.white.withAlphaComponent(0).cgColor,
+            ]
+        case .apple:
+            wash.colors = [UIColor.black.cgColor, UIColor(white: 0.14, alpha: 1).cgColor]
+            titlePlate.textColor = .white
+            glyphView.tintColor = .white
+            layer.shadowColor = UIColor.black.cgColor
+            layer.shadowOpacity = 0.3
+            layer.shadowRadius = 12
+            layer.shadowOffset = CGSize(width: 0, height: 6)
+            shine.colors = [
+                UIColor.white.withAlphaComponent(0.14).cgColor,
+                UIColor.white.withAlphaComponent(0).cgColor,
+            ]
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let radius = bounds.height / 2
+        cloth.layer.cornerRadius = radius
+        wash.frame = cloth.bounds
+        wash.cornerRadius = radius
+        shine.frame = CGRect(x: 0, y: 0, width: cloth.bounds.width, height: max(1, cloth.bounds.height * 0.52))
+        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: radius).cgPath
+    }
+}
+
+final class SnowPillControl: FoyerStagePill {
+    init(spokenTitle: String) {
+        super.init(spokenTitle: spokenTitle, kind: .snow)
+    }
+    required init?(coder: NSCoder) { nil }
+}
+
+final class MidnightPillControl: FoyerStagePill {
+    init(spokenTitle: String) {
+        super.init(spokenTitle: spokenTitle, kind: .magenta)
+    }
     required init?(coder: NSCoder) { nil }
 }
 
