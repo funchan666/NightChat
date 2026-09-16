@@ -99,6 +99,7 @@ final class NightSocialClipTheater: UIViewController {
         send.translatesAutoresizingMaskIntoConstraints = false
 
         let portrait = UIImageView(image: NightSocialMediaAssets.portrait(for: clip.authorDeskKey, size: CGSize(width: 80, height: 80)))
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 18
         portrait.clipsToBounds = true
         portrait.isUserInteractionEnabled = true
@@ -437,6 +438,7 @@ final class DiscussLineRow: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         selectionStyle = .none
+        portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 16
         portrait.clipsToBounds = true
         portrait.isUserInteractionEnabled = true

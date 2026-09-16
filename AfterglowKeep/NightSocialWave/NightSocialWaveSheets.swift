@@ -45,6 +45,9 @@ final class NightSocialWaveRankSheet: UIViewController, UITableViewDataSource, U
         cell.backgroundColor = AfterHoursPalette.loungeInk.withAlphaComponent(0.4)
         cell.textLabel?.textColor = .white
         cell.textLabel?.text = "\(indexPath.row + 1)  \(desk.spokenName)    \(840 - indexPath.row * 200)"
+        cell.imageView?.contentMode = .scaleAspectFill
+        cell.imageView?.clipsToBounds = true
+        cell.imageView?.layer.cornerRadius = 8
         cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
         cell.selectionStyle = .none
         return cell

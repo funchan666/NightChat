@@ -251,6 +251,7 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         hostChip.addTarget(self, action: #selector(openHost), for: .touchUpInside)
         hostChip.translatesAutoresizingMaskIntoConstraints = false
         let hostPic = UIImageView(image: NightSocialMediaAssets.portrait(for: booth.hostDeskKey, size: CGSize(width: 80, height: 80)))
+        hostPic.contentMode = .scaleAspectFill
         hostPic.layer.cornerRadius = 16
         hostPic.clipsToBounds = true
         hostPic.translatesAutoresizingMaskIntoConstraints = false
@@ -758,6 +759,9 @@ final class NightSocialBoothCrowdSheet: UIViewController, UITableViewDataSource,
         cell.textLabel?.textColor = .white
         cell.textLabel?.numberOfLines = 2
         cell.textLabel?.text = "\(desk.spokenName)  \(desk.cityLabel)\n\(desk.handleTag)  \(desk.vibeLine)"
+        cell.imageView?.contentMode = .scaleAspectFill
+        cell.imageView?.clipsToBounds = true
+        cell.imageView?.layer.cornerRadius = 8
         cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
         cell.selectionStyle = .none
         return cell
@@ -846,6 +850,7 @@ final class NightSocialHostCardSheet: UIViewController {
         guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey),
               let desk = NightSocialLoungeCatalog.creator(deskKey: booth.hostDeskKey) else { return }
         let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 140, height: 140)))
+        pic.contentMode = .scaleAspectFill
         pic.layer.cornerRadius = 32
         pic.clipsToBounds = true
         pic.isUserInteractionEnabled = true

@@ -224,6 +224,7 @@ final class NightSocialMirrorLevelBoard: UIViewController {
         wash.translatesAutoresizingMaskIntoConstraints = false
         let alias = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "Night guest"
         let pic = UIImageView(image: NightSocialSessionDrawer.shared.loadPortrait() ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 120, height: 120)))
+        pic.contentMode = .scaleAspectFill
         pic.layer.cornerRadius = 28
         pic.clipsToBounds = true
         pic.translatesAutoresizingMaskIntoConstraints = false

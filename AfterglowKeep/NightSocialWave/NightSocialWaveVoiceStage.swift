@@ -35,6 +35,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         hostChip.addTarget(self, action: #selector(openHost), for: .touchUpInside)
         hostChip.translatesAutoresizingMaskIntoConstraints = false
         let hostPic = UIImageView(image: NightSocialMediaAssets.portrait(for: chamber.hostDeskKey, size: CGSize(width: 72, height: 72)))
+        hostPic.contentMode = .scaleAspectFill
         hostPic.layer.cornerRadius = 14
         hostPic.clipsToBounds = true
         hostPic.translatesAutoresizingMaskIntoConstraints = false
