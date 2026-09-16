@@ -47,8 +47,19 @@ final class NightSocialDeskMirrorController: UIViewController {
         portrait.isUserInteractionEnabled = true
         portrait.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openEdit)))
         portrait.translatesAutoresizingMaskIntoConstraints = false
-        let lens = UIImageView(image: NightSocialImageCabinet.named("PortraitLensBadge", fallback: "Frame_1"))
-        lens.contentMode = .scaleAspectFit
+        let lens = UIButton(type: .custom)
+        lens.backgroundColor = .white
+        lens.layer.cornerRadius = 16
+        lens.layer.shadowColor = UIColor.black.cgColor
+        lens.layer.shadowOpacity = 0.2
+        lens.layer.shadowRadius = 6
+        lens.layer.shadowOffset = CGSize(width: 0, height: 2)
+        lens.setImage(
+            UIImage(systemName: "camera.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)),
+            for: .normal
+        )
+        lens.tintColor = AfterHoursPalette.loungePink
+        lens.addTarget(self, action: #selector(openEdit), for: .touchUpInside)
         lens.translatesAutoresizingMaskIntoConstraints = false
 
         namePlate.font = AfterHoursType.foyerHeadline(20)
@@ -173,10 +184,10 @@ final class NightSocialDeskMirrorController: UIViewController {
             portrait.centerYAnchor.constraint(equalTo: cover.bottomAnchor),
             portrait.widthAnchor.constraint(equalToConstant: 76),
             portrait.heightAnchor.constraint(equalToConstant: 76),
-            lens.trailingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 2),
-            lens.bottomAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 2),
-            lens.widthAnchor.constraint(equalToConstant: 24),
-            lens.heightAnchor.constraint(equalToConstant: 24),
+            lens.centerXAnchor.constraint(equalTo: portrait.trailingAnchor, constant: -4),
+            lens.centerYAnchor.constraint(equalTo: portrait.bottomAnchor, constant: -4),
+            lens.widthAnchor.constraint(equalToConstant: 32),
+            lens.heightAnchor.constraint(equalToConstant: 32),
             namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 12),
             namePlate.topAnchor.constraint(equalTo: cover.bottomAnchor, constant: 6),
             level.leadingAnchor.constraint(equalTo: namePlate.trailingAnchor, constant: 8),
@@ -326,7 +337,7 @@ final class NightSocialDeskMirrorController: UIViewController {
         card.layer.cornerRadius = 20
         card.translatesAutoresizingMaskIntoConstraints = false
         let art = UIImageView(image: image)
-        art.contentMode = .scaleAspectFill
+        art.contentMode = .scaleAspectFit
         art.clipsToBounds = true
         art.isUserInteractionEnabled = false
         art.translatesAutoresizingMaskIntoConstraints = false
