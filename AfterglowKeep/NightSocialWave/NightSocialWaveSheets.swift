@@ -292,7 +292,11 @@ final class NightSocialWaveCreateSheet: UIViewController {
         self.nav = nav
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .pageSheet
-        sheetPresentationController?.detents = [.medium()]
+        sheetPresentationController?.detents = [
+            .custom(identifier: .init("create")) { _ in 216 }
+        ]
+        sheetPresentationController?.prefersGrabberVisible = true
+        sheetPresentationController?.preferredCornerRadius = 24
     }
     required init?(coder: NSCoder) { nil }
     override func viewDidLoad() {
@@ -300,34 +304,45 @@ final class NightSocialWaveCreateSheet: UIViewController {
         view.backgroundColor = AfterHoursPalette.loungeCard
         let title = UILabel()
         title.text = "Create"
-        title.font = AfterHoursType.foyerHeadline(20)
+        title.font = AfterHoursType.foyerHeadline(22)
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
-        let live = UIButton(type: .custom)
-        live.setImage(NightSocialImageCabinet.named("WaveGoLivePill", fallback: "Group_909"), for: .normal)
-        live.imageView?.contentMode = .scaleAspectFit
-        live.addTarget(self, action: #selector(goLive), for: .touchUpInside)
-        let post = UIButton(type: .custom)
-        post.setImage(NightSocialImageCabinet.named("WavePostPill", fallback: "Group_910"), for: .normal)
-        post.imageView?.contentMode = .scaleAspectFit
-        post.addTarget(self, action: #selector(postVideo), for: .touchUpInside)
-        live.translatesAutoresizingMaskIntoConstraints = false
-        post.translatesAutoresizingMaskIntoConstraints = false
+        let live = makeCreateCard(
+            image: NightSocialImageCabinet.named("WaveGoLivePill", fallback: "Group_909"),
+            action: #selector(goLive)
+        )
+        let post = makeCreateCard(
+            image: NightSocialImageCabinet.named("WavePostPill", fallback: "Group_910"),
+            action: #selector(postVideo)
+        )
         view.addSubview(title)
         view.addSubview(live)
         view.addSubview(post)
         NSLayoutConstraint.activate([
-            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             title.topAnchor.constraint(equalTo: view.topAnchor, constant: 18),
-            live.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
-            live.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 18),
-            live.heightAnchor.constraint(equalToConstant: 56),
-            live.trailingAnchor.constraint(equalTo: view.centerXAnchor, constant: -8),
-            post.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 8),
-            post.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18),
+            live.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            live.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 16),
+            live.heightAnchor.constraint(equalToConstant: 88),
+            live.trailingAnchor.constraint(equalTo: view.centerXAnchor, constant: -6),
+            post.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 6),
+            post.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             post.centerYAnchor.constraint(equalTo: live.centerYAnchor),
-            post.heightAnchor.constraint(equalTo: live.heightAnchor),
+            post.heightAnchor.constraint(equalToConstant: 88),
         ])
+    }
+
+    private func makeCreateCard(image: UIImage?, action: Selector) -> UIButton {
+        let card = UIButton(type: .custom)
+        card.setImage(image, for: .normal)
+        card.imageView?.contentMode = .scaleAspectFill
+        card.imageView?.clipsToBounds = true
+        card.clipsToBounds = true
+        card.layer.cornerRadius = 22
+        card.adjustsImageWhenHighlighted = false
+        card.addTarget(self, action: action, for: .touchUpInside)
+        card.translatesAutoresizingMaskIntoConstraints = false
+        return card
     }
     @objc private func goLive() {
         let nav = self.nav

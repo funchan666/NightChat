@@ -39,7 +39,7 @@ enum AfterHoursType {
     }
 
     static func foyerHeadline(_ size: CGFloat) -> UIFont {
-        syne(size, weight: 600, fallback: .semibold)
+        face("Outfit-SemiBold", size: size, fallback: .bold)
     }
 
     static func foyerPill(_ size: CGFloat) -> UIFont {
@@ -65,18 +65,6 @@ enum AfterHoursType {
         return UIFont(name: postscript, size: size) ?? UIFont.systemFont(ofSize: size, weight: fallback)
     }
 
-    private static func syne(_ size: CGFloat, weight: CGFloat, fallback: UIFont.Weight) -> UIFont {
-        registerLampFaces()
-        guard let base = UIFont(name: "Syne-Regular", size: size) ?? UIFont(name: "Syne", size: size) else {
-            return UIFont.systemFont(ofSize: size, weight: fallback)
-        }
-        let descriptor = base.fontDescriptor.addingAttributes([
-            UIFontDescriptor.AttributeName(rawValue: kCTFontVariationAttribute as String): [
-                2003265652: weight,
-            ],
-        ])
-        return UIFont(descriptor: descriptor, size: size)
-    }
 }
 
 enum NightSocialImageCabinet {

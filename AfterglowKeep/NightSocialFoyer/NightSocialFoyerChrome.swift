@@ -105,6 +105,7 @@ class NightSocialWashController: UIViewController {
         plate.textColor = AfterHoursPalette.titleSnow
         plate.font = AfterHoursType.foyerHeadline(34)
         plate.textAlignment = .center
+        plate.clipsToBounds = false
         plate.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(plate)
         return plate

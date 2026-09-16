@@ -35,6 +35,7 @@ final class NightDeskReturnBoardController: NightSocialWashController, UITextFie
         headline.textColor = AfterHoursPalette.titleSnow
         headline.font = AfterHoursType.foyerHeadline(34)
         headline.textAlignment = .center
+        headline.clipsToBounds = false
         headline.translatesAutoresizingMaskIntoConstraints = false
 
         let kicker = UILabel()

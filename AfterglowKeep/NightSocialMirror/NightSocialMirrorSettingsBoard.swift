@@ -39,12 +39,14 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
         head.text = "Settings"
         head.font = AfterHoursType.foyerHeadline(22)
         head.textColor = .white
-        head.translatesAutoresizingMaskIntoConstraints = false
         let kicker = UILabel()
         kicker.text = "House, desk, and sitting"
         kicker.font = AfterHoursType.foyerCaption(12)
         kicker.textColor = UIColor.white.withAlphaComponent(0.62)
-        kicker.translatesAutoresizingMaskIntoConstraints = false
+        let titleBlock = UIStackView(arrangedSubviews: [head, kicker])
+        titleBlock.axis = .vertical
+        titleBlock.spacing = 1
+        titleBlock.translatesAutoresizingMaskIntoConstraints = false
 
         let community = NightSocialSettingsLane(
             kind: .community,
@@ -104,8 +106,7 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
         view.addSubview(scroller)
         scroller.addSubview(spine)
         view.addSubview(back)
-        view.addSubview(head)
-        view.addSubview(kicker)
+        view.addSubview(titleBlock)
         NSLayoutConstraint.activate([
             atmosphere.topAnchor.constraint(equalTo: view.topAnchor),
             atmosphere.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -113,11 +114,10 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
             atmosphere.heightAnchor.constraint(equalToConstant: 280),
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
-            head.leadingAnchor.constraint(equalTo: back.trailingAnchor, constant: 8),
-            head.topAnchor.constraint(equalTo: back.topAnchor, constant: -2),
-            kicker.leadingAnchor.constraint(equalTo: head.leadingAnchor),
-            kicker.topAnchor.constraint(equalTo: head.bottomAnchor, constant: 1),
-            scroller.topAnchor.constraint(equalTo: kicker.bottomAnchor, constant: 16),
+            titleBlock.leadingAnchor.constraint(equalTo: back.trailingAnchor, constant: 8),
+            titleBlock.centerYAnchor.constraint(equalTo: back.centerYAnchor),
+            titleBlock.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            scroller.topAnchor.constraint(equalTo: titleBlock.bottomAnchor, constant: 16),
             scroller.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scroller.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scroller.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -189,8 +189,8 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
                 ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 140, height: 140))
         )
         let blocked = NightSocialSessionDrawer.shared.blockedDeskKeys().count
-        blacklistLane.setValue(blocked == 0 ? "Empty" : "\(blocked)")
-        languageLane.setValue(NightSocialSessionDrawer.shared.spokenTongue)
+        blacklistLane.setValue(blocked == 0 ? "Empty" : "\(blocked)", emphasized: blocked > 0)
+        languageLane.setValue(NightSocialSessionDrawer.shared.spokenTongue, emphasized: true)
     }
 
     private func cluster(spoken: String, lanes: [NightSocialSettingsLane]) -> UIView {
@@ -316,11 +316,11 @@ final class NightSocialSettingsAtmosphere: UIView {
             cloth.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
         fade.colors = [
-            AfterHoursPalette.loungeInk.withAlphaComponent(0.15).cgColor,
-            AfterHoursPalette.loungeInk.withAlphaComponent(0.55).cgColor,
+            AfterHoursPalette.loungeInk.withAlphaComponent(0.42).cgColor,
+            AfterHoursPalette.loungeInk.withAlphaComponent(0.82).cgColor,
             AfterHoursPalette.loungeInk.cgColor,
         ]
-        fade.locations = [0, 0.52, 1]
+        fade.locations = [0, 0.58, 1]
         fade.startPoint = CGPoint(x: 0.5, y: 0)
         fade.endPoint = CGPoint(x: 0.5, y: 1)
         layer.addSublayer(fade)
@@ -370,14 +370,16 @@ final class NightSocialSettingsDeskCard: UIView {
         handlePlate.textColor = UIColor.white.withAlphaComponent(0.7)
         handlePlate.translatesAutoresizingMaskIntoConstraints = false
 
-        chip.text = "  Night desk  "
+        chip.text = "Night desk"
         chip.font = AfterHoursType.foyerCaption(10)
         chip.textColor = .white
-        chip.backgroundColor = AfterHoursPalette.loungePink
-        chip.layer.cornerRadius = 9
-        chip.clipsToBounds = true
-        chip.textAlignment = .center
         chip.translatesAutoresizingMaskIntoConstraints = false
+        let chipCloth = UIView()
+        chipCloth.backgroundColor = AfterHoursPalette.loungePink
+        chipCloth.layer.cornerRadius = 9
+        chipCloth.clipsToBounds = true
+        chipCloth.translatesAutoresizingMaskIntoConstraints = false
+        chipCloth.addSubview(chip)
 
         let sparkle = UIImageView(image: NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle"))
         sparkle.contentMode = .scaleAspectFit
@@ -386,7 +388,7 @@ final class NightSocialSettingsDeskCard: UIView {
         addSubview(portrait)
         addSubview(namePlate)
         addSubview(handlePlate)
-        addSubview(chip)
+        addSubview(chipCloth)
         addSubview(sparkle)
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: 96),
@@ -399,9 +401,14 @@ final class NightSocialSettingsDeskCard: UIView {
             namePlate.trailingAnchor.constraint(lessThanOrEqualTo: sparkle.leadingAnchor, constant: -8),
             handlePlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
             handlePlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 2),
-            chip.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
-            chip.topAnchor.constraint(equalTo: handlePlate.bottomAnchor, constant: 6),
-            chip.heightAnchor.constraint(equalToConstant: 18),
+            handlePlate.trailingAnchor.constraint(lessThanOrEqualTo: sparkle.leadingAnchor, constant: -8),
+            chip.leadingAnchor.constraint(equalTo: chipCloth.leadingAnchor, constant: 8),
+            chip.trailingAnchor.constraint(equalTo: chipCloth.trailingAnchor, constant: -8),
+            chip.topAnchor.constraint(equalTo: chipCloth.topAnchor, constant: 2),
+            chip.bottomAnchor.constraint(equalTo: chipCloth.bottomAnchor, constant: -2),
+            chipCloth.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
+            chipCloth.topAnchor.constraint(equalTo: handlePlate.bottomAnchor, constant: 6),
+            chipCloth.heightAnchor.constraint(equalToConstant: 18),
             sparkle.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             sparkle.topAnchor.constraint(equalTo: topAnchor, constant: 14),
             sparkle.widthAnchor.constraint(equalToConstant: 22),
@@ -495,10 +502,12 @@ final class NightSocialSettingsLane: UIControl {
         let titlePlate = UILabel()
         titlePlate.text = title
         titlePlate.font = AfterHoursType.foyerBody(15, weight: .semibold)
+        titlePlate.lineBreakMode = .byTruncatingTail
         titlePlate.translatesAutoresizingMaskIntoConstraints = false
         let hintPlate = UILabel()
         hintPlate.text = hint
         hintPlate.font = AfterHoursType.foyerCaption(11)
+        hintPlate.lineBreakMode = .byTruncatingTail
         hintPlate.translatesAutoresizingMaskIntoConstraints = false
         switch tone {
         case .house:
@@ -570,9 +579,10 @@ final class NightSocialSettingsLane: UIControl {
         }
     }
 
-    func setValue(_ text: String?) {
+    func setValue(_ text: String?, emphasized: Bool = false) {
         valuePlate.text = text
         valuePlate.isHidden = (text ?? "").isEmpty
+        valuePlate.textColor = emphasized ? AfterHoursPalette.loungePink : UIColor.white.withAlphaComponent(0.55)
         if let text, !text.isEmpty {
             accessibilityValue = text
         }
@@ -642,7 +652,7 @@ final class NightSocialLeaveConfirm: UIViewController {
 }
 
 final class NightSocialMirrorLanguageBoard: UIViewController {
-    private let tongues = ["English", "Español", "Deutsch", "Bahasa Melayu", "Bahasa Indonesia"]
+    private let tongues = NightSocialLampAtlas.tongues
     private var lanes: [NightSocialLanguageLane] = []
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
@@ -660,12 +670,14 @@ final class NightSocialMirrorLanguageBoard: UIViewController {
         head.text = "Language"
         head.font = AfterHoursType.foyerHeadline(22)
         head.textColor = .white
-        head.translatesAutoresizingMaskIntoConstraints = false
         let kicker = UILabel()
         kicker.text = "Choose the tongue for this desk"
         kicker.font = AfterHoursType.foyerCaption(12)
         kicker.textColor = UIColor.white.withAlphaComponent(0.62)
-        kicker.translatesAutoresizingMaskIntoConstraints = false
+        let titleBlock = UIStackView(arrangedSubviews: [head, kicker])
+        titleBlock.axis = .vertical
+        titleBlock.spacing = 1
+        titleBlock.translatesAutoresizingMaskIntoConstraints = false
 
         let card = UIView()
         card.backgroundColor = AfterHoursPalette.loungeCard
@@ -710,12 +722,15 @@ final class NightSocialMirrorLanguageBoard: UIViewController {
         note.textAlignment = .center
         note.translatesAutoresizingMaskIntoConstraints = false
 
+        let scroller = UIScrollView()
+        scroller.alwaysBounceVertical = true
+        scroller.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(atmosphere)
         view.addSubview(back)
-        view.addSubview(head)
-        view.addSubview(kicker)
-        view.addSubview(card)
-        view.addSubview(note)
+        view.addSubview(titleBlock)
+        view.addSubview(scroller)
+        scroller.addSubview(card)
+        scroller.addSubview(note)
         NSLayoutConstraint.activate([
             atmosphere.topAnchor.constraint(equalTo: view.topAnchor),
             atmosphere.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -723,13 +738,16 @@ final class NightSocialMirrorLanguageBoard: UIViewController {
             atmosphere.heightAnchor.constraint(equalToConstant: 280),
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
-            head.leadingAnchor.constraint(equalTo: back.trailingAnchor, constant: 8),
-            head.topAnchor.constraint(equalTo: back.topAnchor, constant: -2),
-            kicker.leadingAnchor.constraint(equalTo: head.leadingAnchor),
-            kicker.topAnchor.constraint(equalTo: head.bottomAnchor, constant: 1),
+            titleBlock.leadingAnchor.constraint(equalTo: back.trailingAnchor, constant: 8),
+            titleBlock.centerYAnchor.constraint(equalTo: back.centerYAnchor),
+            titleBlock.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -16),
+            scroller.topAnchor.constraint(equalTo: titleBlock.bottomAnchor, constant: 16),
+            scroller.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroller.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroller.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             card.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             card.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            card.topAnchor.constraint(equalTo: kicker.bottomAnchor, constant: 22),
+            card.topAnchor.constraint(equalTo: scroller.contentLayoutGuide.topAnchor, constant: 6),
             stack.topAnchor.constraint(equalTo: card.topAnchor, constant: 6),
             stack.leadingAnchor.constraint(equalTo: card.leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: card.trailingAnchor),
@@ -737,6 +755,7 @@ final class NightSocialMirrorLanguageBoard: UIViewController {
             note.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 28),
             note.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -28),
             note.topAnchor.constraint(equalTo: card.bottomAnchor, constant: 16),
+            note.bottomAnchor.constraint(equalTo: scroller.contentLayoutGuide.bottomAnchor, constant: -28),
         ])
     }
 

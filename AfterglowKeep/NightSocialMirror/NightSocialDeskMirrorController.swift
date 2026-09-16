@@ -7,9 +7,11 @@ final class NightSocialDeskMirrorController: UIViewController {
     private let namePlate = UILabel()
     private let handlePlate = UILabel()
     private let vibePlate = UILabel()
-    private let followPlate = UILabel()
-    private let fanPlate = UILabel()
-    private let friendPlate = UILabel()
+    private let landPlate = UILabel()
+    private let pursePlate = UILabel()
+    private let followCount = UILabel()
+    private let fanCount = UILabel()
+    private let friendCount = UILabel()
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
@@ -32,15 +34,12 @@ final class NightSocialDeskMirrorController: UIViewController {
         let word = UIImageView(image: NightSocialImageCabinet.named("MirrorProfileMark", fallback: "Sing_Clip"))
         word.contentMode = .scaleAspectFit
         word.translatesAutoresizingMaskIntoConstraints = false
-        let globe = NightSocialLoungeChrome.iconControl(catalog: "MirrorGlobeMark", fallback: "Frame@2x(64)", edge: 32)
+        let globe = magentaChip(symbol: "globe")
         globe.addTarget(self, action: #selector(openLanguage), for: .touchUpInside)
-        let gear = UIButton(type: .system)
-        gear.setImage(UIImage(systemName: "gearshape.fill"), for: .normal)
-        gear.tintColor = .white
+        let gear = magentaChip(symbol: "gearshape.fill")
         gear.addTarget(self, action: #selector(openSettings), for: .touchUpInside)
-        gear.translatesAutoresizingMaskIntoConstraints = false
 
-        portrait.layer.cornerRadius = 36
+        portrait.layer.cornerRadius = 38
         portrait.clipsToBounds = true
         portrait.layer.borderWidth = 3
         portrait.layer.borderColor = UIColor.white.cgColor
@@ -51,42 +50,49 @@ final class NightSocialDeskMirrorController: UIViewController {
         lens.contentMode = .scaleAspectFit
         lens.translatesAutoresizingMaskIntoConstraints = false
 
-        namePlate.font = AfterHoursType.foyerHeadline(22)
+        namePlate.font = AfterHoursType.foyerHeadline(20)
         namePlate.textColor = .white
+        namePlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         namePlate.translatesAutoresizingMaskIntoConstraints = false
+        let level = NightSocialLoungeChrome.mintLevelPlate(8)
         handlePlate.font = AfterHoursType.foyerCaption(12)
         handlePlate.textColor = UIColor.white.withAlphaComponent(0.7)
         handlePlate.translatesAutoresizingMaskIntoConstraints = false
+
+        pursePlate.font = AfterHoursType.foyerCaption(11)
+        pursePlate.textColor = .white
+        pursePlate.translatesAutoresizingMaskIntoConstraints = false
+        let diamond = UIImageView(image: NightSocialImageCabinet.named("WaveDiamondMark", fallback: "diamond"))
+        diamond.contentMode = .scaleAspectFit
+        diamond.translatesAutoresizingMaskIntoConstraints = false
+        landPlate.font = AfterHoursType.foyerCaption(11)
+        landPlate.textColor = UIColor.white.withAlphaComponent(0.7)
+        landPlate.translatesAutoresizingMaskIntoConstraints = false
+        let pin = UIImageView(image: UIImage(systemName: "mappin.and.ellipse", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold)))
+        pin.tintColor = AfterHoursPalette.loungePink
+        pin.translatesAutoresizingMaskIntoConstraints = false
+
+        let vibeMark = UIImageView(image: NightSocialImageCabinet.named("MirrorFeedbackMark", fallback: "Frame@2x(66)"))
+        vibeMark.contentMode = .scaleAspectFit
+        vibeMark.translatesAutoresizingMaskIntoConstraints = false
         vibePlate.font = AfterHoursType.foyerBody(13)
         vibePlate.textColor = UIColor.white.withAlphaComponent(0.9)
-        vibePlate.numberOfLines = 0
+        vibePlate.numberOfLines = 2
         vibePlate.translatesAutoresizingMaskIntoConstraints = false
-        let tags = UILabel()
-        tags.text = "#ChillSocial   #LiveTogether"
-        tags.font = AfterHoursType.foyerCaption(12)
-        tags.textColor = AfterHoursPalette.loungePink
-        tags.translatesAutoresizingMaskIntoConstraints = false
+
+        let tagRow = UIStackView(arrangedSubviews: [tagChip("#ChillSocial"), tagChip("#LiveTogether")])
+        tagRow.axis = .horizontal
+        tagRow.spacing = 8
+        tagRow.translatesAutoresizingMaskIntoConstraints = false
 
         let stats = UIButton(type: .custom)
         stats.backgroundColor = AfterHoursPalette.loungePink
-        stats.layer.cornerRadius = 16
+        stats.layer.cornerRadius = 20
         stats.addTarget(self, action: #selector(openFollowList), for: .touchUpInside)
         stats.translatesAutoresizingMaskIntoConstraints = false
-        followPlate.font = AfterHoursType.foyerPill(16)
-        followPlate.textColor = .white
-        followPlate.textAlignment = .center
-        followPlate.numberOfLines = 2
-        fanPlate.font = AfterHoursType.foyerPill(16)
-        fanPlate.textColor = .white
-        fanPlate.textAlignment = .center
-        fanPlate.numberOfLines = 2
-        friendPlate.font = AfterHoursType.foyerPill(16)
-        friendPlate.textColor = .white
-        friendPlate.textAlignment = .center
-        friendPlate.numberOfLines = 2
-        followPlate.translatesAutoresizingMaskIntoConstraints = false
-        fanPlate.translatesAutoresizingMaskIntoConstraints = false
-        friendPlate.translatesAutoresizingMaskIntoConstraints = false
+        let followCol = statColumn(count: followCount, caption: "Following")
+        let fanCol = statColumn(count: fanCount, caption: "Followers")
+        let friendCol = statColumn(count: friendCount, caption: "Friends")
         let fanTap = UIButton(type: .custom)
         fanTap.addTarget(self, action: #selector(openFans), for: .touchUpInside)
         fanTap.translatesAutoresizingMaskIntoConstraints = false
@@ -94,27 +100,24 @@ final class NightSocialDeskMirrorController: UIViewController {
         friendTap.addTarget(self, action: #selector(openFriends), for: .touchUpInside)
         friendTap.translatesAutoresizingMaskIntoConstraints = false
 
-        let wallet = UIButton(type: .custom)
-        wallet.setImage(NightSocialImageCabinet.named("MirrorWalletCard", fallback: "Group_915"), for: .normal)
-        wallet.imageView?.contentMode = .scaleAspectFit
-        wallet.addTarget(self, action: #selector(openWallet), for: .touchUpInside)
-        let check = UIButton(type: .custom)
-        check.setImage(NightSocialImageCabinet.named("MirrorCheckCard", fallback: "Group_917"), for: .normal)
-        check.imageView?.contentMode = .scaleAspectFit
-        check.addTarget(self, action: #selector(openCheckIn), for: .touchUpInside)
-        let level = UIButton(type: .custom)
-        level.setImage(NightSocialImageCabinet.named("MirrorLevelCard", fallback: "Group_919"), for: .normal)
-        level.imageView?.contentMode = .scaleAspectFit
-        level.addTarget(self, action: #selector(openLevel), for: .touchUpInside)
-        wallet.translatesAutoresizingMaskIntoConstraints = false
-        check.translatesAutoresizingMaskIntoConstraints = false
-        level.translatesAutoresizingMaskIntoConstraints = false
+        let wallet = perkCard(
+            image: NightSocialImageCabinet.named("MirrorWalletCard", fallback: "Group_915"),
+            action: #selector(openWallet)
+        )
+        let check = perkCard(
+            image: NightSocialImageCabinet.named("MirrorCheckCard", fallback: "Group_917"),
+            action: #selector(openCheckIn)
+        )
+        let levelCard = perkCard(
+            image: NightSocialImageCabinet.named("MirrorLevelCard", fallback: "Group_919"),
+            action: #selector(openLevel)
+        )
 
-        let blacklist = menuRow("MirrorPersonMark", "Frame@2x(37)", "Blacklist", #selector(openBlacklist))
-        let support = menuRow("MirrorSupportMark", "huaban-6136992362_1", "Customer Support", #selector(openSupport))
-        let invite = menuRow("MirrorInviteMark", "Frame@2x(13)", "Invite Code", #selector(openInvite))
-        let feedback = menuRow("MirrorFeedbackMark", "Frame@2x(66)", "Feedback", #selector(openFeedback))
-        let bag = menuRow("MirrorBagMark", "Frame@2x(67)", "My backpack", #selector(openBag))
+        let blacklist = menuRow("person.fill", "Blacklist", #selector(openBlacklist))
+        let support = menuRow("headphones", "Customer Support", #selector(openSupport))
+        let invite = menuRow("envelope.fill", "Invite Code", #selector(openInvite))
+        let feedback = menuRow("info.circle.fill", "Feedback", #selector(openFeedback))
+        let bag = menuRow("bag.fill", "My backpack", #selector(openBag))
         let menus = UIStackView(arrangedSubviews: [blacklist, support, invite, feedback, bag])
         menus.axis = .vertical
         menus.spacing = 10
@@ -128,18 +131,24 @@ final class NightSocialDeskMirrorController: UIViewController {
         scroller.addSubview(portrait)
         scroller.addSubview(lens)
         scroller.addSubview(namePlate)
+        scroller.addSubview(level)
         scroller.addSubview(handlePlate)
+        scroller.addSubview(diamond)
+        scroller.addSubview(pursePlate)
+        scroller.addSubview(pin)
+        scroller.addSubview(landPlate)
+        scroller.addSubview(vibeMark)
         scroller.addSubview(vibePlate)
-        scroller.addSubview(tags)
+        scroller.addSubview(tagRow)
         scroller.addSubview(stats)
-        stats.addSubview(followPlate)
-        stats.addSubview(fanPlate)
-        stats.addSubview(friendPlate)
+        stats.addSubview(followCol)
+        stats.addSubview(fanCol)
+        stats.addSubview(friendCol)
         stats.addSubview(fanTap)
         stats.addSubview(friendTap)
         scroller.addSubview(wallet)
         scroller.addSubview(check)
-        scroller.addSubview(level)
+        scroller.addSubview(levelCard)
         scroller.addSubview(menus)
 
         NSLayoutConstraint.activate([
@@ -150,70 +159,90 @@ final class NightSocialDeskMirrorController: UIViewController {
             cover.topAnchor.constraint(equalTo: scroller.contentLayoutGuide.topAnchor),
             cover.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             cover.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            cover.heightAnchor.constraint(equalToConstant: 260),
+            cover.heightAnchor.constraint(equalToConstant: 210),
             word.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             word.topAnchor.constraint(equalTo: scroller.contentLayoutGuide.topAnchor, constant: 54),
             word.heightAnchor.constraint(equalToConstant: 28),
             word.widthAnchor.constraint(equalToConstant: 90),
             gear.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             gear.centerYAnchor.constraint(equalTo: word.centerYAnchor),
-            gear.widthAnchor.constraint(equalToConstant: 28),
-            gear.heightAnchor.constraint(equalToConstant: 28),
-            globe.trailingAnchor.constraint(equalTo: gear.leadingAnchor, constant: -10),
+            globe.trailingAnchor.constraint(equalTo: gear.leadingAnchor, constant: -8),
             globe.centerYAnchor.constraint(equalTo: word.centerYAnchor),
             portrait.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             portrait.centerYAnchor.constraint(equalTo: cover.bottomAnchor),
-            portrait.widthAnchor.constraint(equalToConstant: 72),
-            portrait.heightAnchor.constraint(equalToConstant: 72),
-            lens.trailingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 4),
-            lens.bottomAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 4),
-            lens.widthAnchor.constraint(equalToConstant: 22),
-            lens.heightAnchor.constraint(equalToConstant: 22),
+            portrait.widthAnchor.constraint(equalToConstant: 76),
+            portrait.heightAnchor.constraint(equalToConstant: 76),
+            lens.trailingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 2),
+            lens.bottomAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 2),
+            lens.widthAnchor.constraint(equalToConstant: 24),
+            lens.heightAnchor.constraint(equalToConstant: 24),
             namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 12),
-            namePlate.topAnchor.constraint(equalTo: cover.bottomAnchor, constant: 8),
+            namePlate.topAnchor.constraint(equalTo: cover.bottomAnchor, constant: 6),
+            level.leadingAnchor.constraint(equalTo: namePlate.trailingAnchor, constant: 8),
+            level.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
             handlePlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
             handlePlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 4),
-            vibePlate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            landPlate.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            landPlate.centerYAnchor.constraint(equalTo: handlePlate.centerYAnchor),
+            pin.trailingAnchor.constraint(equalTo: landPlate.leadingAnchor, constant: -4),
+            pin.centerYAnchor.constraint(equalTo: landPlate.centerYAnchor),
+            pin.widthAnchor.constraint(equalToConstant: 12),
+            pin.heightAnchor.constraint(equalToConstant: 12),
+            pursePlate.trailingAnchor.constraint(equalTo: landPlate.trailingAnchor),
+            pursePlate.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
+            diamond.trailingAnchor.constraint(equalTo: pursePlate.leadingAnchor, constant: -4),
+            diamond.centerYAnchor.constraint(equalTo: pursePlate.centerYAnchor),
+            diamond.widthAnchor.constraint(equalToConstant: 14),
+            diamond.heightAnchor.constraint(equalToConstant: 14),
+            level.trailingAnchor.constraint(lessThanOrEqualTo: diamond.leadingAnchor, constant: -8),
+            vibeMark.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            vibeMark.topAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 16),
+            vibeMark.widthAnchor.constraint(equalToConstant: 16),
+            vibeMark.heightAnchor.constraint(equalToConstant: 16),
+            vibePlate.leadingAnchor.constraint(equalTo: vibeMark.trailingAnchor, constant: 8),
             vibePlate.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            vibePlate.topAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 14),
-            tags.leadingAnchor.constraint(equalTo: vibePlate.leadingAnchor),
-            tags.topAnchor.constraint(equalTo: vibePlate.bottomAnchor, constant: 8),
+            vibePlate.topAnchor.constraint(equalTo: vibeMark.topAnchor, constant: -2),
+            tagRow.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            tagRow.topAnchor.constraint(equalTo: vibePlate.bottomAnchor, constant: 10),
             stats.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             stats.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            stats.topAnchor.constraint(equalTo: tags.bottomAnchor, constant: 14),
-            stats.heightAnchor.constraint(equalToConstant: 64),
-            followPlate.leadingAnchor.constraint(equalTo: stats.leadingAnchor),
-            followPlate.centerYAnchor.constraint(equalTo: stats.centerYAnchor),
-            followPlate.widthAnchor.constraint(equalTo: stats.widthAnchor, multiplier: 1 / 3),
-            fanPlate.centerXAnchor.constraint(equalTo: stats.centerXAnchor),
-            fanPlate.centerYAnchor.constraint(equalTo: stats.centerYAnchor),
-            fanPlate.widthAnchor.constraint(equalTo: followPlate.widthAnchor),
-            friendPlate.trailingAnchor.constraint(equalTo: stats.trailingAnchor),
-            friendPlate.centerYAnchor.constraint(equalTo: stats.centerYAnchor),
-            friendPlate.widthAnchor.constraint(equalTo: followPlate.widthAnchor),
-            fanTap.centerXAnchor.constraint(equalTo: fanPlate.centerXAnchor),
-            fanTap.centerYAnchor.constraint(equalTo: fanPlate.centerYAnchor),
-            fanTap.widthAnchor.constraint(equalTo: fanPlate.widthAnchor),
+            stats.topAnchor.constraint(equalTo: tagRow.bottomAnchor, constant: 14),
+            stats.heightAnchor.constraint(equalToConstant: 72),
+            followCol.leadingAnchor.constraint(equalTo: stats.leadingAnchor),
+            followCol.topAnchor.constraint(equalTo: stats.topAnchor),
+            followCol.bottomAnchor.constraint(equalTo: stats.bottomAnchor),
+            followCol.widthAnchor.constraint(equalTo: stats.widthAnchor, multiplier: 1 / 3),
+            fanCol.centerXAnchor.constraint(equalTo: stats.centerXAnchor),
+            fanCol.topAnchor.constraint(equalTo: stats.topAnchor),
+            fanCol.bottomAnchor.constraint(equalTo: stats.bottomAnchor),
+            fanCol.widthAnchor.constraint(equalTo: followCol.widthAnchor),
+            friendCol.trailingAnchor.constraint(equalTo: stats.trailingAnchor),
+            friendCol.topAnchor.constraint(equalTo: stats.topAnchor),
+            friendCol.bottomAnchor.constraint(equalTo: stats.bottomAnchor),
+            friendCol.widthAnchor.constraint(equalTo: followCol.widthAnchor),
+            fanTap.centerXAnchor.constraint(equalTo: fanCol.centerXAnchor),
+            fanTap.centerYAnchor.constraint(equalTo: fanCol.centerYAnchor),
+            fanTap.widthAnchor.constraint(equalTo: fanCol.widthAnchor),
             fanTap.heightAnchor.constraint(equalTo: stats.heightAnchor),
-            friendTap.centerXAnchor.constraint(equalTo: friendPlate.centerXAnchor),
-            friendTap.centerYAnchor.constraint(equalTo: friendPlate.centerYAnchor),
-            friendTap.widthAnchor.constraint(equalTo: friendPlate.widthAnchor),
+            friendTap.centerXAnchor.constraint(equalTo: friendCol.centerXAnchor),
+            friendTap.centerYAnchor.constraint(equalTo: friendCol.centerYAnchor),
+            friendTap.widthAnchor.constraint(equalTo: friendCol.widthAnchor),
             friendTap.heightAnchor.constraint(equalTo: stats.heightAnchor),
             wallet.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            wallet.topAnchor.constraint(equalTo: stats.bottomAnchor, constant: 14),
-            wallet.widthAnchor.constraint(equalToConstant: 168),
-            wallet.heightAnchor.constraint(equalToConstant: 92),
+            wallet.topAnchor.constraint(equalTo: stats.bottomAnchor, constant: 12),
+            wallet.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.44),
+            wallet.heightAnchor.constraint(equalTo: wallet.widthAnchor, multiplier: 360.0 / 374.0),
             check.leadingAnchor.constraint(equalTo: wallet.trailingAnchor, constant: 10),
-            check.topAnchor.constraint(equalTo: wallet.topAnchor),
             check.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            check.heightAnchor.constraint(equalToConstant: 42),
-            level.leadingAnchor.constraint(equalTo: check.leadingAnchor),
-            level.trailingAnchor.constraint(equalTo: check.trailingAnchor),
-            level.topAnchor.constraint(equalTo: check.bottomAnchor, constant: 8),
-            level.heightAnchor.constraint(equalToConstant: 42),
+            check.topAnchor.constraint(equalTo: wallet.topAnchor),
+            levelCard.leadingAnchor.constraint(equalTo: check.leadingAnchor),
+            levelCard.trailingAnchor.constraint(equalTo: check.trailingAnchor),
+            levelCard.bottomAnchor.constraint(equalTo: wallet.bottomAnchor),
+            levelCard.topAnchor.constraint(equalTo: check.bottomAnchor, constant: 8),
+            check.heightAnchor.constraint(equalTo: levelCard.heightAnchor),
             menus.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             menus.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            menus.topAnchor.constraint(equalTo: wallet.bottomAnchor, constant: 16),
+            menus.topAnchor.constraint(equalTo: wallet.bottomAnchor, constant: 14),
             menus.bottomAnchor.constraint(equalTo: scroller.contentLayoutGuide.bottomAnchor, constant: -16),
         ])
         NotificationCenter.default.addObserver(self, selector: #selector(paintDesk), name: .deskDrawerDidChange, object: nil)
@@ -228,34 +257,142 @@ final class NightSocialDeskMirrorController: UIViewController {
         paintDesk()
     }
 
-    private func menuRow(_ catalog: String, _ fallback: String, _ title: String, _ sel: Selector) -> UIButton {
+    private func magentaChip(symbol: String) -> UIButton {
+        let chip = UIButton(type: .custom)
+        chip.backgroundColor = AfterHoursPalette.loungePink
+        chip.layer.cornerRadius = 18
+        chip.setImage(
+            UIImage(systemName: symbol, withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)),
+            for: .normal
+        )
+        chip.tintColor = .white
+        chip.translatesAutoresizingMaskIntoConstraints = false
+        chip.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        chip.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        return chip
+    }
+
+    private func tagChip(_ spoken: String) -> UIView {
+        let wrap = UIView()
+        wrap.layer.cornerRadius = 11
+        wrap.layer.borderWidth = 1
+        wrap.layer.borderColor = AfterHoursPalette.loungePink.withAlphaComponent(0.75).cgColor
+        wrap.translatesAutoresizingMaskIntoConstraints = false
+        let plate = UILabel()
+        plate.text = spoken
+        plate.font = AfterHoursType.foyerCaption(11)
+        plate.textColor = AfterHoursPalette.loungePink
+        plate.translatesAutoresizingMaskIntoConstraints = false
+        wrap.addSubview(plate)
+        NSLayoutConstraint.activate([
+            wrap.heightAnchor.constraint(equalToConstant: 22),
+            plate.leadingAnchor.constraint(equalTo: wrap.leadingAnchor, constant: 10),
+            plate.trailingAnchor.constraint(equalTo: wrap.trailingAnchor, constant: -10),
+            plate.centerYAnchor.constraint(equalTo: wrap.centerYAnchor),
+        ])
+        return wrap
+    }
+
+    private func statColumn(count: UILabel, caption: String) -> UIView {
+        let wrap = UIView()
+        wrap.isUserInteractionEnabled = false
+        wrap.translatesAutoresizingMaskIntoConstraints = false
+        count.font = AfterHoursType.foyerPill(20)
+        count.textColor = .white
+        count.textAlignment = .center
+        count.translatesAutoresizingMaskIntoConstraints = false
+        let cap = UILabel()
+        cap.text = caption
+        cap.font = AfterHoursType.foyerCaption(11)
+        cap.textColor = UIColor.white.withAlphaComponent(0.88)
+        cap.textAlignment = .center
+        cap.translatesAutoresizingMaskIntoConstraints = false
+        wrap.addSubview(count)
+        wrap.addSubview(cap)
+        NSLayoutConstraint.activate([
+            count.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
+            count.centerYAnchor.constraint(equalTo: wrap.centerYAnchor, constant: -8),
+            cap.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
+            cap.topAnchor.constraint(equalTo: count.bottomAnchor, constant: 2),
+        ])
+        return wrap
+    }
+
+    private func perkCard(image: UIImage?, action: Selector) -> UIButton {
+        let card = UIButton(type: .custom)
+        card.adjustsImageWhenHighlighted = false
+        card.clipsToBounds = true
+        card.layer.cornerRadius = 20
+        card.translatesAutoresizingMaskIntoConstraints = false
+        let art = UIImageView(image: image)
+        art.contentMode = .scaleAspectFill
+        art.clipsToBounds = true
+        art.isUserInteractionEnabled = false
+        art.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(art)
+        NSLayoutConstraint.activate([
+            art.topAnchor.constraint(equalTo: card.topAnchor),
+            art.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            art.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            art.bottomAnchor.constraint(equalTo: card.bottomAnchor),
+        ])
+        card.addTarget(self, action: action, for: .touchUpInside)
+        return card
+    }
+
+    private func menuRow(_ symbol: String, _ title: String, _ sel: Selector) -> UIButton {
         let row = UIButton(type: .custom)
         row.backgroundColor = AfterHoursPalette.loungeCard
-        row.layer.cornerRadius = 16
-        row.heightAnchor.constraint(equalToConstant: 52).isActive = true
-        let icon = UIImageView(image: NightSocialImageCabinet.named(catalog, fallback: fallback))
-        icon.contentMode = .scaleAspectFit
-        icon.translatesAutoresizingMaskIntoConstraints = false
+        row.layer.cornerRadius = 22
+        row.heightAnchor.constraint(equalToConstant: 54).isActive = true
+        let disc = UIView()
+        disc.backgroundColor = AfterHoursPalette.loungePink
+        disc.layer.cornerRadius = 16
+        disc.isUserInteractionEnabled = false
+        disc.translatesAutoresizingMaskIntoConstraints = false
+        let glyph = UIImageView(
+            image: UIImage(systemName: symbol, withConfiguration: UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold))
+        )
+        glyph.tintColor = .white
+        glyph.contentMode = .scaleAspectFit
+        glyph.translatesAutoresizingMaskIntoConstraints = false
         let plate = UILabel()
         plate.text = title
         plate.font = AfterHoursType.foyerBody(15, weight: .semibold)
         plate.textColor = .white
         plate.translatesAutoresizingMaskIntoConstraints = false
-        let chev = UIImageView(image: UIImage(systemName: "chevron.right"))
-        chev.tintColor = UIColor.white.withAlphaComponent(0.45)
+        let chevDisc = UIView()
+        chevDisc.backgroundColor = UIColor.white.withAlphaComponent(0.10)
+        chevDisc.layer.cornerRadius = 12
+        chevDisc.isUserInteractionEnabled = false
+        chevDisc.translatesAutoresizingMaskIntoConstraints = false
+        let chev = UIImageView(
+            image: UIImage(systemName: "chevron.right", withConfiguration: UIImage.SymbolConfiguration(pointSize: 11, weight: .bold))
+        )
+        chev.tintColor = .white
         chev.translatesAutoresizingMaskIntoConstraints = false
-        row.addSubview(icon)
+        row.addSubview(disc)
+        disc.addSubview(glyph)
         row.addSubview(plate)
-        row.addSubview(chev)
+        row.addSubview(chevDisc)
+        chevDisc.addSubview(chev)
         NSLayoutConstraint.activate([
-            icon.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: 14),
-            icon.centerYAnchor.constraint(equalTo: row.centerYAnchor),
-            icon.widthAnchor.constraint(equalToConstant: 22),
-            icon.heightAnchor.constraint(equalToConstant: 22),
-            plate.leadingAnchor.constraint(equalTo: icon.trailingAnchor, constant: 10),
+            disc.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: 12),
+            disc.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+            disc.widthAnchor.constraint(equalToConstant: 32),
+            disc.heightAnchor.constraint(equalToConstant: 32),
+            glyph.centerXAnchor.constraint(equalTo: disc.centerXAnchor),
+            glyph.centerYAnchor.constraint(equalTo: disc.centerYAnchor),
+            glyph.widthAnchor.constraint(equalToConstant: 16),
+            glyph.heightAnchor.constraint(equalToConstant: 16),
+            plate.leadingAnchor.constraint(equalTo: disc.trailingAnchor, constant: 12),
             plate.centerYAnchor.constraint(equalTo: row.centerYAnchor),
-            chev.trailingAnchor.constraint(equalTo: row.trailingAnchor, constant: -14),
-            chev.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+            chevDisc.trailingAnchor.constraint(equalTo: row.trailingAnchor, constant: -12),
+            chevDisc.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+            chevDisc.widthAnchor.constraint(equalToConstant: 24),
+            chevDisc.heightAnchor.constraint(equalToConstant: 24),
+            chev.centerXAnchor.constraint(equalTo: chevDisc.centerXAnchor),
+            chev.centerYAnchor.constraint(equalTo: chevDisc.centerYAnchor),
         ])
         row.addTarget(self, action: sel, for: .touchUpInside)
         return row
@@ -265,13 +402,15 @@ final class NightSocialDeskMirrorController: UIViewController {
         let session = NightSocialSessionDrawer.shared.restoredSession()
         let alias = session?.nightAlias.isEmpty == false ? session!.nightAlias : "Night guest"
         namePlate.text = alias
-        handlePlate.text = "@\(String((session?.deskHolderId ?? "nightchat").prefix(10)))   Night desk"
+        handlePlate.text = "@\(String((session?.deskHolderId ?? "nightchat").prefix(10)))"
         vibePlate.text = session?.nightSignature.isEmpty == false
             ? session!.nightSignature
             : "Live bright, connect with wonderful people."
-        followPlate.text = "\(NightSocialSessionDrawer.shared.followedDeskKeys().count)\nFollowing"
-        fanPlate.text = "\(NightSocialSessionDrawer.shared.fanDeskKeys().count)\nFollowers"
-        friendPlate.text = "\(NightSocialSessionDrawer.shared.acceptedFriendKeys().count)\nFriends"
+        followCount.text = "\(NightSocialSessionDrawer.shared.followedDeskKeys().count)"
+        fanCount.text = "\(NightSocialSessionDrawer.shared.fanDeskKeys().count)"
+        friendCount.text = "\(NightSocialSessionDrawer.shared.acceptedFriendKeys().count)"
+        pursePlate.text = "\(NightSocialSessionDrawer.shared.diamondPurse)"
+        landPlate.text = NightSocialLampAtlas.land(code: NightSocialSessionDrawer.shared.homeCountryCode).spokenTitle
         portrait.image = NightSocialSessionDrawer.shared.loadPortrait()
             ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 160, height: 160))
         cover.image = NightSocialSessionDrawer.shared.loadCover()

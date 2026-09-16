@@ -265,18 +265,11 @@ final class NightSocialChimeComposeBoard: UIViewController, UITableViewDataSourc
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         if desks.isEmpty {
-            let empty = UILabel()
-            empty.text = "Follow someone first.\nNew messages start from desks you follow."
-            empty.numberOfLines = 0
-            empty.textAlignment = .center
-            empty.font = AfterHoursType.foyerBody(14)
-            empty.textColor = UIColor.white.withAlphaComponent(0.7)
-            empty.translatesAutoresizingMaskIntoConstraints = false
+            let empty = NightSocialEmptyPane(spoken: "Follow someone first.\nNew messages start from desks you follow.")
             view.addSubview(empty)
             NSLayoutConstraint.activate([
                 empty.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                 empty.topAnchor.constraint(equalTo: table.topAnchor, constant: 36),
-                empty.widthAnchor.constraint(equalToConstant: 280),
             ])
         }
     }

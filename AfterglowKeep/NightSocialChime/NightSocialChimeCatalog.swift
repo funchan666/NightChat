@@ -8,24 +8,36 @@ struct ChimeLine: Codable, Equatable {
 
 struct ChimeNotice: Equatable {
     let noticeKey: String
+    let spokenTitle: String
     let spokenBody: String
     let minutesAgo: Int
+    let speakerDeskKey: String?
+    let clipKey: String?
 }
 
 enum NightSocialChimeCatalog {
     static let supportDeskKey = "desk.house.support"
 
     static let platformNotices: [ChimeNotice] = [
-        ChimeNotice(noticeKey: "plat.1", spokenBody: "You have a new system update notification", minutesAgo: 5),
-        ChimeNotice(noticeKey: "plat.2", spokenBody: "House rules were refreshed for night sittings", minutesAgo: 18),
-        ChimeNotice(noticeKey: "plat.3", spokenBody: "Diamond purse activity was recorded on this desk", minutesAgo: 42),
+        ChimeNotice(noticeKey: "plat.1", spokenTitle: "Night desk", spokenBody: "A house update is waiting on this sitting.", minutesAgo: 5, speakerDeskKey: nil, clipKey: nil),
+        ChimeNotice(noticeKey: "plat.2", spokenTitle: "House rules", spokenBody: "Night sittings were refreshed. Keep the lamp kind.", minutesAgo: 18, speakerDeskKey: nil, clipKey: nil),
+        ChimeNotice(noticeKey: "plat.3", spokenTitle: "Night purse", spokenBody: "Coin activity was recorded on this desk.", minutesAgo: 42, speakerDeskKey: nil, clipKey: nil),
     ]
 
-    static let likeNotices: [ChimeNotice] = [
-        ChimeNotice(noticeKey: "like.1", spokenBody: "Someone liked your post.", minutesAgo: 5),
-        ChimeNotice(noticeKey: "like.2", spokenBody: "You have received a new like.", minutesAgo: 5),
-        ChimeNotice(noticeKey: "like.3", spokenBody: "A user liked your video content.", minutesAgo: 9),
-    ]
+    static var likeNotices: [ChimeNotice] {
+        let desks = NightSocialLoungeCatalog.creators
+        let clips = NightSocialLoungeCatalog.clips
+        let one = desks.indices.contains(0) ? desks[0] : nil
+        let two = desks.indices.contains(2) ? desks[2] : nil
+        let three = desks.indices.contains(4) ? desks[4] : nil
+        let clipA = clips.indices.contains(0) ? clips[0].clipKey : nil
+        let clipB = clips.indices.contains(1) ? clips[1].clipKey : nil
+        return [
+            ChimeNotice(noticeKey: "like.1", spokenTitle: one?.spokenName ?? "A guest", spokenBody: "liked your night clip.", minutesAgo: 5, speakerDeskKey: one?.deskKey, clipKey: clipA),
+            ChimeNotice(noticeKey: "like.2", spokenTitle: two?.spokenName ?? "A guest", spokenBody: "liked your sitting.", minutesAgo: 5, speakerDeskKey: two?.deskKey, clipKey: clipB),
+            ChimeNotice(noticeKey: "like.3", spokenTitle: three?.spokenName ?? "A guest", spokenBody: "liked your video.", minutesAgo: 9, speakerDeskKey: three?.deskKey, clipKey: clipA),
+        ]
+    }
 
     static let supportSeed: [ChimeLine] = [
         ChimeLine(speakerIsMe: false, hushBody: "NightChat house desk here. How can we tend your sitting?", spokenAt: Date().timeIntervalSince1970 - 3600),

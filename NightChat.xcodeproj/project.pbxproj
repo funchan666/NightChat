@@ -7,11 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf */; };
-		D1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf */; };
-		D1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf */; };
-		D1F01A11E0B04C9A8D2F6B04 /* Syne.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B04 /* Syne.ttf */; };
-		B7D42E18F2C15D0B9E3A7C22 /* NightSocialLampStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C31F07E1B04C9A8D2F6B11 /* NightSocialLampStore.swift */; };
 		00FD8F14940536DB4EB932E6 /* Group_135@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CB816B26A60C505BBD1D99C /* Group_135@2x.png */; };
 		042DF2F8418B09367D1AA3A2 /* Frame@2x(22).png in Resources */ = {isa = PBXBuildFile; fileRef = 7C70AF965F249915E8CADDED /* Frame@2x(22).png */; };
 		046BD7689769DB6151F88298 /* Rectangle_1113@2x(1).png in Resources */ = {isa = PBXBuildFile; fileRef = 52F97D0375E6CCC96C5C08F7 /* Rectangle_1113@2x(1).png */; };
@@ -119,6 +114,7 @@
 		B6CBD6F83B9A68C562364727 /* Group_819@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E91851EE1174F177A3C20776 /* Group_819@2x.png */; };
 		B7609BAFE6FFCA909CF65503 /* NightSocialMirrorPeopleBoards.swift in Sources */ = {isa = PBXBuildFile; fileRef = B888E35DCF1E803592EBC0DA /* NightSocialMirrorPeopleBoards.swift */; };
 		B7AF04750479962468F0ED26 /* NightSocialLookupBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B86C0C5C066C7C704ED711 /* NightSocialLookupBoard.swift */; };
+		B7D42E18F2C15D0B9E3A7C22 /* NightSocialLampStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C31F07E1B04C9A8D2F6B11 /* NightSocialLampStore.swift */; };
 		B89A535D573541F787B9B8A1 /* AfterglowAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061D3C7BF793019C60EB5B1A /* AfterglowAppDelegate.swift */; };
 		B8A530514CD4E1EFF4D00E71 /* Frame@2x(44).png in Resources */ = {isa = PBXBuildFile; fileRef = 1F3D07C8A4482CDF4256E18D /* Frame@2x(44).png */; };
 		BA4FF5268A6A240C25AE7EFE /* Group_892@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7DACB1FCFB2A78938076B2D9 /* Group_892@2x.png */; };
@@ -133,6 +129,10 @@
 		CD42C048275CAC3EFAF806CB /* Frame@2x(38).png in Resources */ = {isa = PBXBuildFile; fileRef = 66024DBC998CFFA098EBCEB5 /* Frame@2x(38).png */; };
 		CE5AF314F1BA6143E6B0F874 /* Frame@2x(14).png in Resources */ = {isa = PBXBuildFile; fileRef = 8C8819D1977CE9341E466A4E /* Frame@2x(14).png */; };
 		D005DBFC0C9727CE057F3653 /* Group_914@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A5F6EA973DADCA36F679B0D5 /* Group_914@2x.png */; };
+		D1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf */; };
+		D1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf */; };
+		D1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf */; };
+		D1F01A11E0B04C9A8D2F6B04 /* Syne.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1F01A11E0B04C9A8D2F6B04 /* Syne.ttf */; };
 		D2848C142BBA3E359A568F44 /* Group_918@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8293F5DC91970CBD2918C4FF /* Group_918@2x.png */; };
 		D30BE776B7B19853C8C91841 /* NightSocialWaveStageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70BE7158A9EBAC423D8A30D /* NightSocialWaveStageController.swift */; };
 		D52D3EE8DCA0A17AD09B6403 /* NightSocialChimeThreadBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545CECB30CCA63B915251C7C /* NightSocialChimeThreadBoard.swift */; };
@@ -163,11 +163,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Outfit-Regular.ttf; sourceTree = "<group>"; };
-		C1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Outfit-Medium.ttf; sourceTree = "<group>"; };
-		C1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Outfit-SemiBold.ttf; sourceTree = "<group>"; };
-		C1F01A11E0B04C9A8D2F6B04 /* Syne.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Syne.ttf; sourceTree = "<group>"; };
-		A8C31F07E1B04C9A8D2F6B11 /* NightSocialLampStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLampStore.swift; sourceTree = "<group>"; };
 		00BF60C8AEDBC0A2F401C8AC /* Rectangle_1116@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle_1116@2x.png"; sourceTree = "<group>"; };
 		01D1475D45B2D680E1A34830 /* Rectangle_1197@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Rectangle_1197@2x.png"; sourceTree = "<group>"; };
 		038D9CB57FD2D8DF591E2B1F /* Frame@2x(49).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Frame@2x(49).png"; sourceTree = "<group>"; };
@@ -274,6 +269,7 @@
 		A0B8B42503E809AF9F74CBC8 /* NightSocialWavePublishBoards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialWavePublishBoards.swift; sourceTree = "<group>"; };
 		A0C60AEA8FC195E0C3071390 /* Group_899@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_899@2x.png"; sourceTree = "<group>"; };
 		A5F6EA973DADCA36F679B0D5 /* Group_914@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_914@2x.png"; sourceTree = "<group>"; };
+		A8C31F07E1B04C9A8D2F6B11 /* NightSocialLampStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLampStore.swift; sourceTree = "<group>"; };
 		ADF8AF91C08629C7D5140F78 /* Group_646@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_646@2x.png"; sourceTree = "<group>"; };
 		AF7CF877D0EA91B2E884EEB9 /* Group_913@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_913@2x.png"; sourceTree = "<group>"; };
 		B01E40068B72F0EB0E2EC9DE /* NightSocialWaveSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialWaveSheets.swift; sourceTree = "<group>"; };
@@ -291,6 +287,10 @@
 		BF2B7B548A4A73DE0B7EB98B /* Group_904@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_904@2x.png"; sourceTree = "<group>"; };
 		BFE1D2325A81167BE2F40BA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Outfit-Regular.ttf"; sourceTree = "<group>"; };
+		C1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Outfit-Medium.ttf"; sourceTree = "<group>"; };
+		C1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Outfit-SemiBold.ttf"; sourceTree = "<group>"; };
+		C1F01A11E0B04C9A8D2F6B04 /* Syne.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Syne.ttf; sourceTree = "<group>"; };
 		C205FC2D0960C56F1CC8C58B /* Frame@2x(39).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Frame@2x(39).png"; sourceTree = "<group>"; };
 		C3C3E749AA6643F91B246022 /* Group_656@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_656@2x.png"; sourceTree = "<group>"; };
 		C51AEE7D02BD06F0610BE7B3 /* Group_917@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Group_917@2x.png"; sourceTree = "<group>"; };
@@ -322,17 +322,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		E1F01A11E0B04C9A8D2F6B10 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				C1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf */,
-				C1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf */,
-				C1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf */,
-				C1F01A11E0B04C9A8D2F6B04 /* Syne.ttf */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
 		016F09F2D0543EE74512B1A9 /* assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -483,6 +472,17 @@
 				59D37CD53FCEF0D2B75517AF /* NightSocialTributeTray.swift */,
 			);
 			path = NightSocialLounge;
+			sourceTree = "<group>";
+		};
+		E1F01A11E0B04C9A8D2F6B10 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				C1F01A11E0B04C9A8D2F6B01 /* Outfit-Regular.ttf */,
+				C1F01A11E0B04C9A8D2F6B02 /* Outfit-Medium.ttf */,
+				C1F01A11E0B04C9A8D2F6B03 /* Outfit-SemiBold.ttf */,
+				C1F01A11E0B04C9A8D2F6B04 /* Syne.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		F62EC74BFFAD3D740F803C73 /* NightSocialMedia */ = {
@@ -924,7 +924,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lampdesk.afterhours;
 				PRODUCT_NAME = NightChat;
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1010,7 +1013,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lampdesk.afterhours;
 				PRODUCT_NAME = NightChat;
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

@@ -207,6 +207,13 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
                 : "\(rows.count) active rooms"
         paintBanners()
         table.reloadData()
+        table.backgroundView = rows.isEmpty
+            ? NightSocialEmptyPane(spoken: partyLane == .follow
+                ? "No followed rooms yet."
+                : partyLane == .recent
+                    ? "No recent rooms yet."
+                    : "No live rooms right now.")
+            : nil
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { rows.count }

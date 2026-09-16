@@ -11,6 +11,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
     private var followDesks: [LoungeCreatorDesk] = []
     private var tableToHead: NSLayoutConstraint?
     private var tableToTabs: NSLayoutConstraint?
+    private var friendsHeight: NSLayoutConstraint?
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
@@ -88,7 +89,6 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             friendsRow.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             friendsRow.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             friendsRow.topAnchor.constraint(equalTo: tiles.bottomAnchor, constant: 14),
-            friendsRow.heightAnchor.constraint(equalToConstant: 86),
             friendsStack.leadingAnchor.constraint(equalTo: friendsRow.contentLayoutGuide.leadingAnchor, constant: 16),
             friendsStack.trailingAnchor.constraint(equalTo: friendsRow.contentLayoutGuide.trailingAnchor, constant: -16),
             friendsStack.topAnchor.constraint(equalTo: friendsRow.contentLayoutGuide.topAnchor),
@@ -100,6 +100,8 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        friendsHeight = friendsRow.heightAnchor.constraint(equalToConstant: 86)
+        friendsHeight?.isActive = true
         tableToHead = table.topAnchor.constraint(equalTo: chatHead.bottomAnchor, constant: 6)
         tableToTabs = table.topAnchor.constraint(equalTo: followMark.bottomAnchor, constant: 16)
         tableToHead?.isActive = true
@@ -162,21 +164,16 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         view.viewWithTag(77)?.removeFromSuperview()
         let showingEmpty = showingFollow ? followDesks.isEmpty : threadKeys.isEmpty
         guard showingEmpty else { return }
-        let empty = UILabel()
+        let empty = NightSocialEmptyPane(
+            spoken: showingFollow
+                ? "Follows you start sit here.\nNobody is auto-followed."
+                : "No chats yet.\nOpen a desk, then send a line after you follow each other."
+        )
         empty.tag = 77
-        empty.numberOfLines = 0
-        empty.textAlignment = .center
-        empty.font = AfterHoursType.foyerBody(14)
-        empty.textColor = UIColor.white.withAlphaComponent(0.7)
-        empty.text = showingFollow
-            ? "Follows you start sit here.\nNobody is auto-followed."
-            : "No chats yet.\nOpen a desk, then send a line after you follow each other."
-        empty.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(empty)
         NSLayoutConstraint.activate([
             empty.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            empty.topAnchor.constraint(equalTo: table.topAnchor, constant: 36),
-            empty.widthAnchor.constraint(equalToConstant: 280),
+            empty.topAnchor.constraint(equalTo: table.topAnchor, constant: 28),
         ])
     }
 
@@ -186,31 +183,12 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             NightSocialLoungeCatalog.creator(deskKey: $0)
         }.filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.deskKey) }
         if friends.isEmpty {
-            let wrap = UIView()
-            wrap.translatesAutoresizingMaskIntoConstraints = false
-            wrap.widthAnchor.constraint(equalToConstant: 220).isActive = true
-            let pic = UIImageView(image: NightSocialImageCabinet.named("LampEmptyFriends", fallback: "Ellipse_75"))
-            pic.contentMode = .scaleAspectFit
-            pic.translatesAutoresizingMaskIntoConstraints = false
-            let name = UILabel()
-            name.text = "Friends wait for a yes"
-            name.font = AfterHoursType.foyerCaption(11)
-            name.textColor = UIColor.white.withAlphaComponent(0.7)
-            name.textAlignment = .center
-            name.translatesAutoresizingMaskIntoConstraints = false
-            wrap.addSubview(pic)
-            wrap.addSubview(name)
-            NSLayoutConstraint.activate([
-                pic.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
-                pic.topAnchor.constraint(equalTo: wrap.topAnchor, constant: 4),
-                pic.widthAnchor.constraint(equalToConstant: 48),
-                pic.heightAnchor.constraint(equalToConstant: 48),
-                name.topAnchor.constraint(equalTo: pic.bottomAnchor, constant: 8),
-                name.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
-            ])
-            friendsStack.addArrangedSubview(wrap)
+            friendsRow.isHidden = showingFollow
+            friendsHeight?.constant = showingFollow ? 0 : 0
             return
         }
+        friendsRow.isHidden = showingFollow
+        friendsHeight?.constant = showingFollow ? 0 : 86
         for desk in friends.prefix(12) {
             let wrap = UIControl()
             wrap.translatesAutoresizingMaskIntoConstraints = false

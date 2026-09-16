@@ -151,11 +151,9 @@ final class NightSocialMirrorBackpackBoard: UIViewController {
         }
         grid.arrangedSubviews.forEach { $0.removeFromSuperview() }
         if lane != 0 {
-            let empty = UILabel()
-            empty.text = lane == 1 ? "No frames in this desk yet." : "No badges in this desk yet."
-            empty.textColor = UIColor.white.withAlphaComponent(0.6)
-            empty.font = AfterHoursType.foyerBody(14)
-            grid.addArrangedSubview(empty)
+            grid.addArrangedSubview(NightSocialEmptyPane(
+                spoken: lane == 1 ? "No frames in this desk yet." : "No badges in this desk yet."
+            ))
             return
         }
         let items: [(String, String, String)] = [

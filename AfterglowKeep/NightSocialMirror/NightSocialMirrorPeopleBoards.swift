@@ -83,28 +83,23 @@ final class NightSocialMirrorPeopleBoard: UIViewController, UITableViewDataSourc
         table.reloadData()
         view.viewWithTag(88)?.removeFromSuperview()
         guard desks.isEmpty else { return }
-        let empty = UILabel()
-        empty.tag = 88
-        empty.numberOfLines = 0
-        empty.textAlignment = .center
-        empty.font = AfterHoursType.foyerBody(14)
-        empty.textColor = UIColor.white.withAlphaComponent(0.7)
-        empty.translatesAutoresizingMaskIntoConstraints = false
+        let spoken: String
         switch kind {
         case .blacklist:
-            empty.text = "No blocked desks.\nBlock someone and they sit here until you lift it."
+            spoken = "No blocked desks.\nBlock someone and they sit here until you lift it."
         case .fans:
-            empty.text = "No followers yet.\nPeople who follow you appear here."
+            spoken = "No followers yet.\nPeople who follow you appear here."
         case .follow:
-            empty.text = "You are not following anyone yet."
+            spoken = "You are not following anyone yet."
         case .friends:
-            empty.text = "No friends yet.\nA friend ask waits for the other desk to agree."
+            spoken = "No friends yet.\nA friend ask waits for the other desk to agree."
         }
+        let empty = NightSocialEmptyPane(spoken: spoken)
+        empty.tag = 88
         view.addSubview(empty)
         NSLayoutConstraint.activate([
             empty.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            empty.topAnchor.constraint(equalTo: table.topAnchor, constant: 40),
-            empty.widthAnchor.constraint(equalToConstant: 280),
+            empty.topAnchor.constraint(equalTo: table.topAnchor, constant: 36),
         ])
     }
 

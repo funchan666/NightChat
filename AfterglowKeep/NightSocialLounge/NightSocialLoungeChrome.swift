@@ -59,6 +59,10 @@ enum NightSocialLoungeChrome {
         return pill
     }
 
+    static func emptyPane(spoken: String) -> UIView {
+        NightSocialEmptyPane(spoken: spoken)
+    }
+
     static func ghostPill(title: String) -> UIButton {
         let pill = UIButton(type: .custom)
         pill.setTitle(title, for: .normal)
@@ -70,4 +74,37 @@ enum NightSocialLoungeChrome {
         pill.heightAnchor.constraint(equalToConstant: 36).isActive = true
         return pill
     }
+}
+
+final class NightSocialEmptyPane: UIView {
+    init(spoken: String) {
+        super.init(frame: .zero)
+        translatesAutoresizingMaskIntoConstraints = false
+        isUserInteractionEnabled = false
+        let mascot = UIImageView(image: NightSocialImageCabinet.named("LampReviewMascot", fallback: "image_652"))
+        mascot.contentMode = .scaleAspectFit
+        mascot.translatesAutoresizingMaskIntoConstraints = false
+        let plate = UILabel()
+        plate.text = spoken
+        plate.font = AfterHoursType.foyerBody(14)
+        plate.textColor = UIColor.white.withAlphaComponent(0.62)
+        plate.textAlignment = .center
+        plate.numberOfLines = 0
+        plate.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(mascot)
+        addSubview(plate)
+        NSLayoutConstraint.activate([
+            mascot.topAnchor.constraint(equalTo: topAnchor),
+            mascot.centerXAnchor.constraint(equalTo: centerXAnchor),
+            mascot.widthAnchor.constraint(equalToConstant: 140),
+            mascot.heightAnchor.constraint(equalToConstant: 130),
+            plate.topAnchor.constraint(equalTo: mascot.bottomAnchor, constant: 12),
+            plate.leadingAnchor.constraint(equalTo: leadingAnchor),
+            plate.trailingAnchor.constraint(equalTo: trailingAnchor),
+            plate.bottomAnchor.constraint(equalTo: bottomAnchor),
+            widthAnchor.constraint(equalToConstant: 280),
+        ])
+    }
+
+    required init?(coder: NSCoder) { nil }
 }

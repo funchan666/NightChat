@@ -370,7 +370,7 @@ final class EmberFriendAskPane: UIViewController {
         card.backgroundColor = AfterHoursPalette.loungeCard
         card.layer.cornerRadius = 28
         card.translatesAutoresizingMaskIntoConstraints = false
-        let pic = UIImageView(image: NightSocialImageCabinet.named("LampEmptyFriends", fallback: "Ellipse_75"))
+        let pic = UIImageView(image: NightSocialImageCabinet.named("LampReviewMascot", fallback: "image_652"))
         pic.contentMode = .scaleAspectFit
         pic.translatesAutoresizingMaskIntoConstraints = false
         let title = UILabel()
