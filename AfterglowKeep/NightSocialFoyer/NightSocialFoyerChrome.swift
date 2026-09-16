@@ -38,8 +38,34 @@ class NightSocialWashController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let nav = navigationController
+        nav?.interactivePopGestureRecognizer?.delegate = nil
+        nav?.interactivePopGestureRecognizer?.isEnabled = (nav?.viewControllers.count ?? 0) > 1
+    }
+
     @objc func foldKeyboard() {
         view.endEditing(true)
+    }
+
+    @discardableResult
+    func attachFoyerBackControl(action: Selector) -> UIButton {
+        let back = NightSocialLoungeChrome.backControl()
+        back.addTarget(self, action: action, for: .touchUpInside)
+        back.accessibilityLabel = "Back"
+        view.addSubview(back)
+        view.bringSubviewToFront(back)
+        NSLayoutConstraint.activate([
+            back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            back.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 6),
+        ])
+        return back
+    }
+
+    @objc func foldTowardFoyer() {
+        foldKeyboard()
+        AfterglowRootCoordinator.foldFoyerBoard(self)
     }
 
     func makeStageMarkView(edge: CGFloat) -> UIImageView {

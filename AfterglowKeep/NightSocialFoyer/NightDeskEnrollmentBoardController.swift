@@ -62,7 +62,7 @@ final class NightDeskEnrollmentBoardController: NightSocialWashController, UITex
 
         NSLayoutConstraint.activate([
             mark.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mark.topAnchor.constraint(equalTo: scroller.topAnchor, constant: 108),
+            mark.topAnchor.constraint(equalTo: scroller.topAnchor, constant: 118),
             mark.widthAnchor.constraint(equalToConstant: 78),
             mark.heightAnchor.constraint(equalToConstant: 78),
 
@@ -86,6 +86,7 @@ final class NightDeskEnrollmentBoardController: NightSocialWashController, UITex
 
             scroller.contentLayoutGuide.bottomAnchor.constraint(greaterThanOrEqualTo: cluster.bottomAnchor, constant: 220),
         ])
+        attachFoyerBackControl(action: #selector(foldTowardFoyer))
         self.covenantBar = covenantBar
 
         NotificationCenter.default.addObserver(self, selector: #selector(liftForKeyboard(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)

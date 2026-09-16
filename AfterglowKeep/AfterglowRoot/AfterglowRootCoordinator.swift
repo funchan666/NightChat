@@ -49,6 +49,14 @@ enum AfterglowRootCoordinator {
         replaceRoot(in: window, with: wrapped(AfterglowWelcomeGateController()))
     }
 
+    static func foldFoyerBoard(_ host: UIViewController) {
+        if let nav = host.navigationController, nav.viewControllers.count > 1 {
+            nav.popViewController(animated: true)
+        } else {
+            revealFoyer(from: host)
+        }
+    }
+
     static func revealReturnDoor(from host: UIViewController? = nil) {
         guard let window = host?.view.window ?? keyWindow() else { return }
         replaceRoot(in: window, with: wrapped(NightDeskReturnBoardController()))

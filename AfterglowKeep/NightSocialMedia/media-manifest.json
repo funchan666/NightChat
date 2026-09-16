@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "localPortrait": "DdRRhFgjMbk.jpg",
   "duplicateAliases": {
     "Dc1zxOZj248 (1).jpg": "Dc1zxOZj248.jpg",
@@ -39,7 +39,7 @@
       "portrait": "Dc4HHTTiC2k.jpg",
       "cover": "DdOfuRCDPcb.jpg",
       "presentation": "masculine",
-      "video": "iiolumi_Dbdw4RkMD4p.mp4",
+      "video": "alex_uspk_DaiGceLxTQc.mp4",
       "videoPresentation": "masculine"
     },
     {
@@ -84,8 +84,8 @@
       "portrait": "Dci4PcCDYhi.jpg",
       "cover": "DdEepkZDQ5r.jpg",
       "presentation": "feminine",
-      "video": "alex_uspk_DaiGceLxTQc.mp4",
-      "videoPresentation": "scenery"
+      "video": "iiolumi_Dbdw4RkMD4p.mp4",
+      "videoPresentation": "feminine"
     },
     {
       "deskKey": "desk.idris.belkacem",
@@ -93,7 +93,7 @@
       "portrait": "Dcg3Zgll8lU.jpg",
       "cover": "DcrSpuuGj9s.jpg",
       "presentation": "masculine",
-      "video": "justinegotico__DbtMHu7pVzx.mp4",
+      "video": "nathanroq_DZ7oSdpOS1h.mp4",
       "videoPresentation": "masculine"
     },
     {
@@ -102,7 +102,7 @@
       "portrait": "DcqzI2gjCHu.jpg",
       "cover": "DcwQONqDNl2.jpg",
       "presentation": "feminine",
-      "video": "nathanroq_DZ7oSdpOS1h.mp4",
+      "video": "justinegotico__DbtMHu7pVzx.mp4",
       "videoPresentation": "feminine"
     },
     {
@@ -121,7 +121,7 @@
       "cover": "DdKK_HUDHz_.jpg",
       "presentation": "feminine",
       "video": "iamhippeel_DdNODifzki4.mp4",
-      "videoPresentation": "feminine"
+      "videoPresentation": "scenery"
     },
     {
       "deskKey": "desk.theo.miles",
@@ -161,12 +161,12 @@
     },
     {
       "deskKey": "desk.felix.hayes",
-      "spokenName": "Felix Hayes",
-      "portrait": "DcoKusglnkE.jpg",
-      "cover": "DcyFYoOjbOm.jpg",
-      "presentation": "masculine",
-      "video": "charliestringr_DcRs7ivyH2b.mp4",
-      "videoPresentation": "masculine"
+      "spokenName": "Faye Hayes",
+      "portrait": "DcqcD2ZDvwG.jpg",
+      "cover": "DcoKusglnkE.jpg",
+      "presentation": "feminine",
+      "video": "patagonico.k_DZ-bQGlOMaG.mp4",
+      "videoPresentation": "feminine"
     },
     {
       "deskKey": "desk.nora.blake",
@@ -199,9 +199,9 @@
       "deskKey": "desk.leo.gray",
       "spokenName": "Leo Gray",
       "portrait": "Dcv_XcoEcIs.jpg",
-      "cover": "DcxxVlpjC1R.jpg",
+      "cover": "DcyFYoOjbOm.jpg",
       "presentation": "masculine",
-      "video": "patagonico.k_DZ-bQGlOMaG.mp4",
+      "video": "charliestringr_DcRs7ivyH2b.mp4",
       "videoPresentation": "masculine"
     },
     {
@@ -210,13 +210,13 @@
       "portrait": "Dc1Ii5HACCq.jpg",
       "cover": "DcrCQ_IkZQQ.jpg",
       "presentation": "feminine",
-      "video": "thevillage.newyork_Dat9aT9Cwa6.mp4",
-      "videoPresentation": "feminine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.jude.ford",
       "spokenName": "Jude Ford",
-      "portrait": "Dc0X-ygiGzb.jpg",
+      "portrait": "DdCc-najmV9.jpg",
       "cover": "Dc6Dfy6jSal.jpg",
       "presentation": "masculine",
       "video": "danat_aliyev_DcHhsNJza4I.mp4",
@@ -261,7 +261,7 @@
     {
       "deskKey": "desk.owen.hill",
       "spokenName": "Owen Hill",
-      "portrait": "Dc6AmbVDv2F.jpg",
+      "portrait": "DdEc_R6CNvg.jpg",
       "cover": "DdMdwL7jHdI.jpg",
       "presentation": "masculine",
       "video": null,
@@ -271,15 +271,15 @@
       "deskKey": "desk.finn.woods",
       "spokenName": "Finn Woods",
       "portrait": "DcgzAm8kU1C.jpg",
-      "cover": "DcqcD2ZDvwG.jpg",
+      "cover": "DcwPyn2CBID.jpg",
       "presentation": "masculine",
-      "video": null,
-      "videoPresentation": null
+      "video": "thevillage.newyork_Dat9aT9Cwa6.mp4",
+      "videoPresentation": "scenery"
     },
     {
       "deskKey": "desk.alex.park",
       "spokenName": "Alex Park",
-      "portrait": "DdEc_R6CNvg.jpg",
+      "portrait": "Dc0X-ygiGzb.jpg",
       "cover": "Dc1gwKBAUoO.jpg",
       "presentation": "mixed",
       "video": null,
@@ -288,8 +288,8 @@
     {
       "deskKey": "desk.ruby.lake",
       "spokenName": "Ruby Lake",
-      "portrait": "DdCc-najmV9.jpg",
-      "cover": "DcwPyn2CBID.jpg",
+      "portrait": "Dc6AmbVDv2F.jpg",
+      "cover": "DcxxVlpjC1R.jpg",
       "presentation": "feminine",
       "video": null,
       "videoPresentation": null

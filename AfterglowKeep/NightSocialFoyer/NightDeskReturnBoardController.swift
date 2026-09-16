@@ -90,6 +90,7 @@ final class NightDeskReturnBoardController: NightSocialWashController, UITextFie
 
             scroller.contentLayoutGuide.bottomAnchor.constraint(greaterThanOrEqualTo: cluster.bottomAnchor, constant: 220),
         ])
+        attachFoyerBackControl(action: #selector(foldTowardFoyer))
 
         NotificationCenter.default.addObserver(self, selector: #selector(liftForKeyboard(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
