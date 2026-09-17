@@ -42,15 +42,15 @@ enum NightSocialLampPack: CaseIterable {
 
     var spokenTitle: String {
         switch self {
-        case .spark: return "Spark"
-        case .ember: return "Ember"
-        case .wick: return "Wick"
-        case .lantern: return "Lantern"
-        case .aurora: return "Aurora"
-        case .comet: return "Comet"
-        case .halo: return "Halo"
-        case .nova: return "Nova"
-        case .eclipse: return "Eclipse"
+        case .spark: return "Quiet"
+        case .ember: return "Warm"
+        case .wick: return "Sitting"
+        case .lantern: return "Host"
+        case .aurora: return "Late"
+        case .comet: return "Room"
+        case .halo: return "House"
+        case .nova: return "Night"
+        case .eclipse: return "Lamp"
         }
     }
 }
@@ -106,18 +106,23 @@ enum NightSocialLampStore {
         ("Chat, follows, watching", "Always free"),
     ]
 
+    private static let priceLock = NSLock()
     private static var storePrices: [String: String] = [:]
 
     static func storePrice(for pack: NightSocialLampPack) -> String? {
-        storePrices[pack.productId]
+        priceLock.lock()
+        defer { priceLock.unlock() }
+        return storePrices[pack.productId]
     }
 
     static func refreshCatalog() async {
         do {
             let found = try await Product.products(for: Set(NightSocialLampPack.allCases.map(\.productId)))
             let next = Dictionary(uniqueKeysWithValues: found.map { ($0.id, $0.displayPrice) })
+            priceLock.lock()
+            storePrices = next
+            priceLock.unlock()
             await MainActor.run {
-                storePrices = next
                 NotificationCenter.default.post(name: catalogDidChange, object: nil)
             }
         } catch {

@@ -379,9 +379,9 @@ final class ChimeFollowRow: UITableViewCell {
     private let namePlate = UILabel()
     private let metaPlate = UILabel()
     private let liveMark = UIImageView()
+    private let levelPlate = UILabel()
     private let unfollow = UIButton(type: .custom)
     private let chat = UIButton(type: .custom)
-    private var levelWrap: UIView?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -389,35 +389,68 @@ final class ChimeFollowRow: UITableViewCell {
         selectionStyle = .none
         contentView.backgroundColor = AfterHoursPalette.loungeCard
         contentView.layer.cornerRadius = 16
+        contentView.clipsToBounds = true
         portrait.contentMode = .scaleAspectFill
         portrait.layer.cornerRadius = 22
         portrait.clipsToBounds = true
         portrait.translatesAutoresizingMaskIntoConstraints = false
         namePlate.font = AfterHoursType.foyerPill(15)
         namePlate.textColor = .white
+        namePlate.numberOfLines = 1
+        namePlate.lineBreakMode = .byTruncatingTail
+        namePlate.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         namePlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        namePlate.translatesAutoresizingMaskIntoConstraints = false
         metaPlate.font = AfterHoursType.foyerCaption(11)
         metaPlate.textColor = UIColor.white.withAlphaComponent(0.65)
-        metaPlate.translatesAutoresizingMaskIntoConstraints = false
+        metaPlate.numberOfLines = 1
+        metaPlate.lineBreakMode = .byTruncatingTail
+        metaPlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
+        liveMark.setContentHuggingPriority(.required, for: .horizontal)
+        liveMark.setContentCompressionResistancePriority(.required, for: .horizontal)
         liveMark.translatesAutoresizingMaskIntoConstraints = false
+        let levelHost = UIView()
+        levelHost.translatesAutoresizingMaskIntoConstraints = false
+        let levelCloth = UIImageView(image: NightSocialImageCabinet.named("LevelBadge", fallback: "LevelBadge"))
+        levelCloth.contentMode = .scaleToFill
+        levelCloth.translatesAutoresizingMaskIntoConstraints = false
+        levelPlate.textColor = AfterHoursPalette.inkOnSnow
+        levelPlate.font = AfterHoursType.foyerCaption(10)
+        levelPlate.textAlignment = .center
+        levelPlate.translatesAutoresizingMaskIntoConstraints = false
+        levelHost.addSubview(levelCloth)
+        levelHost.addSubview(levelPlate)
         unfollow.setTitle("  \(NightLang.t(.unfollow))  ", for: .normal)
         unfollow.setTitleColor(AfterHoursPalette.loungePink, for: .normal)
         unfollow.titleLabel?.font = AfterHoursType.foyerCaption(12)
         unfollow.backgroundColor = UIColor.white.withAlphaComponent(0.14)
         unfollow.layer.cornerRadius = 14
         unfollow.addTarget(self, action: #selector(tapUnfollow), for: .touchUpInside)
+        unfollow.setContentCompressionResistancePriority(.required, for: .horizontal)
         unfollow.translatesAutoresizingMaskIntoConstraints = false
         chat.setImage(NightSocialImageCabinet.named("ChatBubble", fallback: "ChatBubble"), for: .normal)
         chat.imageView?.contentMode = .scaleAspectFit
         chat.addTarget(self, action: #selector(tapChat), for: .touchUpInside)
         chat.translatesAutoresizingMaskIntoConstraints = false
+        let spacer = UIView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacer.setContentCompressionResistancePriority(.fittingSizeLevel, for: .horizontal)
+        let nameRow = UIStackView(arrangedSubviews: [namePlate, liveMark, spacer])
+        nameRow.axis = .horizontal
+        nameRow.alignment = .center
+        nameRow.spacing = 6
+        nameRow.clipsToBounds = true
+        let textCol = UIStackView(arrangedSubviews: [nameRow, metaPlate])
+        textCol.axis = .vertical
+        textCol.alignment = .fill
+        textCol.spacing = 3
+        textCol.clipsToBounds = true
+        textCol.translatesAutoresizingMaskIntoConstraints = false
+        textCol.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         contentView.addSubview(portrait)
-        contentView.addSubview(namePlate)
-        contentView.addSubview(metaPlate)
-        contentView.addSubview(liveMark)
+        contentView.addSubview(textCol)
+        contentView.addSubview(levelHost)
         contentView.addSubview(unfollow)
         contentView.addSubview(chat)
         NSLayoutConstraint.activate([
@@ -425,16 +458,6 @@ final class ChimeFollowRow: UITableViewCell {
             portrait.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             portrait.widthAnchor.constraint(equalToConstant: 44),
             portrait.heightAnchor.constraint(equalToConstant: 44),
-            namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 10),
-            namePlate.topAnchor.constraint(equalTo: portrait.topAnchor),
-            liveMark.leadingAnchor.constraint(equalTo: namePlate.trailingAnchor, constant: 6),
-            liveMark.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
-            liveMark.widthAnchor.constraint(equalToConstant: 40),
-            liveMark.heightAnchor.constraint(equalToConstant: 16),
-            liveMark.trailingAnchor.constraint(lessThanOrEqualTo: unfollow.leadingAnchor, constant: -8),
-            metaPlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
-            metaPlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 4),
-            metaPlate.trailingAnchor.constraint(lessThanOrEqualTo: unfollow.leadingAnchor, constant: -8),
             chat.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             chat.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             chat.widthAnchor.constraint(equalToConstant: 36),
@@ -443,6 +466,21 @@ final class ChimeFollowRow: UITableViewCell {
             unfollow.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             unfollow.heightAnchor.constraint(equalToConstant: 28),
             unfollow.widthAnchor.constraint(greaterThanOrEqualToConstant: 76),
+            levelHost.trailingAnchor.constraint(equalTo: unfollow.leadingAnchor, constant: -8),
+            levelHost.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            levelHost.widthAnchor.constraint(equalToConstant: 52),
+            levelHost.heightAnchor.constraint(equalToConstant: 18),
+            levelCloth.topAnchor.constraint(equalTo: levelHost.topAnchor),
+            levelCloth.leadingAnchor.constraint(equalTo: levelHost.leadingAnchor),
+            levelCloth.trailingAnchor.constraint(equalTo: levelHost.trailingAnchor),
+            levelCloth.bottomAnchor.constraint(equalTo: levelHost.bottomAnchor),
+            levelPlate.centerXAnchor.constraint(equalTo: levelHost.centerXAnchor),
+            levelPlate.centerYAnchor.constraint(equalTo: levelHost.centerYAnchor),
+            liveMark.widthAnchor.constraint(equalToConstant: 40),
+            liveMark.heightAnchor.constraint(equalToConstant: 16),
+            textCol.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 10),
+            textCol.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            textCol.trailingAnchor.constraint(equalTo: levelHost.leadingAnchor, constant: -8),
         ])
     }
     required init?(coder: NSCoder) { nil }
@@ -452,17 +490,10 @@ final class ChimeFollowRow: UITableViewCell {
     }
     func paint(_ desk: LoungeCreatorDesk) {
         portrait.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 88, height: 88))
-        namePlate.text = "\(desk.spokenName)  \(desk.cityLabel)"
+        namePlate.text = desk.spokenName
         metaPlate.text = "\(desk.followerCount) followers"
         liveMark.isHidden = !desk.isLive
-        levelWrap?.removeFromSuperview()
-        let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
-        levelWrap = level
-        contentView.addSubview(level)
-        NSLayoutConstraint.activate([
-            level.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
-            level.topAnchor.constraint(equalTo: metaPlate.bottomAnchor, constant: 2),
-        ])
+        levelPlate.text = "Lv.\(desk.levelMark)"
     }
     @objc private func tapChat() { onChat?() }
     @objc private func tapUnfollow() { onUnfollow?() }

@@ -128,7 +128,7 @@ final class LookupDeskRow: UITableViewCell {
         namePlate.textColor = .white
         namePlate.numberOfLines = 1
         namePlate.lineBreakMode = .byTruncatingTail
-        namePlate.setContentHuggingPriority(.required, for: .horizontal)
+        namePlate.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         namePlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         metaPlate.font = AfterHoursType.foyerCaption(12)
@@ -167,11 +167,13 @@ final class LookupDeskRow: UITableViewCell {
         nameRow.axis = .horizontal
         nameRow.alignment = .center
         nameRow.spacing = 6
+        nameRow.clipsToBounds = true
 
         let textCol = UIStackView(arrangedSubviews: [nameRow, metaPlate])
         textCol.axis = .vertical
         textCol.alignment = .fill
         textCol.spacing = 4
+        textCol.clipsToBounds = true
         textCol.translatesAutoresizingMaskIntoConstraints = false
         textCol.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
