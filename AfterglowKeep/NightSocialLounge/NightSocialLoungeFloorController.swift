@@ -66,7 +66,7 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
         meridianRow.addSubview(meridianStack)
         for lane in LoungeMeridianLane.allCases {
             let chip = UIButton(type: .system)
-            chip.setTitle("  \(lane.rawValue)  ", for: .normal)
+            chip.setTitle("  \(lane.spokenTitle)  ", for: .normal)
             chip.titleLabel?.font = AfterHoursType.foyerCaption(12)
             chip.layer.cornerRadius = 14
             chip.tag = LoungeMeridianLane.allCases.firstIndex(of: lane) ?? 0

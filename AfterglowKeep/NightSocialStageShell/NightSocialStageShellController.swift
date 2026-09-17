@@ -1,6 +1,7 @@
 import UIKit
 
 final class NightSocialStageShellController: UIViewController, UINavigationControllerDelegate {
+    private let startLane: Int
     private let loungeNav: UINavigationController = {
         let nav = UINavigationController(rootViewController: NightSocialLoungeFloorController())
         nav.setNavigationBarHidden(true, animated: false)
@@ -28,6 +29,12 @@ final class NightSocialStageShellController: UIViewController, UINavigationContr
     private let dock = NightSocialStageDock()
     private var litLane = 0
     private var didOfferLampWelcome = false
+
+    init(startLane: Int = 0) {
+        self.startLane = startLane
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { nil }
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
     override var childForStatusBarStyle: UIViewController? {
@@ -69,7 +76,7 @@ final class NightSocialStageShellController: UIViewController, UINavigationContr
             dock.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             dock.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-        showLane(0)
+        showLane(startLane)
     }
 
     override func viewDidAppear(_ animated: Bool) {

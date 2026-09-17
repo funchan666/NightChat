@@ -9,31 +9,41 @@ enum LoungeBrowseLane: Int, CaseIterable {
 
     var spokenTitle: String {
         switch self {
-        case .all: return "ALL"
-        case .live: return "Live"
-        case .fresh: return "New"
-        case .follow: return "Follow"
-        case .music: return "Music"
+        case .all: return NightLang.t(.all)
+        case .live: return NightLang.t(.live)
+        case .fresh: return NightLang.t(.fresh)
+        case .follow: return NightLang.t(.followTab)
+        case .music: return NightLang.t(.music)
         }
     }
 
     var sectionTitle: String {
         switch self {
-        case .all: return "Featured creators"
-        case .live: return "Live rooms"
-        case .fresh: return "New Video"
-        case .follow: return "Follow creators"
-        case .music: return "Night tracks"
+        case .all: return NightLang.t(.featuredCreators)
+        case .live: return NightLang.t(.liveRooms)
+        case .fresh: return NightLang.t(.newVideo)
+        case .follow: return NightLang.t(.followCreators)
+        case .music: return NightLang.t(.nightTracks)
         }
     }
 }
 
 enum LoungeMeridianLane: String, CaseIterable {
-    case global = "Global"
-    case europe = "Europe"
-    case eastAsia = "East Asia"
-    case latin = "Latin"
-    case africa = "Africa"
+    case global
+    case europe
+    case eastAsia
+    case latin
+    case africa
+
+    var spokenTitle: String {
+        switch self {
+        case .global: return NightLang.t(.global)
+        case .europe: return NightLang.t(.europe)
+        case .eastAsia: return NightLang.t(.eastAsia)
+        case .latin: return NightLang.t(.latin)
+        case .africa: return NightLang.t(.africa)
+        }
+    }
 }
 
 struct LoungeCreatorDesk: Equatable {

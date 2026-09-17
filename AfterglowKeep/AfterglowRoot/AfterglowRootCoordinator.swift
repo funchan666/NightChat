@@ -19,6 +19,7 @@ enum AfterglowRootCoordinator {
 
     static func install(in window: UIWindow) {
         NightSocialSessionDrawer.shared.openDrawer()
+        NightLang.applyLayoutDirection()
         window.backgroundColor = AfterHoursPalette.magentaPeak
         window.rootViewController = AfterglowLampClothController()
     }
@@ -39,9 +40,10 @@ enum AfterglowRootCoordinator {
         replaceRoot(in: window, with: next)
     }
 
-    static func revealLoungeFloor(from host: UIViewController? = nil) {
+    static func revealLoungeFloor(from host: UIViewController? = nil, startLane: Int = 0) {
         guard let window = host?.view.window ?? keyWindow() else { return }
-        replaceRoot(in: window, with: NightSocialStageShellController())
+        NightLang.applyLayoutDirection()
+        replaceRoot(in: window, with: NightSocialStageShellController(startLane: startLane))
     }
 
     static func revealFoyer(from host: UIViewController? = nil) {

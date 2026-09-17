@@ -102,9 +102,9 @@ final class NightSocialDeskMirrorController: UIViewController {
         stats.layer.cornerRadius = 20
         stats.addTarget(self, action: #selector(openFollowList), for: .touchUpInside)
         stats.translatesAutoresizingMaskIntoConstraints = false
-        let followCol = statColumn(count: followCount, caption: "Following")
-        let fanCol = statColumn(count: fanCount, caption: "Followers")
-        let friendCol = statColumn(count: friendCount, caption: "Friends")
+        let followCol = statColumn(count: followCount, caption: NightLang.t(.following))
+        let fanCol = statColumn(count: fanCount, caption: NightLang.t(.followers))
+        let friendCol = statColumn(count: friendCount, caption: NightLang.t(.friends))
         let fanTap = UIButton(type: .custom)
         fanTap.addTarget(self, action: #selector(openFans), for: .touchUpInside)
         fanTap.translatesAutoresizingMaskIntoConstraints = false
@@ -131,11 +131,11 @@ final class NightSocialDeskMirrorController: UIViewController {
             action: #selector(openLevel)
         )
 
-        let blacklist = menuRow("person.fill", "Blacklist", #selector(openBlacklist))
-        let support = menuRow("headphones", "Customer Support", #selector(openSupport))
-        let invite = menuRow("envelope.fill", "Invite Code", #selector(openInvite))
-        let feedback = menuRow("info.circle.fill", "Feedback", #selector(openFeedback))
-        let bag = menuRow("bag.fill", "My backpack", #selector(openBag))
+        let blacklist = menuRow("person.fill", NightLang.t(.blacklist), #selector(openBlacklist))
+        let support = menuRow("headphones", NightLang.t(.customerSupport), #selector(openSupport))
+        let invite = menuRow("envelope.fill", NightLang.t(.inviteCode), #selector(openInvite))
+        let feedback = menuRow("info.circle.fill", NightLang.t(.feedback), #selector(openFeedback))
+        let bag = menuRow("bag.fill", NightLang.t(.backpack), #selector(openBag))
         let menus = UIStackView(arrangedSubviews: [blacklist, support, invite, feedback, bag])
         menus.axis = .vertical
         menus.spacing = 10

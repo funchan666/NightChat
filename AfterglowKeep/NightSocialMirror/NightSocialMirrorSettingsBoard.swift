@@ -4,15 +4,15 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
     private let deskCard = NightSocialSettingsDeskCard()
     private let blacklistLane = NightSocialSettingsLane(
         kind: .blacklist,
-        title: "Blacklist",
-        hint: "Desks you hid from this sitting",
+        title: NightLang.t(.blacklist),
+        hint: NightLang.t(.blacklistHint),
         catalog: "PersonIcon",
         fallback: "PersonIcon"
     )
     private let languageLane = NightSocialSettingsLane(
         kind: .language,
-        title: "Language",
-        hint: "Spoken labels on this desk",
+        title: NightLang.t(.language),
+        hint: NightLang.t(.languageHint),
         catalog: "LanguageIcon",
         fallback: "LanguageIcon"
     )
@@ -36,11 +36,11 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
         let head = UILabel()
-        head.text = "Settings"
+        head.text = NightLang.t(.settings)
         head.font = AfterHoursType.foyerHeadline(22)
         head.textColor = .white
         let kicker = UILabel()
-        kicker.text = "House, desk, and sitting"
+        kicker.text = NightLang.t(.settingsKicker)
         kicker.font = AfterHoursType.foyerCaption(12)
         kicker.textColor = UIColor.white.withAlphaComponent(0.62)
         let titleBlock = UIStackView(arrangedSubviews: [head, kicker])
@@ -50,36 +50,36 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
 
         let community = NightSocialSettingsLane(
             kind: .community,
-            title: "Community Rules",
-            hint: "How we keep the house kind",
+            title: NightLang.t(.community),
+            hint: NightLang.t(.communityHint),
             catalog: "SafetyShield",
             fallback: "PersonIcon"
         )
         let privacy = NightSocialSettingsLane(
             kind: .privacy,
-            title: "Privacy agreement",
-            hint: "How NightChat holds your data",
+            title: NightLang.t(.privacy),
+            hint: NightLang.t(.privacyHint),
             catalog: "LockIcon",
             fallback: "PersonIcon"
         )
         let agreement = NightSocialSettingsLane(
             kind: .agreement,
-            title: "User agreement",
-            hint: "Terms of this sitting",
+            title: NightLang.t(.agreement),
+            hint: NightLang.t(.agreementHint),
             symbol: "doc.text.fill"
         )
         let logout = NightSocialSettingsLane(
             kind: .logout,
-            title: "Log Out",
-            hint: "Park this desk until next time",
+            title: NightLang.t(.logOut),
+            hint: NightLang.t(.logOutHint),
             symbol: "rectangle.portrait.and.arrow.right",
             showsChevron: false,
             tone: .leave
         )
         let deleteDesk = NightSocialSettingsLane(
             kind: .deleteDesk,
-            title: "Deletion of account",
-            hint: "Erase this night desk",
+            title: NightLang.t(.deleteAccount),
+            hint: NightLang.t(.deleteAccountHint),
             catalog: "TrashIcon",
             fallback: "PersonIcon",
             showsChevron: false,
@@ -92,10 +92,10 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
 
         let spine = UIStackView(arrangedSubviews: [
             deskCard,
-            cluster(spoken: "Safety", lanes: [blacklistLane, community]),
-            cluster(spoken: "House scrolls", lanes: [privacy, agreement]),
-            cluster(spoken: "Preferences", lanes: [languageLane]),
-            cluster(spoken: "Account", lanes: [logout, deleteDesk]),
+            cluster(spoken: NightLang.t(.safety), lanes: [blacklistLane, community]),
+            cluster(spoken: NightLang.t(.houseScrolls), lanes: [privacy, agreement]),
+            cluster(spoken: NightLang.t(.preferences), lanes: [languageLane]),
+            cluster(spoken: NightLang.t(.account), lanes: [logout, deleteDesk]),
             versionPlate(),
         ])
         spine.axis = .vertical
@@ -189,7 +189,7 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
                 ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 140, height: 140))
         )
         let blocked = NightSocialSessionDrawer.shared.blockedDeskKeys().count
-        blacklistLane.setValue(blocked == 0 ? "Empty" : "\(blocked)", emphasized: blocked > 0)
+        blacklistLane.setValue(blocked == 0 ? NightLang.t(.empty) : "\(blocked)", emphasized: blocked > 0)
         languageLane.setValue(NightSocialSessionDrawer.shared.spokenTongue, emphasized: true)
     }
 
@@ -667,11 +667,11 @@ final class NightSocialMirrorLanguageBoard: UIViewController {
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
         let head = UILabel()
-        head.text = "Language"
+        head.text = NightLang.t(.language)
         head.font = AfterHoursType.foyerHeadline(22)
         head.textColor = .white
         let kicker = UILabel()
-        kicker.text = "Choose the tongue for this desk"
+        kicker.text = NightLang.t(.chooseLanguage)
         kicker.font = AfterHoursType.foyerCaption(12)
         kicker.textColor = UIColor.white.withAlphaComponent(0.62)
         let titleBlock = UIStackView(arrangedSubviews: [head, kicker])
@@ -715,7 +715,7 @@ final class NightSocialMirrorLanguageBoard: UIViewController {
         card.addSubview(stack)
 
         let note = UILabel()
-        note.text = "House copy stays in the tongue you pick for this sitting."
+        note.text = NightLang.t(.languageNote)
         note.font = AfterHoursType.foyerCaption(12)
         note.textColor = UIColor.white.withAlphaComponent(0.38)
         note.numberOfLines = 0
@@ -767,13 +767,15 @@ final class NightSocialMirrorLanguageBoard: UIViewController {
     @objc private func fold() { navigationController?.popViewController(animated: true) }
 
     @objc private func pickTongue(_ sender: UIControl) {
-        let title = tongues[sender.tag]
+        let title = (sender as? NightSocialLanguageLane)?.tongue ?? tongues[sender.tag]
         present(NightSocialLanguageConfirm(tongue: title, host: self), animated: true)
     }
 
     func applyTongue(_ title: String) {
         NightSocialSessionDrawer.shared.writeSpokenTongue(title)
+        NightLang.applyLayoutDirection()
         lanes.forEach { $0.setChosen($0.tongue == title) }
+        AfterglowRootCoordinator.revealLoungeFloor(from: self, startLane: 3)
     }
 }
 
@@ -864,17 +866,17 @@ final class NightSocialLanguageConfirm: UIViewController {
         cloth.layer.cornerRadius = 24
         cloth.translatesAutoresizingMaskIntoConstraints = false
         let body = UILabel()
-        body.text = "Are you sure you want to\nchange the language?"
+        body.text = NightLang.t(.confirmLanguage)
         body.font = AfterHoursType.foyerHeadline(18)
         body.textColor = AfterHoursPalette.inkOnSnow
         body.textAlignment = .center
         body.numberOfLines = 0
         body.translatesAutoresizingMaskIntoConstraints = false
-        let cancel = NightSocialLoungeChrome.ghostPill(title: "Cancel")
+        let cancel = NightSocialLoungeChrome.ghostPill(title: NightLang.t(.cancel))
         cancel.setTitleColor(AfterHoursPalette.inkOnSnow, for: .normal)
         cancel.backgroundColor = UIColor.white.withAlphaComponent(0.75)
         cancel.addTarget(self, action: #selector(fold), for: .touchUpInside)
-        let go = NightSocialLoungeChrome.pinkPill(title: "Confirm")
+        let go = NightSocialLoungeChrome.pinkPill(title: NightLang.t(.confirm))
         go.addTarget(self, action: #selector(confirm), for: .touchUpInside)
         view.addSubview(cloth)
         view.addSubview(body)
@@ -898,7 +900,10 @@ final class NightSocialLanguageConfirm: UIViewController {
     }
     @objc private func fold() { dismiss(animated: true) }
     @objc private func confirm() {
-        host?.applyTongue(tongue)
-        dismiss(animated: true)
+        let chosen = tongue
+        let board = host
+        dismiss(animated: true) {
+            board?.applyTongue(chosen)
+        }
     }
 }
