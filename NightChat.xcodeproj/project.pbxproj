@@ -11,11 +11,11 @@
 		0580EB6E23DCA68FC086DD73 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 013563507BF9FFC8136346AE /* StoreKit.framework */; };
 		0B165C403B461A1294E12DF1 /* NightSocialVideoSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5295F043954D83727C166E /* NightSocialVideoSurface.swift */; };
 		16DFF564B5D39C778516B69B /* NightSocialSessionDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3398D1AFEAAC6EC26A6E0E85 /* NightSocialSessionDrawer.swift */; };
-		1AB67B9E95BA87CC2ADA6DCC /* OFL-Syne.txt in Resources */ = {isa = PBXBuildFile; fileRef = 549FCB70B0A45E2DAEB60286 /* OFL-Syne.txt */; };
 		1BE6D7FA195C0846608E5BEA /* NightSocialChimeCallStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A32E68B2FCF9556F3EC044 /* NightSocialChimeCallStage.swift */; };
 		1CBA8D93327339234A79E85F /* NightSocialCreatorDeskBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F916FBB38B1FA2EEF7BE354 /* NightSocialCreatorDeskBoard.swift */; };
 		1EED0ED74CC0DA8EEF6AD97D /* AfterglowWelcomeGateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796021F432996DD9F5FA84DB /* AfterglowWelcomeGateController.swift */; };
 		1F76CF42BDF8D0A29D6DC38D /* NightSocialWaveCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90D8246EB408DF392941EBA7 /* NightSocialWaveCatalog.swift */; };
+		1F8A6C2D9E4B70C3A5D1829E /* NightSocialCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */; };
 		202CC513C1B25EF98C96E82F /* Outfit-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4626E97C4603219252557755 /* Outfit-Medium.ttf */; };
 		2551F6F7E6368E0C1D309B72 /* NightSocialClipTheater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC57DFC63D1183E846F02A1 /* NightSocialClipTheater.swift */; };
 		2DFC5194F413487D8F6EEB09 /* NightSocialMirrorPerkBoards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8A99AA3D6794A10D8D1083 /* NightSocialMirrorPerkBoards.swift */; };
@@ -29,7 +29,6 @@
 		67910D3EAF043AD6687CB507 /* NightSocialCrownBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9426BFCD6A27B8454231C965 /* NightSocialCrownBoard.swift */; };
 		6C6142E4C9A1ED6AA43F884A /* pics in Resources */ = {isa = PBXBuildFile; fileRef = EA7072DD6E44B01D6B1ED542 /* pics */; };
 		6D92FA7DBEB220535B037A30 /* NightSocialApplePassage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1606CD57E81BFB2DFE0AAD6B /* NightSocialApplePassage.swift */; };
-		6D9C346740C474B8861B7606 /* Syne.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 893F8E957B06FBE0AA32B19F /* Syne.ttf */; };
 		703BBF68230CF089C4FD903C /* AfterglowSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4781EF185DF9D4E1B353AF34 /* AfterglowSceneDelegate.swift */; };
 		774980DBE6F0973DBDD8B568 /* NightSocialChimeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6360D26E924EEAFAE355CB6 /* NightSocialChimeCatalog.swift */; };
 		792255F648E079A9D5B79A90 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */; };
@@ -59,7 +58,6 @@
 		D30BE776B7B19853C8C91841 /* NightSocialWaveStageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70BE7158A9EBAC423D8A30D /* NightSocialWaveStageController.swift */; };
 		D52D3EE8DCA0A17AD09B6403 /* NightSocialChimeThreadBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545CECB30CCA63B915251C7C /* NightSocialChimeThreadBoard.swift */; };
 		D9D35F14C368F9CC7248C801 /* AfterHoursPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77FBAD4EA204A0B519D0290 /* AfterHoursPalette.swift */; };
-		1F8A6C2D9E4B70C3A5D1829E /* NightSocialCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */; };
 		E0158B77B6735C30C7C0512E /* NightSocialPortraitIntake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CE29552CE50EBCAC6C6384 /* NightSocialPortraitIntake.swift */; };
 		E1162EA930A2493AD712AC50 /* NightSocialCommunityLampBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69B136EA75589026E0D3A88F /* NightSocialCommunityLampBoard.swift */; };
 		E43B469CE260E4DEC1CED1D1 /* AfterglowLampClothController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9BA05898CBE3E71F522DB /* AfterglowLampClothController.swift */; };
@@ -125,11 +123,11 @@
 		B0D96B9AB63A3185FB799253 /* Outfit-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Outfit-Regular.ttf"; sourceTree = "<group>"; };
 		B0EDDA9E8B5376544D439FC2 /* NightSocialStageShellController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialStageShellController.swift; sourceTree = "<group>"; };
 		B77FBAD4EA204A0B519D0290 /* AfterHoursPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterHoursPalette.swift; sourceTree = "<group>"; };
-		C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialCopy.swift; sourceTree = "<group>"; };
 		B888E35DCF1E803592EBC0DA /* NightSocialMirrorPeopleBoards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialMirrorPeopleBoards.swift; sourceTree = "<group>"; };
 		B8E075B539E2BE2696B46B7D /* NightSocialWaveVoiceStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialWaveVoiceStage.swift; sourceTree = "<group>"; };
 		BFE1D2325A81167BE2F40BA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialCopy.swift; sourceTree = "<group>"; };
 		C9982E70A4E36569DEB8AFDE /* NightSocialMotionLoaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialMotionLoaders.swift; sourceTree = "<group>"; };
 		CFEA01497A4BCF69815FB659 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D70BE7158A9EBAC423D8A30D /* NightSocialWaveStageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialWaveStageController.swift; sourceTree = "<group>"; };
@@ -579,7 +577,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lampdesk.afterhours;
 				PRODUCT_NAME = NightChat;
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -666,7 +667,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lampdesk.afterhours;
 				PRODUCT_NAME = NightChat;
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
