@@ -406,7 +406,7 @@ enum NightLang {
         .safety: "Seguridad", .preferences: "Preferencias", .account: "Cuenta",
         .customerSupport: "Soporte", .inviteCode: "Código de invitación",
         .feedback: "Comentarios", .backpack: "Mochila",
-        .all: "TODO", .live: "Live", .fresh: "Nuevo", .followTab: "Seguir", .music: "Música",
+        .all: "TODOS", .live: "Live", .fresh: "Nuevo", .followTab: "Seguir", .music: "Música",
         .featuredCreators: "Creadores destacados", .liveRooms: "Salas en vivo",
         .party: "Fiesta", .recent: "Reciente",
         .liveVoiceRooms: "Salas de voz", .followedRooms: "Salas seguidas",

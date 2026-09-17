@@ -40,20 +40,6 @@ enum NightSocialLampPack: CaseIterable {
         }
     }
 
-    var listedPrice: String {
-        switch self {
-        case .spark: return "$0.99"
-        case .ember: return "$1.99"
-        case .wick: return "$4.99"
-        case .lantern: return "$9.99"
-        case .aurora: return "$14.99"
-        case .comet: return "$19.99"
-        case .halo: return "$29.99"
-        case .nova: return "$49.99"
-        case .eclipse: return "$99.99"
-        }
-    }
-
     var spokenTitle: String {
         switch self {
         case .spark: return "Spark"
@@ -111,6 +97,7 @@ enum NightSocialLampStoreIssue: LocalizedError {
 
 enum NightSocialLampStore {
     static let welcomeGrant = 1288
+    static let catalogDidChange = Notification.Name("nightSocial.lampCatalogDidChange")
 
     static let spendGuide: [(String, String)] = [
         ("Live gifts", "99 or 199 coins, by glyph"),
@@ -118,6 +105,25 @@ enum NightSocialLampStore {
         ("Post a night clip", "68 coins"),
         ("Chat, follows, watching", "Always free"),
     ]
+
+    private static var storePrices: [String: String] = [:]
+
+    static func storePrice(for pack: NightSocialLampPack) -> String? {
+        storePrices[pack.productId]
+    }
+
+    static func refreshCatalog() async {
+        do {
+            let found = try await Product.products(for: Set(NightSocialLampPack.allCases.map(\.productId)))
+            let next = Dictionary(uniqueKeysWithValues: found.map { ($0.id, $0.displayPrice) })
+            await MainActor.run {
+                storePrices = next
+                NotificationCenter.default.post(name: catalogDidChange, object: nil)
+            }
+        } catch {
+            return
+        }
+    }
 
     static func startListening() {
         Task.detached {
@@ -130,6 +136,7 @@ enum NightSocialLampStore {
                 _ = try? await settle(result)
             }
         }
+        Task { await refreshCatalog() }
     }
 
     @MainActor
