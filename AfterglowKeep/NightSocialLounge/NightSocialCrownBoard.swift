@@ -171,6 +171,7 @@ final class CrownPodiumSeat: UIControl {
 
         pic.contentMode = .scaleAspectFill
         pic.clipsToBounds = true
+        pic.layer.masksToBounds = true
         pic.isUserInteractionEnabled = false
         pic.translatesAutoresizingMaskIntoConstraints = false
         frameMark.contentMode = .scaleAspectFit
@@ -197,15 +198,15 @@ final class CrownPodiumSeat: UIControl {
         addSubview(spark)
         addSubview(scorePlate)
 
-        let frameEdge: CGFloat = rank == 1 ? 118 : 96
-        let faceEdge: CGFloat = rank == 1 ? 62 : 50
+        let frameEdge: CGFloat = rank == 1 ? 122 : 102
+        let faceEdge: CGFloat = rank == 1 ? 84 : 70
         NSLayoutConstraint.activate([
             frameMark.topAnchor.constraint(equalTo: topAnchor),
             frameMark.centerXAnchor.constraint(equalTo: centerXAnchor),
             frameMark.widthAnchor.constraint(equalToConstant: frameEdge),
             frameMark.heightAnchor.constraint(equalToConstant: frameEdge),
             pic.centerXAnchor.constraint(equalTo: frameMark.centerXAnchor),
-            pic.centerYAnchor.constraint(equalTo: frameMark.centerYAnchor, constant: -7),
+            pic.centerYAnchor.constraint(equalTo: frameMark.centerYAnchor, constant: -2),
             pic.widthAnchor.constraint(equalToConstant: faceEdge),
             pic.heightAnchor.constraint(equalToConstant: faceEdge),
             namePlate.topAnchor.constraint(equalTo: frameMark.bottomAnchor, constant: -6),
@@ -229,7 +230,7 @@ final class CrownPodiumSeat: UIControl {
     required init?(coder: NSCoder) { nil }
 
     func paint(desk: LoungeCreatorDesk, score: Int) {
-        pic.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 120, height: 120))
+        pic.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 240, height: 240))
         namePlate.text = desk.spokenName
         scorePlate.text = Self.scorePhrase(score)
         levelHost.subviews.forEach { $0.removeFromSuperview() }
