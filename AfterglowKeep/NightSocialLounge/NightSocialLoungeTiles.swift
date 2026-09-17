@@ -366,7 +366,7 @@ final class LoungeMusicTile: UICollectionViewCell {
     required init?(coder: NSCoder) { nil }
 
     func paint(_ clip: LoungeClipReel) {
-        cover.image = NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 120, height: 120))
+        cover.image = NightSocialMediaAssets.albumArt(for: clip.clipKey)
         titlePlate.text = clip.musicTitle
         metaPlate.text = "\(clip.authorSpokenName)  ·  \(clip.durationPhrase)"
     }

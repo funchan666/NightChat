@@ -17,6 +17,8 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
     private var chatter: Timer?
     private var speakTimer: Timer?
     private var speakingIndex: Int?
+    private let followPlus = UIButton(type: .system)
+    private var followPlusWidth: NSLayoutConstraint!
 
     init(chamberKey: String) {
         self.chamberKey = chamberKey
@@ -53,13 +55,12 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         hostPlate.font = AfterHoursType.foyerPill(13)
         hostPlate.textColor = .white
         hostPlate.translatesAutoresizingMaskIntoConstraints = false
-        let plus = UIButton(type: .system)
-        plus.setTitle("+", for: .normal)
-        plus.setTitleColor(.white, for: .normal)
-        plus.backgroundColor = AfterHoursPalette.loungePink
-        plus.layer.cornerRadius = 10
-        plus.addTarget(self, action: #selector(followHost), for: .touchUpInside)
-        plus.translatesAutoresizingMaskIntoConstraints = false
+        followPlus.setTitle("+", for: .normal)
+        followPlus.setTitleColor(.white, for: .normal)
+        followPlus.backgroundColor = AfterHoursPalette.loungePink
+        followPlus.layer.cornerRadius = 10
+        followPlus.addTarget(self, action: #selector(followHost), for: .touchUpInside)
+        followPlus.translatesAutoresizingMaskIntoConstraints = false
         let crowd = makeCountChip(
             symbol: "person.2.fill",
             value: "\(chamber.listenerCount)",
@@ -154,7 +155,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         view.addSubview(hostChip)
         hostChip.addSubview(hostPic)
         hostChip.addSubview(hostPlate)
-        hostChip.addSubview(plus)
+        hostChip.addSubview(followPlus)
         view.addSubview(crowd)
         view.addSubview(more)
         view.addSubview(crown)
@@ -185,11 +186,10 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
             hostPic.heightAnchor.constraint(equalToConstant: 28),
             hostPlate.leadingAnchor.constraint(equalTo: hostPic.trailingAnchor, constant: 6),
             hostPlate.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
-            plus.leadingAnchor.constraint(equalTo: hostPlate.trailingAnchor, constant: 6),
-            plus.trailingAnchor.constraint(equalTo: hostChip.trailingAnchor, constant: -6),
-            plus.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
-            plus.widthAnchor.constraint(equalToConstant: 20),
-            plus.heightAnchor.constraint(equalToConstant: 20),
+            followPlus.leadingAnchor.constraint(equalTo: hostPlate.trailingAnchor, constant: 6),
+            followPlus.trailingAnchor.constraint(equalTo: hostChip.trailingAnchor, constant: -6),
+            followPlus.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
+            followPlus.heightAnchor.constraint(equalToConstant: 20),
             more.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
             more.centerYAnchor.constraint(equalTo: exit.centerYAnchor),
             crowd.trailingAnchor.constraint(equalTo: more.leadingAnchor, constant: -8),
@@ -243,8 +243,12 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         if let seated = NightSocialSessionDrawer.shared.seatedChamberSeat(), seated.0 == chamberKey {
             mySeat = seated.1
         }
+        followPlusWidth = followPlus.widthAnchor.constraint(equalToConstant: 20)
+        followPlusWidth.isActive = true
         NotificationCenter.default.addObserver(self, selector: #selector(catchGift(_:)), name: .liveGiftOffered, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(paintFollowPlus), name: .deskDrawerDidChange, object: nil)
         seedOpeningChat()
+        paintFollowPlus()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -524,6 +528,13 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
 
     @objc private func followHost() {
         NightSocialSessionDrawer.shared.toggleFollow(chamber.hostDeskKey)
+        paintFollowPlus()
+    }
+
+    @objc private func paintFollowPlus() {
+        let on = NightSocialSessionDrawer.shared.isFollowing(chamber.hostDeskKey)
+        followPlus.isHidden = on
+        followPlusWidth.constant = on ? 0 : 20
     }
     @objc private func openHost() {
         navigationController?.pushViewController(NightSocialCreatorDeskBoard(deskKey: chamber.hostDeskKey), animated: true)

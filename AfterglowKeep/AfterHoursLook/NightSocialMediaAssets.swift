@@ -33,6 +33,25 @@ enum NightSocialMediaAssets {
         return cache
     }()
 
+    static func albumArt(for clipKey: String) -> UIImage? {
+        let catalog: [String: String] = [
+            "clip.marisol.1": "AlbumArtCardamom",
+            "clip.ellis.1": "AlbumArtTide",
+            "clip.priya.1": "AlbumArtOffices",
+            "clip.nadine.1": "AlbumArtClay",
+            "clip.sable.1": "AlbumArtKitchen",
+            "clip.yara.1": "AlbumArtRoof",
+            "clip.kohei.1": "AlbumArtSignoff",
+            "clip.jonah.1": "AlbumArtBoard",
+        ]
+        if let named = catalog[clipKey], let image = UIImage(named: named) {
+            return image
+        }
+        let fallback = ["AlbumArtCardamom", "AlbumArtTide", "AlbumArtOffices", "AlbumArtClay",
+                        "AlbumArtKitchen", "AlbumArtRoof", "AlbumArtSignoff", "AlbumArtBoard"]
+        return UIImage(named: fallback[abs(clipKey.hashValue) % fallback.count])
+    }
+
     static func person(_ key: String) -> Person? {
         people.first { $0.deskKey == key || $0.spokenName == key }
     }

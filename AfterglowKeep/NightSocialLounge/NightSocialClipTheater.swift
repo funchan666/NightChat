@@ -1,5 +1,201 @@
 import UIKit
 
+final class NightSocialMusicStage: UIViewController {
+    private let clipKey: String
+    private var playing = false
+    private var elapsed: Double = 0
+    private var clock: Timer?
+    private let playMark = UIImageView()
+    private let progress = UIProgressView(progressViewStyle: .default)
+    private let elapsedPlate = UILabel()
+    private let remainPlate = UILabel()
+    private let likePlate = UILabel()
+    private var liked = false
+
+    init(clipKey: String) {
+        self.clipKey = clipKey
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { nil }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = AfterHoursPalette.loungeInk
+        additionalSafeAreaInsets = .zero
+        guard let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) else { return }
+        let art = NightSocialMediaAssets.albumArt(for: clip.clipKey)
+
+        let wash = UIImageView(image: art)
+        wash.contentMode = .scaleAspectFill
+        wash.clipsToBounds = true
+        wash.alpha = 0.22
+        wash.translatesAutoresizingMaskIntoConstraints = false
+        let dim = UIView()
+        dim.backgroundColor = UIColor.black.withAlphaComponent(0.45)
+        dim.translatesAutoresizingMaskIntoConstraints = false
+
+        let album = UIImageView(image: art)
+        album.contentMode = .scaleAspectFill
+        album.clipsToBounds = true
+        album.layer.cornerRadius = 22
+        album.translatesAutoresizingMaskIntoConstraints = false
+
+        playMark.image = UIImage(systemName: "play.circle.fill")
+        playMark.tintColor = AfterHoursPalette.loungePink
+        playMark.translatesAutoresizingMaskIntoConstraints = false
+        playMark.isUserInteractionEnabled = false
+
+        let title = UILabel()
+        title.text = clip.musicTitle
+        title.font = AfterHoursType.foyerHeadline(24)
+        title.textColor = .white
+        title.textAlignment = .center
+        title.translatesAutoresizingMaskIntoConstraints = false
+        let artist = UILabel()
+        artist.text = clip.authorSpokenName
+        artist.font = AfterHoursType.foyerBody(15)
+        artist.textColor = UIColor.white.withAlphaComponent(0.7)
+        artist.textAlignment = .center
+        artist.translatesAutoresizingMaskIntoConstraints = false
+
+        progress.progressTintColor = AfterHoursPalette.loungePink
+        progress.trackTintColor = UIColor.white.withAlphaComponent(0.22)
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        elapsedPlate.font = AfterHoursType.foyerCaption(12)
+        elapsedPlate.textColor = UIColor.white.withAlphaComponent(0.75)
+        elapsedPlate.text = "0:00"
+        elapsedPlate.translatesAutoresizingMaskIntoConstraints = false
+        remainPlate.font = AfterHoursType.foyerCaption(12)
+        remainPlate.textColor = UIColor.white.withAlphaComponent(0.75)
+        remainPlate.text = clip.durationPhrase
+        remainPlate.textAlignment = .right
+        remainPlate.translatesAutoresizingMaskIntoConstraints = false
+
+        let back = NightSocialLoungeChrome.backControl()
+        back.addTarget(self, action: #selector(fold), for: .touchUpInside)
+        let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle")
+        more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
+
+        let heart = UIButton(type: .system)
+        heart.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        heart.tintColor = .white
+        heart.addTarget(self, action: #selector(flipLike), for: .touchUpInside)
+        heart.translatesAutoresizingMaskIntoConstraints = false
+        likePlate.font = AfterHoursType.foyerCaption(12)
+        likePlate.textColor = .white
+        likePlate.text = "\(clip.likeCount)"
+        likePlate.textAlignment = .center
+        likePlate.translatesAutoresizingMaskIntoConstraints = false
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(flipPlayback))
+        view.addGestureRecognizer(tap)
+
+        view.addSubview(wash)
+        view.addSubview(dim)
+        view.addSubview(album)
+        view.addSubview(playMark)
+        view.addSubview(title)
+        view.addSubview(artist)
+        view.addSubview(progress)
+        view.addSubview(elapsedPlate)
+        view.addSubview(remainPlate)
+        view.addSubview(heart)
+        view.addSubview(likePlate)
+        view.addSubview(back)
+        view.addSubview(more)
+        NSLayoutConstraint.activate([
+            wash.topAnchor.constraint(equalTo: view.topAnchor),
+            wash.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            wash.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            wash.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dim.topAnchor.constraint(equalTo: view.topAnchor),
+            dim.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dim.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            dim.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            album.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            album.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -70),
+            album.widthAnchor.constraint(equalToConstant: 280),
+            album.heightAnchor.constraint(equalToConstant: 280),
+            playMark.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            playMark.topAnchor.constraint(equalTo: album.bottomAnchor, constant: 22),
+            playMark.widthAnchor.constraint(equalToConstant: 64),
+            playMark.heightAnchor.constraint(equalToConstant: 64),
+            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            title.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            title.topAnchor.constraint(equalTo: playMark.bottomAnchor, constant: 18),
+            artist.leadingAnchor.constraint(equalTo: title.leadingAnchor),
+            artist.trailingAnchor.constraint(equalTo: title.trailingAnchor),
+            artist.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 6),
+            progress.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            progress.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            progress.topAnchor.constraint(equalTo: artist.bottomAnchor, constant: 22),
+            elapsedPlate.leadingAnchor.constraint(equalTo: progress.leadingAnchor),
+            elapsedPlate.topAnchor.constraint(equalTo: progress.bottomAnchor, constant: 8),
+            remainPlate.trailingAnchor.constraint(equalTo: progress.trailingAnchor),
+            remainPlate.centerYAnchor.constraint(equalTo: elapsedPlate.centerYAnchor),
+            heart.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -18),
+            heart.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -48),
+            likePlate.centerXAnchor.constraint(equalTo: heart.centerXAnchor),
+            likePlate.topAnchor.constraint(equalTo: heart.bottomAnchor, constant: 2),
+            back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
+            more.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
+            more.centerYAnchor.constraint(equalTo: back.centerYAnchor),
+        ])
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        clock?.invalidate()
+        clock = nil
+    }
+
+    @objc private func fold() { navigationController?.popViewController(animated: true) }
+
+    @objc private func flipPlayback() {
+        playing.toggle()
+        playMark.image = UIImage(systemName: playing ? "pause.circle.fill" : "play.circle.fill")
+        if playing { startClock() } else { clock?.invalidate(); clock = nil }
+    }
+
+    private func startClock() {
+        clock?.invalidate()
+        clock = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { [weak self] _ in
+            guard let self, let clip = NightSocialLoungeCatalog.clip(clipKey: self.clipKey) else { return }
+            let duration = Double(clip.trackSeconds)
+            self.elapsed = min(duration, self.elapsed + 0.25)
+            self.progress.progress = Float(self.elapsed / max(duration, 1))
+            self.elapsedPlate.text = Self.clockPhrase(self.elapsed)
+            self.remainPlate.text = Self.clockPhrase(max(0, duration - self.elapsed))
+            if self.elapsed >= duration {
+                self.playing = false
+                self.elapsed = 0
+                self.playMark.image = UIImage(systemName: "play.circle.fill")
+                self.clock?.invalidate()
+                self.clock = nil
+            }
+        }
+    }
+
+    private static func clockPhrase(_ seconds: Double) -> String {
+        let total = max(0, Int(seconds))
+        return String(format: "%d:%02d", total / 60, total % 60)
+    }
+
+    @objc private func openSafety() {
+        guard let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) else { return }
+        NightSocialSafetyFlow.presentChooser(from: self, target: .clip(clipKey: clip.clipKey, authorDeskKey: clip.authorDeskKey))
+    }
+
+    @objc private func flipLike() {
+        liked.toggle()
+        if let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) {
+            likePlate.text = "\(clip.likeCount + (liked ? 1 : 0))"
+        }
+    }
+}
+
 final class NightSocialClipTheater: UIViewController {
     private let clipKey: String
     private let asMusic: Bool

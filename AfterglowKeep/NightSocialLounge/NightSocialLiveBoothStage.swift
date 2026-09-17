@@ -213,6 +213,8 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     private let giftRibbon = LiveGiftRibbon()
     private let giftBurst = UIImageView()
     private var chatter: Timer?
+    private let followPlus = UIButton(type: .system)
+    private var followPlusWidth: NSLayoutConstraint!
 
     init(boothKey: String) {
         self.boothKey = boothKey
@@ -261,13 +263,12 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         hostName.font = AfterHoursType.foyerPill(13)
         hostName.textColor = .white
         hostName.translatesAutoresizingMaskIntoConstraints = false
-        let plus = UIButton(type: .system)
-        plus.setTitle("+", for: .normal)
-        plus.setTitleColor(.white, for: .normal)
-        plus.backgroundColor = AfterHoursPalette.loungePink
-        plus.layer.cornerRadius = 10
-        plus.addTarget(self, action: #selector(followHost), for: .touchUpInside)
-        plus.translatesAutoresizingMaskIntoConstraints = false
+        followPlus.setTitle("+", for: .normal)
+        followPlus.setTitleColor(.white, for: .normal)
+        followPlus.backgroundColor = AfterHoursPalette.loungePink
+        followPlus.layer.cornerRadius = 10
+        followPlus.addTarget(self, action: #selector(followHost), for: .touchUpInside)
+        followPlus.translatesAutoresizingMaskIntoConstraints = false
 
         let watchChip = UIButton(type: .custom)
         watchChip.backgroundColor = UIColor.black.withAlphaComponent(0.35)
@@ -337,7 +338,7 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         view.addSubview(hostChip)
         hostChip.addSubview(hostPic)
         hostChip.addSubview(hostName)
-        hostChip.addSubview(plus)
+        hostChip.addSubview(followPlus)
         view.addSubview(watchChip)
         view.addSubview(more)
         view.addSubview(close)
@@ -363,11 +364,10 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
             hostPic.heightAnchor.constraint(equalToConstant: 32),
             hostName.leadingAnchor.constraint(equalTo: hostPic.trailingAnchor, constant: 6),
             hostName.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
-            plus.leadingAnchor.constraint(equalTo: hostName.trailingAnchor, constant: 8),
-            plus.trailingAnchor.constraint(equalTo: hostChip.trailingAnchor, constant: -6),
-            plus.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
-            plus.widthAnchor.constraint(equalToConstant: 20),
-            plus.heightAnchor.constraint(equalToConstant: 20),
+            followPlus.leadingAnchor.constraint(equalTo: hostName.trailingAnchor, constant: 8),
+            followPlus.trailingAnchor.constraint(equalTo: hostChip.trailingAnchor, constant: -6),
+            followPlus.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
+            followPlus.heightAnchor.constraint(equalToConstant: 20),
             close.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
             close.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
             more.trailingAnchor.constraint(equalTo: close.leadingAnchor, constant: -8),
@@ -411,8 +411,12 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
             send.centerYAnchor.constraint(equalTo: field.centerYAnchor),
             field.trailingAnchor.constraint(equalTo: send.leadingAnchor, constant: -8),
         ])
+        followPlusWidth = followPlus.widthAnchor.constraint(equalToConstant: 20)
+        followPlusWidth.isActive = true
         NotificationCenter.default.addObserver(self, selector: #selector(catchGift(_:)), name: .liveGiftOffered, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(paintFollowPlus), name: .deskDrawerDidChange, object: nil)
         seedOpeningChat()
+        paintFollowPlus()
     }
 
     deinit { NotificationCenter.default.removeObserver(self) }
@@ -426,7 +430,15 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     @objc private func followHost() {
         if let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) {
             NightSocialSessionDrawer.shared.toggleFollow(booth.hostDeskKey)
+            paintFollowPlus()
         }
+    }
+
+    @objc private func paintFollowPlus() {
+        guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
+        let on = NightSocialSessionDrawer.shared.isFollowing(booth.hostDeskKey)
+        followPlus.isHidden = on
+        followPlusWidth.constant = on ? 0 : 20
     }
     @objc private func openHost() {
         guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }

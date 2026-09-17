@@ -255,7 +255,9 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
         case .fresh, .music:
             let clip = clipItems[indexPath.item]
             navigationController?.pushViewController(
-                NightSocialClipTheater(clipKey: clip.clipKey, asMusic: browseLane == .music),
+                browseLane == .music
+                    ? NightSocialMusicStage(clipKey: clip.clipKey)
+                    : NightSocialClipTheater(clipKey: clip.clipKey),
                 animated: true
             )
         }

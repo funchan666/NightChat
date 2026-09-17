@@ -174,15 +174,29 @@ enum NightSocialLoungeCatalog {
                 cityLabel: "NightChat", handleTag: "@" + person.deskKey.dropFirst(5),
                 vibeLine: "Sharing moments and meeting new friends.", vibeTags: ["NewFriends", "CasualTalk"],
                 levelMark: 1, likeCount: 0, followerCount: "0", friendCount: "0", watchingCount: "0",
-                matchPercent: "", activityScore: 0, isHot: false, isLive: person.video != nil,
+                matchPercent: "", activityScore: 0, isHot: false,
+                isLive: person.video != nil && !voiceBusyDeskKeys.contains(person.deskKey),
                 meridian: .global, clipCaptions: [], musicTitle: ""
             )
         }
 
+    // People sitting in a voice room cannot also host a live stream.
+    static let voiceBusyDeskKeys: Set<String> = [
+        "desk.ada.bell", "desk.ivy.stone", "desk.zoe.wells", "desk.clara.june",
+        "desk.ella.moss", "desk.alex.park", "desk.sophia.lane", "desk.theo.miles",
+        "desk.emma.reed", "desk.luca.brooks", "desk.isla.west", "desk.felix.hayes",
+        "desk.nora.blake", "desk.noah.rivers", "desk.maya.rose", "desk.leo.gray",
+        "desk.jude.ford", "desk.finn.woods", "desk.ruby.lake", "desk.owen.hill",
+    ]
+
     // One room per supplied video. The original room keys remain stable so
     // existing navigation and stored relations still work.
     static let booths: [LoungeLiveBooth] = originalBooths + NightSocialMediaAssets.people
-        .filter { person in person.video != nil && !originalBooths.contains { $0.hostDeskKey == person.deskKey } }
+        .filter { person in
+            person.video != nil
+                && !voiceBusyDeskKeys.contains(person.deskKey)
+                && !originalBooths.contains { $0.hostDeskKey == person.deskKey }
+        }
         .map { person in
             let stats = modestLiveStats(for: person.deskKey)
             return LoungeLiveBooth(
@@ -224,11 +238,36 @@ enum NightSocialLoungeCatalog {
     }
 
     static func booth(boothKey: String) -> LoungeLiveBooth? {
-        booths.first { $0.boothKey == boothKey }
+        booths.first { $0.boothKey == boothKey } ?? hostedLiveBooths().first { $0.boothKey == boothKey }
     }
 
     static func booth(hostedBy deskKey: String) -> LoungeLiveBooth? {
-        booths.first { $0.hostDeskKey == deskKey }
+        booths.first { $0.hostDeskKey == deskKey } ?? hostedLiveBooths().first { $0.hostDeskKey == deskKey }
+    }
+
+    static func hostedLiveBooths() -> [LoungeLiveBooth] {
+        NightSocialSessionDrawer.shared.hostedLiveRecords().compactMap { rec in
+            guard let key = rec["key"], let title = rec["title"], let host = rec["host"] else { return nil }
+            let tags = (rec["tags"] ?? "").split(separator: ",").map(String.init)
+            let alias = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "You"
+            let land = NightSocialLampAtlas.land(code: NightSocialSessionDrawer.shared.homeCountryCode)
+            return LoungeLiveBooth(
+                boothKey: key,
+                boothTitle: title,
+                moodLine: rec["mood"] ?? "Live now",
+                hostDeskKey: host,
+                hostSpokenName: alias,
+                hostAge: 18,
+                hostCity: land.spokenTitle,
+                vibeTags: tags,
+                watcherCount: 1,
+                giftCount: 0,
+                likeCount: 0,
+                durationPhrase: "00:00:12",
+                regionLabel: land.spokenTitle,
+                meridian: .global
+            )
+        }
     }
 
     static func clip(clipKey: String) -> LoungeClipReel? {
@@ -277,7 +316,7 @@ enum NightSocialLoungeCatalog {
     }
 
     static func visibleBooths() -> [LoungeLiveBooth] {
-        booths.filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
+        (hostedLiveBooths() + booths).filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
     }
 
     static func liveHeatRank(boothKey: String) -> Int {

@@ -2,12 +2,16 @@ import PhotosUI
 import UIKit
 
 final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewControllerDelegate {
+    private enum LiveKind { case voice, video }
+    private var kind: LiveKind = .video
     private let titleField = FoyerLonelySnowField(whisper: "What's your room about?")
     private let cover = UIImageView()
     private var coverImage: UIImage?
     private var pickedTags: Set<String> = []
     private let tagTitles = ["Chat", "Music", "Game Talk", "Life Vibe", "Relax Time", "Story Sharing"]
-    private let tagRow = UIStackView()
+    private let voiceCard = UIButton(type: .custom)
+    private let videoCard = UIButton(type: .custom)
+    private let start = NightSocialLoungeChrome.pinkPill(title: "Start")
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
@@ -15,95 +19,174 @@ final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewController
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeInk
         additionalSafeAreaInsets = .zero
+        navigationController?.setNavigationBarHidden(true, animated: false)
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
         let head = UILabel()
         head.text = "Go Live"
-        head.font = AfterHoursType.foyerHeadline(20)
+        head.font = AfterHoursType.foyerHeadline(22)
         head.textColor = .white
         head.translatesAutoresizingMaskIntoConstraints = false
+
+        let scroller = UIScrollView()
+        scroller.alwaysBounceVertical = true
+        scroller.keyboardDismissMode = .onDrag
+        scroller.translatesAutoresizingMaskIntoConstraints = false
+
+        styleModeCard(voiceCard, symbol: "mic.fill", title: "Voice Room", subtitle: "Talk on mics with a sitting")
+        voiceCard.addTarget(self, action: #selector(pickVoice), for: .touchUpInside)
+        styleModeCard(videoCard, symbol: "video.fill", title: "Video Live", subtitle: "Go on camera")
+        videoCard.addTarget(self, action: #selector(pickVideo), for: .touchUpInside)
+        let modes = UIStackView(arrangedSubviews: [voiceCard, videoCard])
+        modes.axis = .horizontal
+        modes.spacing = 10
+        modes.distribution = .fillEqually
+        modes.translatesAutoresizingMaskIntoConstraints = false
+
         cover.backgroundColor = AfterHoursPalette.loungeCard
-        cover.layer.cornerRadius = 18
+        cover.layer.cornerRadius = 20
         cover.clipsToBounds = true
         cover.contentMode = .scaleAspectFill
         cover.isUserInteractionEnabled = true
         cover.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pickCover)))
         cover.translatesAutoresizingMaskIntoConstraints = false
+        let cam = UIImageView(image: UIImage(systemName: "camera.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)))
+        cam.tintColor = .white
+        cam.translatesAutoresizingMaskIntoConstraints = false
         let coverHint = UILabel()
         coverHint.text = "Add a cover"
-        coverHint.textColor = UIColor.white.withAlphaComponent(0.7)
+        coverHint.textColor = UIColor.white.withAlphaComponent(0.78)
         coverHint.font = AfterHoursType.foyerBody(14)
         coverHint.translatesAutoresizingMaskIntoConstraints = false
         coverHint.tag = 44
+        let hintStack = UIStackView(arrangedSubviews: [cam, coverHint])
+        hintStack.axis = .vertical
+        hintStack.alignment = .center
+        hintStack.spacing = 8
+        hintStack.translatesAutoresizingMaskIntoConstraints = false
+        hintStack.tag = 44
+        hintStack.isUserInteractionEnabled = false
+
         let titleMark = UILabel()
         titleMark.text = "Title"
         titleMark.font = AfterHoursType.foyerPill(14)
         titleMark.textColor = .white
-        titleMark.translatesAutoresizingMaskIntoConstraints = false
         let labelMark = UILabel()
         labelMark.text = "Label"
         labelMark.font = AfterHoursType.foyerPill(14)
         labelMark.textColor = .white
-        labelMark.translatesAutoresizingMaskIntoConstraints = false
-        tagRow.axis = .horizontal
-        tagRow.spacing = 8
-        tagRow.translatesAutoresizingMaskIntoConstraints = false
-        let wrap = UIScrollView()
-        wrap.showsHorizontalScrollIndicator = false
-        wrap.translatesAutoresizingMaskIntoConstraints = false
-        wrap.addSubview(tagRow)
-        for (index, title) in tagTitles.enumerated() {
-            let chip = UIButton(type: .system)
-            chip.setTitle("  \(title)  ", for: .normal)
-            chip.tag = index
-            chip.layer.cornerRadius = 14
-            chip.backgroundColor = UIColor.white.withAlphaComponent(0.10)
-            chip.setTitleColor(.white, for: .normal)
-            chip.addTarget(self, action: #selector(flipTag(_:)), for: .touchUpInside)
-            tagRow.addArrangedSubview(chip)
+
+        let tagWrap = UIStackView()
+        tagWrap.axis = .vertical
+        tagWrap.spacing = 8
+        tagWrap.translatesAutoresizingMaskIntoConstraints = false
+        for chunk in stride(from: 0, to: tagTitles.count, by: 3) {
+            let row = UIStackView()
+            row.axis = .horizontal
+            row.spacing = 8
+            row.distribution = .fillEqually
+            row.translatesAutoresizingMaskIntoConstraints = false
+            for index in chunk..<min(chunk + 3, tagTitles.count) {
+                let chip = UIButton(type: .custom)
+                chip.setTitle(tagTitles[index], for: .normal)
+                chip.tag = index
+                chip.layer.cornerRadius = 16
+                chip.titleLabel?.font = AfterHoursType.foyerCaption(12)
+                chip.backgroundColor = UIColor.white.withAlphaComponent(0.10)
+                chip.setTitleColor(.white, for: .normal)
+                chip.addTarget(self, action: #selector(flipTag(_:)), for: .touchUpInside)
+                chip.heightAnchor.constraint(equalToConstant: 32).isActive = true
+                row.addArrangedSubview(chip)
+            }
+            tagWrap.addArrangedSubview(row)
         }
-        let start = NightSocialLoungeChrome.pinkPill(title: "StartLive · 120pts")
+
         start.addTarget(self, action: #selector(startLive), for: .touchUpInside)
+        paintMode()
+
+        let stack = UIStackView(arrangedSubviews: [modes, cover, titleMark, titleField, labelMark, tagWrap])
+        stack.axis = .vertical
+        stack.spacing = 14
+        stack.setCustomSpacing(18, after: modes)
+        stack.setCustomSpacing(18, after: cover)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(back)
         view.addSubview(head)
-        view.addSubview(cover)
-        cover.addSubview(coverHint)
-        view.addSubview(titleMark)
-        view.addSubview(titleField)
-        view.addSubview(labelMark)
-        view.addSubview(wrap)
+        view.addSubview(scroller)
+        scroller.addSubview(stack)
+        cover.addSubview(hintStack)
         view.addSubview(start)
         NSLayoutConstraint.activate([
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
             head.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             head.centerYAnchor.constraint(equalTo: back.centerYAnchor),
-            cover.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            cover.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            cover.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 16),
-            cover.heightAnchor.constraint(equalToConstant: 180),
-            coverHint.centerXAnchor.constraint(equalTo: cover.centerXAnchor),
-            coverHint.centerYAnchor.constraint(equalTo: cover.centerYAnchor),
-            titleMark.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            titleMark.topAnchor.constraint(equalTo: cover.bottomAnchor, constant: 16),
-            titleField.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            titleField.trailingAnchor.constraint(equalTo: cover.trailingAnchor),
-            titleField.topAnchor.constraint(equalTo: titleMark.bottomAnchor, constant: 8),
-            labelMark.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            labelMark.topAnchor.constraint(equalTo: titleField.bottomAnchor, constant: 16),
-            wrap.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            wrap.trailingAnchor.constraint(equalTo: cover.trailingAnchor),
-            wrap.topAnchor.constraint(equalTo: labelMark.bottomAnchor, constant: 8),
-            wrap.heightAnchor.constraint(equalToConstant: 32),
-            tagRow.leadingAnchor.constraint(equalTo: wrap.contentLayoutGuide.leadingAnchor),
-            tagRow.trailingAnchor.constraint(equalTo: wrap.contentLayoutGuide.trailingAnchor),
-            tagRow.topAnchor.constraint(equalTo: wrap.contentLayoutGuide.topAnchor),
-            tagRow.bottomAnchor.constraint(equalTo: wrap.contentLayoutGuide.bottomAnchor),
-            start.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            start.trailingAnchor.constraint(equalTo: cover.trailingAnchor),
+            scroller.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 12),
+            scroller.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroller.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroller.bottomAnchor.constraint(equalTo: start.topAnchor, constant: -12),
+            stack.topAnchor.constraint(equalTo: scroller.contentLayoutGuide.topAnchor),
+            stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            stack.bottomAnchor.constraint(equalTo: scroller.contentLayoutGuide.bottomAnchor, constant: -16),
+            stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -32),
+            modes.heightAnchor.constraint(equalToConstant: 108),
+            cover.heightAnchor.constraint(equalToConstant: 168),
+            hintStack.centerXAnchor.constraint(equalTo: cover.centerXAnchor),
+            hintStack.centerYAnchor.constraint(equalTo: cover.centerYAnchor),
+            start.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            start.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             start.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -28),
         ])
     }
+
+    private func styleModeCard(_ card: UIButton, symbol: String, title: String, subtitle: String) {
+        card.layer.cornerRadius = 18
+        card.translatesAutoresizingMaskIntoConstraints = false
+        let mark = UIImageView(image: UIImage(systemName: symbol, withConfiguration: UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)))
+        mark.tintColor = AfterHoursPalette.loungePink
+        mark.translatesAutoresizingMaskIntoConstraints = false
+        let name = UILabel()
+        name.text = title
+        name.font = AfterHoursType.foyerPill(15)
+        name.textColor = .white
+        name.translatesAutoresizingMaskIntoConstraints = false
+        let hint = UILabel()
+        hint.text = subtitle
+        hint.font = AfterHoursType.foyerCaption(11)
+        hint.textColor = UIColor.white.withAlphaComponent(0.62)
+        hint.numberOfLines = 2
+        hint.textAlignment = .center
+        hint.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(mark)
+        card.addSubview(name)
+        card.addSubview(hint)
+        NSLayoutConstraint.activate([
+            mark.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+            mark.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
+            name.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+            name.topAnchor.constraint(equalTo: mark.bottomAnchor, constant: 8),
+            hint.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 8),
+            hint.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -8),
+            hint.topAnchor.constraint(equalTo: name.bottomAnchor, constant: 4),
+        ])
+    }
+
+    private func paintMode() {
+        let voiceOn = kind == .voice
+        voiceCard.backgroundColor = voiceOn ? AfterHoursPalette.loungePink.withAlphaComponent(0.28) : AfterHoursPalette.loungeCard
+        videoCard.backgroundColor = voiceOn ? AfterHoursPalette.loungeCard : AfterHoursPalette.loungePink.withAlphaComponent(0.28)
+        voiceCard.layer.borderWidth = voiceOn ? 1.5 : 0
+        videoCard.layer.borderWidth = voiceOn ? 0 : 1.5
+        voiceCard.layer.borderColor = AfterHoursPalette.loungePink.cgColor
+        videoCard.layer.borderColor = AfterHoursPalette.loungePink.cgColor
+        let cost = NightSocialLampSpend.hostVoice.cost
+        start.setTitle(voiceOn ? "Start Voice Room · \(cost)" : "Start Video Live · \(cost)", for: .normal)
+    }
+
+    @objc private func pickVoice() { kind = .voice; paintMode() }
+    @objc private func pickVideo() { kind = .video; paintMode() }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
 
@@ -138,16 +221,22 @@ final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewController
     @objc private func startLive() {
         let title = NightSocialFoyerGuard.trimmed(titleField.text)
         if title.isEmpty {
-            FoyerNotice.present(on: self, spokenTitle: "Title still empty", spokenBody: "Write what this voice desk is about before you go live.")
+            FoyerNotice.present(on: self, spokenTitle: "Title still empty", spokenBody: "Write a title before you go live.")
             return
         }
         if pickedTags.isEmpty {
-            FoyerNotice.present(on: self, spokenTitle: "Pick a label", spokenBody: "Choose at least one label so people can find the sitting.")
+            FoyerNotice.present(on: self, spokenTitle: "Pick a label", spokenBody: "Choose at least one label so people can find you.")
             return
         }
         let tags = Array(pickedTags)
-        NightSocialLampStore.spend(.hostVoice, from: self) { [weak self] in
-            self?.openHostedSitting(title: title, tags: tags)
+        let spend: NightSocialLampSpend = kind == .voice ? .hostVoice : .hostLive
+        NightSocialLampStore.spend(spend, from: self) { [weak self] in
+            guard let self else { return }
+            if self.kind == .voice {
+                self.openHostedSitting(title: title, tags: tags)
+            } else {
+                self.openHostedLive(title: title, tags: tags)
+            }
         }
     }
 
@@ -163,6 +252,19 @@ final class NightSocialWaveGoLiveBoard: UIViewController, PHPickerViewController
         ])
         NightSocialSessionDrawer.shared.rememberVisitedChamber(key)
         navigationController?.pushViewController(NightSocialWaveVoiceStage(chamberKey: key), animated: true)
+    }
+
+    private func openHostedLive(title: String, tags: [String]) {
+        let host = NightSocialSessionDrawer.shared.restoredSession()?.deskHolderId ?? "me.desk"
+        let key = "live.hosted.\(UUID().uuidString)"
+        NightSocialSessionDrawer.shared.rememberHostedLive([
+            "key": key,
+            "title": title,
+            "mood": "Live now",
+            "host": host,
+            "tags": tags.joined(separator: ","),
+        ])
+        navigationController?.pushViewController(NightSocialLiveBoothStage(boothKey: key), animated: true)
     }
 }
 

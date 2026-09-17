@@ -72,12 +72,13 @@ enum NightSocialLampPack: CaseIterable {
 enum NightSocialLampSpend {
     case liveGift(LoungeGiftToken, quantity: Int)
     case hostVoice
+    case hostLive
     case postClip
 
     var cost: Int {
         switch self {
         case .liveGift(let gift, let quantity): return gift.diamondCost * quantity
-        case .hostVoice: return 188
+        case .hostVoice, .hostLive: return 188
         case .postClip: return 68
         }
     }
@@ -86,6 +87,7 @@ enum NightSocialLampSpend {
         switch self {
         case .liveGift(let gift, let quantity): return "Send \(gift.spokenTitle)×\(quantity)"
         case .hostVoice: return "Open a voice sitting"
+        case .hostLive: return "Start a video live"
         case .postClip: return "Post a night clip"
         }
     }

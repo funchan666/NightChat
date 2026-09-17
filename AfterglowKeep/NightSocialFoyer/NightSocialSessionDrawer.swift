@@ -113,6 +113,7 @@ final class NightSocialSessionDrawer {
         static let acceptedFriends = "lampdesk.nightSocial.acceptedFriends.v1"
         static let recentChambers = "lampdesk.nightSocial.recentVoiceChambers.v1"
         static let hostedChambers = "lampdesk.nightSocial.hostedVoiceChambers.v1"
+        static let hostedLives = "lampdesk.nightSocial.hostedLiveBooths.v1"
         static let seatedChamber = "lampdesk.nightSocial.seatedVoiceChamber.v1"
         static let chimeLines = "lampdesk.nightSocial.chimeLines.v2"
         static let chimeRead = "lampdesk.nightSocial.chimeRead.v2"
@@ -550,6 +551,17 @@ final class NightSocialSessionDrawer {
         defaults.array(forKey: DrawerSlot.hostedChambers) as? [[String: String]] ?? []
     }
 
+    func hostedLiveRecords() -> [[String: String]] {
+        defaults.array(forKey: DrawerSlot.hostedLives) as? [[String: String]] ?? []
+    }
+
+    func rememberHostedLive(_ record: [String: String]) {
+        var rows = hostedLiveRecords()
+        rows.insert(record, at: 0)
+        defaults.set(rows, forKey: DrawerSlot.hostedLives)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
     func chimeLines(for deskKey: String) -> [ChimeLine] {
         let box = decode([String: [ChimeLine]].self, key: DrawerSlot.chimeLines) ?? [:]
         return box[deskKey] ?? []
@@ -653,7 +665,7 @@ final class NightSocialSessionDrawer {
             DrawerSlot.blockedDesks, DrawerSlot.reportedDesks, DrawerSlot.reportedClips,
             DrawerSlot.reportedLines, DrawerSlot.clipComments, DrawerSlot.pendingClips,
             DrawerSlot.sentFriendAsks, DrawerSlot.incomingFriendAsks, DrawerSlot.acceptedFriends,
-            DrawerSlot.recentChambers, DrawerSlot.hostedChambers, DrawerSlot.seatedChamber,
+            DrawerSlot.recentChambers, DrawerSlot.hostedChambers, DrawerSlot.hostedLives, DrawerSlot.seatedChamber,
             DrawerSlot.chimeLines, DrawerSlot.chimeRead, DrawerSlot.platformRead,
             DrawerSlot.likesRead, DrawerSlot.spokenTongue, DrawerSlot.homeCountry, DrawerSlot.genderMark,
             DrawerSlot.profileTags, DrawerSlot.checkInDays,
