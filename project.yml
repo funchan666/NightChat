@@ -1,6 +1,6 @@
 name: NightChat
 options:
-  bundleIdPrefix: com.lampdesk
+  bundleIdPrefix: com.sittinglamp
   deploymentTarget:
     iOS: "16.0"
   developmentLanguage: en
@@ -31,7 +31,7 @@ targets:
       - sdk: StoreKit.framework
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.lampdesk.nightlounge
+        PRODUCT_BUNDLE_IDENTIFIER: com.sittinglamp.nightdesk
         INFOPLIST_FILE: AfterglowKeep/Info.plist
         PRODUCT_NAME: NightChat
         CODE_SIGN_ENTITLEMENTS: AfterglowKeep/NightChat.entitlements
