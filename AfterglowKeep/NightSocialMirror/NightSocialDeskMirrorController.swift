@@ -251,13 +251,13 @@ final class NightSocialDeskMirrorController: UIViewController {
             wallet.widthAnchor.constraint(equalToConstant: 187),
             wallet.heightAnchor.constraint(equalToConstant: 180),
             check.leadingAnchor.constraint(equalTo: wallet.trailingAnchor, constant: 8),
+            check.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             check.topAnchor.constraint(equalTo: wallet.topAnchor),
-            check.widthAnchor.constraint(equalToConstant: 168.24),
             check.heightAnchor.constraint(equalToConstant: 85.67),
             levelCard.leadingAnchor.constraint(equalTo: check.leadingAnchor),
-            levelCard.topAnchor.constraint(equalTo: check.bottomAnchor, constant: 9.09),
-            levelCard.widthAnchor.constraint(equalToConstant: 188),
-            levelCard.heightAnchor.constraint(equalToConstant: 85.24),
+            levelCard.trailingAnchor.constraint(equalTo: check.trailingAnchor),
+            levelCard.topAnchor.constraint(equalTo: check.bottomAnchor, constant: 8.66),
+            levelCard.bottomAnchor.constraint(equalTo: wallet.bottomAnchor),
             menus.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             menus.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             menus.topAnchor.constraint(equalTo: wallet.bottomAnchor, constant: 14),
@@ -343,7 +343,7 @@ final class NightSocialDeskMirrorController: UIViewController {
         card.layer.cornerRadius = 22
         card.translatesAutoresizingMaskIntoConstraints = false
         let art = UIImageView(image: image)
-        art.contentMode = .scaleToFill
+        art.contentMode = .scaleAspectFill
         art.clipsToBounds = true
         art.isUserInteractionEnabled = false
         art.translatesAutoresizingMaskIntoConstraints = false
