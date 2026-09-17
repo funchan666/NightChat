@@ -95,7 +95,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         tagRow.spacing = 8
         tagRow.translatesAutoresizingMaskIntoConstraints = false
 
-        styleActionPill(followPill, title: NightLang.t(.plusFollow), symbol: "plus")
+        styleActionPill(followPill, title: NightLang.t(.follow), symbol: "plus")
         followPill.addTarget(self, action: #selector(flipFollow), for: .touchUpInside)
         styleActionPill(chatPill, title: NightLang.t(.chatting), symbol: "ellipsis.bubble.fill")
         chatPill.addTarget(self, action: #selector(openWhisper), for: .touchUpInside)
@@ -311,7 +311,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     private func paintFollow() {
         let on = NightSocialSessionDrawer.shared.isFollowing(deskKey)
         followedMark.isHidden = !on
-        followPill.setTitle(on ? " \(NightLang.t(.followed))" : " \(NightLang.t(.plusFollow))", for: .normal)
+        followPill.setTitle(on ? " \(NightLang.t(.followed))" : " \(NightLang.t(.follow))", for: .normal)
         followPill.setImage(
             UIImage(
                 systemName: on ? "checkmark" : "plus",
