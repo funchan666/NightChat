@@ -270,6 +270,53 @@ final class LoungeClipTile: UICollectionViewCell {
     }
 }
 
+final class LoungeMomentTile: UICollectionViewCell {
+    static let reuseId = "LoungeMomentTile"
+    private let still = UIImageView()
+    private let captionBar = UIView()
+    private let captionPlate = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.layer.cornerRadius = 16
+        contentView.clipsToBounds = true
+        still.contentMode = .scaleAspectFill
+        still.clipsToBounds = true
+        still.translatesAutoresizingMaskIntoConstraints = false
+        captionBar.backgroundColor = AfterHoursPalette.loungePink.withAlphaComponent(0.92)
+        captionBar.translatesAutoresizingMaskIntoConstraints = false
+        captionPlate.font = AfterHoursType.foyerCaption(11)
+        captionPlate.textColor = .white
+        captionPlate.numberOfLines = 2
+        captionPlate.lineBreakMode = .byTruncatingTail
+        captionPlate.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(still)
+        contentView.addSubview(captionBar)
+        captionBar.addSubview(captionPlate)
+        NSLayoutConstraint.activate([
+            still.topAnchor.constraint(equalTo: contentView.topAnchor),
+            still.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            still.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            still.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            captionBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            captionBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            captionBar.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            captionPlate.leadingAnchor.constraint(equalTo: captionBar.leadingAnchor, constant: 10),
+            captionPlate.trailingAnchor.constraint(equalTo: captionBar.trailingAnchor, constant: -10),
+            captionPlate.topAnchor.constraint(equalTo: captionBar.topAnchor, constant: 8),
+            captionPlate.bottomAnchor.constraint(equalTo: captionBar.bottomAnchor, constant: -8),
+        ])
+    }
+    required init?(coder: NSCoder) { nil }
+
+    func paint(_ moment: DeskMoment) {
+        still.image = moment.useCover
+            ? NightSocialMediaAssets.cover(for: moment.deskKey, size: CGSize(width: 320, height: 400))
+            : NightSocialMediaAssets.portrait(for: moment.deskKey, size: CGSize(width: 320, height: 400))
+        captionPlate.text = moment.caption
+    }
+}
+
 final class LoungeMusicTile: UICollectionViewCell {
     static let reuseId = "LoungeMusicTile"
     private let cover = UIImageView()

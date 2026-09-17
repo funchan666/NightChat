@@ -28,7 +28,10 @@ enum NightKey: String {
     case viewers, likes, gifts, liveDuration
     case leaveRoom, leaveRoomBody
     case audienceWatching, addFriend, asked
-    case plusFollow
+    case plusFollow, unfollow
+    case editProfile, save, name, bio, gender, birthday, country, interests
+    case changeCover, changePhoto
+    case female, male, nonbinary, preferNot
 }
 
 enum NightLang {
@@ -153,7 +156,12 @@ enum NightLang {
         .leaveRoomBody: "You'll drop the mic and go back to Party.",
         .audienceWatching: "%d watching this sitting",
         .addFriend: "Add friend", .asked: "Asked",
-        .plusFollow: "+ Follow",
+        .plusFollow: "+ Follow", .unfollow: "Unfollow",
+        .editProfile: "Edit Profile", .save: "Save",
+        .name: "Name", .bio: "Bio", .gender: "Gender",
+        .birthday: "Birthday", .country: "Country", .interests: "Interests",
+        .changeCover: "Change the background image", .changePhoto: "Change photo",
+        .female: "Female", .male: "Male", .nonbinary: "Non-binary", .preferNot: "Prefer not to say",
     ]
 
     private static let zhHans: [NightKey: String] = [
@@ -207,7 +215,12 @@ enum NightLang {
         .leaveRoomBody: "你会放下麦克风，回到派对。",
         .audienceWatching: "%d 人正在观看",
         .addFriend: "加好友", .asked: "已申请",
-        .plusFollow: "+ 关注",
+        .plusFollow: "+ 关注", .unfollow: "取消关注",
+        .editProfile: "编辑资料", .save: "保存",
+        .name: "昵称", .bio: "简介", .gender: "性别",
+        .birthday: "生日", .country: "国家", .interests: "兴趣标签",
+        .changeCover: "点击更换背景图", .changePhoto: "更换头像",
+        .female: "女", .male: "男", .nonbinary: "非二元", .preferNot: "不愿透露",
     ]
 
     private static let zhHant: [NightKey: String] = [
@@ -261,7 +274,12 @@ enum NightLang {
         .leaveRoomBody: "你會放下麥克風，回到派對。",
         .audienceWatching: "%d 人正在觀看",
         .addFriend: "加好友", .asked: "已申請",
-        .plusFollow: "+ 追蹤",
+        .plusFollow: "+ 追蹤", .unfollow: "取消追蹤",
+        .editProfile: "編輯資料", .save: "儲存",
+        .name: "暱稱", .bio: "簡介", .gender: "性別",
+        .birthday: "生日", .country: "國家", .interests: "興趣標籤",
+        .changeCover: "點擊更換背景圖", .changePhoto: "更換頭像",
+        .female: "女", .male: "男", .nonbinary: "非二元", .preferNot: "不願透露",
     ]
 
     private static let ja: [NightKey: String] = [

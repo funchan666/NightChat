@@ -12,6 +12,7 @@ final class NightSocialDeskMirrorController: UIViewController {
     private let followCount = UILabel()
     private let fanCount = UILabel()
     private let friendCount = UILabel()
+    private let tagRow = UIStackView()
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
@@ -92,7 +93,6 @@ final class NightSocialDeskMirrorController: UIViewController {
         vibePlate.numberOfLines = 2
         vibePlate.translatesAutoresizingMaskIntoConstraints = false
 
-        let tagRow = UIStackView(arrangedSubviews: [tagChip("#ChillSocial"), tagChip("#LiveTogether")])
         tagRow.axis = .horizontal
         tagRow.spacing = 8
         tagRow.translatesAutoresizingMaskIntoConstraints = false
@@ -442,6 +442,10 @@ final class NightSocialDeskMirrorController: UIViewController {
             ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 160, height: 160))
         cover.image = NightSocialSessionDrawer.shared.loadCover()
             ?? NightSocialMediaAssets.localCover(size: CGSize(width: 420, height: 520))
+        tagRow.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        NightSocialSessionDrawer.shared.profileTags.prefix(4).forEach { tag in
+            tagRow.addArrangedSubview(tagChip("#\(tag)"))
+        }
     }
 
     @objc private func openLanguage() {

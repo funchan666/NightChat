@@ -84,6 +84,13 @@ struct LoungeLiveBooth: Equatable {
     let meridian: LoungeMeridianLane
 }
 
+struct DeskMoment: Equatable {
+    let momentKey: String
+    let deskKey: String
+    let caption: String
+    let useCover: Bool
+}
+
 struct LoungeClipReel: Equatable {
     let clipKey: String
     let authorDeskKey: String
@@ -230,6 +237,35 @@ enum NightSocialLoungeCatalog {
 
     static func clips(for deskKey: String) -> [LoungeClipReel] {
         clips.filter { $0.authorDeskKey == deskKey }
+    }
+
+    static func moments(for deskKey: String) -> [DeskMoment] {
+        var rows: [DeskMoment] = []
+        if NightSocialSessionDrawer.shared.restoredSession()?.deskHolderId == deskKey {
+            for rec in NightSocialSessionDrawer.shared.pendingClipRecords() {
+                rows.append(
+                    DeskMoment(
+                        momentKey: rec["key"] ?? UUID().uuidString,
+                        deskKey: deskKey,
+                        caption: rec["caption"] ?? "",
+                        useCover: false
+                    )
+                )
+            }
+        }
+        if let desk = creator(deskKey: deskKey) {
+            for (index, caption) in desk.clipCaptions.enumerated() {
+                rows.append(
+                    DeskMoment(
+                        momentKey: "moment.\(deskKey).\(index)",
+                        deskKey: deskKey,
+                        caption: caption,
+                        useCover: index % 2 == 1
+                    )
+                )
+            }
+        }
+        return rows
     }
 
     static func visibleCreators() -> [LoungeCreatorDesk] {

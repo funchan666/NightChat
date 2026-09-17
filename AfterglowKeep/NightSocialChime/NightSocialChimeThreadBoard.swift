@@ -241,40 +241,71 @@ final class ChimeBubbleCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
+        contentView.backgroundColor = .clear
+        clipsToBounds = false
+        contentView.clipsToBounds = false
         selectionStyle = .none
-        bubble.layer.cornerRadius = 16
+        bubble.layer.cornerRadius = 18
+        bubble.clipsToBounds = true
         bubble.translatesAutoresizingMaskIntoConstraints = false
         plate.numberOfLines = 0
         plate.font = AfterHoursType.foyerBody(14)
+        plate.lineBreakMode = .byWordWrapping
+        plate.clipsToBounds = false
+        plate.setContentCompressionResistancePriority(.required, for: .vertical)
         plate.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(bubble)
         bubble.addSubview(plate)
         NSLayoutConstraint.activate([
-            bubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-            bubble.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, multiplier: 0.74),
-            plate.leadingAnchor.constraint(equalTo: bubble.leadingAnchor, constant: 14),
-            plate.trailingAnchor.constraint(equalTo: bubble.trailingAnchor, constant: -14),
-            plate.topAnchor.constraint(equalTo: bubble.topAnchor, constant: 10),
-            plate.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -10),
+            bubble.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
+            bubble.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
+            bubble.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor, multiplier: 0.78),
+            plate.leadingAnchor.constraint(equalTo: bubble.leadingAnchor, constant: 18),
+            plate.trailingAnchor.constraint(equalTo: bubble.trailingAnchor, constant: -18),
+            plate.topAnchor.constraint(equalTo: bubble.topAnchor, constant: 14),
+            plate.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -14),
         ])
     }
     required init?(coder: NSCoder) { nil }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let maxWidth = contentView.bounds.width * 0.78 - 36
+        if maxWidth > 0, abs(plate.preferredMaxLayoutWidth - maxWidth) > 0.5 {
+            plate.preferredMaxLayoutWidth = maxWidth
+        }
+    }
+
     func paint(_ line: ChimeLine) {
-        plate.text = line.hushBody
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = 3
+        style.lineBreakMode = .byWordWrapping
         leading?.isActive = false
         trailing?.isActive = false
         if line.speakerIsMe {
             bubble.backgroundColor = AfterHoursPalette.loungePink
-            plate.textColor = .white
             trailing = bubble.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
             trailing?.isActive = true
+            plate.attributedText = NSAttributedString(
+                string: line.hushBody,
+                attributes: [
+                    .font: AfterHoursType.foyerBody(14),
+                    .foregroundColor: UIColor.white,
+                    .paragraphStyle: style,
+                ]
+            )
         } else {
-            bubble.backgroundColor = .white
-            plate.textColor = AfterHoursPalette.inkOnSnow
+            bubble.backgroundColor = AfterHoursPalette.loungePink
             leading = bubble.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
             leading?.isActive = true
+            plate.attributedText = NSAttributedString(
+                string: line.hushBody,
+                attributes: [
+                    .font: AfterHoursType.foyerBody(14),
+                    .foregroundColor: UIColor.white,
+                    .paragraphStyle: style,
+                ]
+            )
         }
     }
 }

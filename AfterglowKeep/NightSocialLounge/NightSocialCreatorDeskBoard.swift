@@ -7,7 +7,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     private let chatPill = UIButton(type: .custom)
     private let followedMark = UILabel()
     private let emptyPane = NightSocialEmptyPane(spoken: NightLang.t(.noPostsYet))
-    private var clips: [LoungeClipReel] = []
+    private var moments: [DeskMoment] = []
     private var collection: UICollectionView!
     private var collectionHeight: NSLayoutConstraint!
 
@@ -119,7 +119,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         collection.dataSource = self
         collection.delegate = self
         collection.isScrollEnabled = false
-        collection.register(LoungeClipTile.self, forCellWithReuseIdentifier: LoungeClipTile.reuseId)
+        collection.register(LoungeMomentTile.self, forCellWithReuseIdentifier: LoungeMomentTile.reuseId)
         collection.translatesAutoresizingMaskIntoConstraints = false
         collectionHeight = collection.heightAnchor.constraint(equalToConstant: 220)
 
@@ -211,13 +211,11 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     }
 
     private func reloadClips() {
-        clips = NightSocialLoungeCatalog.clips(for: deskKey).filter {
-            !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey)
-        }
+        moments = NightSocialLoungeCatalog.moments(for: deskKey)
     }
 
     private func paintPosts() {
-        let empty = clips.isEmpty
+        let empty = moments.isEmpty
         emptyPane.isHidden = !empty
         collection.isHidden = empty
         collection.reloadData()
@@ -225,13 +223,13 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     }
 
     private func updateCollectionHeight() {
-        guard !clips.isEmpty else {
+        guard !moments.isEmpty else {
             if collectionHeight.constant != 220 { collectionHeight.constant = 220 }
             return
         }
         let width = max(120, (view.bounds.width - 42) / 2)
         let height = width * 1.32
-        let rows = ceil(CGFloat(clips.count) / 2)
+        let rows = ceil(CGFloat(moments.count) / 2)
         let next = rows * height + max(0, rows - 1) * 10
         if abs(collectionHeight.constant - next) > 0.5 {
             collectionHeight.constant = next
@@ -332,10 +330,10 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         NightSocialSafetyFlow.presentChooser(from: self, target: .desk(deskKey))
     }
 
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { clips.count }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { moments.count }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeClipTile.reuseId, for: indexPath) as! LoungeClipTile
-        cell.paint(clips[indexPath.item], musicMode: false)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeMomentTile.reuseId, for: indexPath) as! LoungeMomentTile
+        cell.paint(moments[indexPath.item])
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -346,6 +344,55 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        navigationController?.pushViewController(NightSocialClipTheater(clipKey: clips[indexPath.item].clipKey), animated: true)
+        navigationController?.pushViewController(NightSocialMomentBoard(moment: moments[indexPath.item]), animated: true)
     }
+}
+
+final class NightSocialMomentBoard: UIViewController {
+    private let moment: DeskMoment
+    init(moment: DeskMoment) {
+        self.moment = moment
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { nil }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = AfterHoursPalette.loungeInk
+        additionalSafeAreaInsets = .zero
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        let still = UIImageView(
+            image: moment.useCover
+                ? NightSocialMediaAssets.cover(for: moment.deskKey, size: CGSize(width: 430, height: 760))
+                : NightSocialMediaAssets.portrait(for: moment.deskKey, size: CGSize(width: 430, height: 760))
+        )
+        still.contentMode = .scaleAspectFill
+        still.clipsToBounds = true
+        still.translatesAutoresizingMaskIntoConstraints = false
+        let back = NightSocialLoungeChrome.backControl()
+        back.addTarget(self, action: #selector(fold), for: .touchUpInside)
+        let caption = UILabel()
+        caption.text = moment.caption
+        caption.font = AfterHoursType.foyerBody(16)
+        caption.textColor = .white
+        caption.numberOfLines = 0
+        caption.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(still)
+        view.addSubview(back)
+        view.addSubview(caption)
+        NSLayoutConstraint.activate([
+            still.topAnchor.constraint(equalTo: view.topAnchor),
+            still.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            still.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            still.bottomAnchor.constraint(equalTo: caption.topAnchor, constant: -16),
+            back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
+            caption.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            caption.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            caption.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
+        ])
+    }
+
+    @objc private func fold() { navigationController?.popViewController(animated: true) }
 }

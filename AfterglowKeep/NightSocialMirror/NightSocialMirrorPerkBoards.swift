@@ -530,6 +530,8 @@ final class NightSocialMirrorSupportBoard: UIViewController, UITableViewDataSour
         table.backgroundColor = .clear
         table.separatorStyle = .none
         table.dataSource = self
+        table.rowHeight = UITableView.automaticDimension
+        table.estimatedRowHeight = 96
         table.register(ChimeBubbleCell.self, forCellReuseIdentifier: ChimeBubbleCell.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
         field.placeholder = "Tell me your opinion..."
@@ -800,20 +802,48 @@ final class NightSocialMirrorRechargeBoard: UIViewController {
 
 final class NightSocialMirrorEditBoard: UIViewController, PHPickerViewControllerDelegate {
     private let nameField = FoyerLonelySnowField(whisper: "Please enter the name...")
+    private let bioNote = FoyerLonelySnowNote(whisper: "Write a short bio")
     private let cover = UIImageView()
+    private let portraitSlot = UIButton(type: .custom)
+    private let genderRow = FoyerPickSnowRow(whisper: "Gender")
+    private let birthRow = FoyerPickSnowRow(whisper: "Birthday")
+    private let landRow = FoyerPickSnowRow(whisper: "Country")
+    private let tagStrip = UIStackView()
     private var pickingCover = true
+    private var pendingCover: UIImage?
+    private var pendingPortrait: UIImage?
+    private var genderMark = ""
+    private var birthDay: Date?
+    private var landCode = "US"
+    private var pickedTags: Set<String> = []
+    private let tagChoices = ["ChillSocial", "LiveTogether", "VoiceChat", "PopLive", "Music", "NightOwl", "CasualTalk", "MoodTalk"]
+
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeInk
         additionalSafeAreaInsets = .zero
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        let session = NightSocialSessionDrawer.shared.restoredSession()
+        genderMark = NightSocialSessionDrawer.shared.genderMark
+        landCode = NightSocialSessionDrawer.shared.homeCountryCode
+        pickedTags = Set(NightSocialSessionDrawer.shared.profileTags)
+        birthDay = Self.parseBirth(session?.birthMeridianPhrase ?? "")
+
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
         let head = UILabel()
-        head.text = "Edit Profile"
+        head.text = NightLang.t(.editProfile)
         head.font = AfterHoursType.foyerHeadline(20)
         head.textColor = .white
         head.translatesAutoresizingMaskIntoConstraints = false
+
+        let scroller = UIScrollView()
+        scroller.alwaysBounceVertical = true
+        scroller.keyboardDismissMode = .onDrag
+        scroller.translatesAutoresizingMaskIntoConstraints = false
+
         cover.backgroundColor = AfterHoursPalette.loungeCard
         cover.layer.cornerRadius = 18
         cover.clipsToBounds = true
@@ -821,58 +851,178 @@ final class NightSocialMirrorEditBoard: UIViewController, PHPickerViewController
         cover.isUserInteractionEnabled = true
         cover.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pickCover)))
         cover.translatesAutoresizingMaskIntoConstraints = false
-        cover.image = NightSocialMediaAssets.localCover(size: CGSize(width: 420, height: 520))
+        cover.image = NightSocialSessionDrawer.shared.loadCover()
+            ?? NightSocialMediaAssets.localCover(size: CGSize(width: 420, height: 520))
         let hint = UILabel()
-        hint.text = "Change the background image"
+        hint.text = NightLang.t(.changeCover)
         hint.font = AfterHoursType.foyerBody(14)
-        hint.textColor = UIColor.white.withAlphaComponent(0.7)
+        hint.textColor = UIColor.white.withAlphaComponent(0.78)
         hint.translatesAutoresizingMaskIntoConstraints = false
-        nameField.text = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias
-        let slot = UIButton(type: .custom)
-        slot.backgroundColor = AfterHoursPalette.loungeCard
-        slot.layer.cornerRadius = 16
-        slot.setImage(NightSocialMediaAssets.localPortrait(size: CGSize(width: 120, height: 120)), for: .normal)
-        slot.imageView?.contentMode = .scaleAspectFill
-        slot.clipsToBounds = true
-        slot.accessibilityLabel = "Change profile photo"
-        slot.titleLabel?.font = AfterHoursType.foyerHeadline(28)
-        slot.addTarget(self, action: #selector(pickPortrait), for: .touchUpInside)
-        slot.translatesAutoresizingMaskIntoConstraints = false
-        let save = NightSocialLoungeChrome.pinkPill(title: "Save")
+
+        portraitSlot.backgroundColor = AfterHoursPalette.loungeCard
+        portraitSlot.layer.cornerRadius = 16
+        portraitSlot.setImage(
+            NightSocialSessionDrawer.shared.loadPortrait()
+                ?? NightSocialMediaAssets.localPortrait(size: CGSize(width: 120, height: 120)),
+            for: .normal
+        )
+        portraitSlot.imageView?.contentMode = .scaleAspectFill
+        portraitSlot.imageView?.clipsToBounds = true
+        portraitSlot.clipsToBounds = true
+        portraitSlot.addTarget(self, action: #selector(pickPortrait), for: .touchUpInside)
+        portraitSlot.translatesAutoresizingMaskIntoConstraints = false
+        let photoHint = UILabel()
+        photoHint.text = NightLang.t(.changePhoto)
+        photoHint.font = AfterHoursType.foyerCaption(12)
+        photoHint.textColor = UIColor.white.withAlphaComponent(0.62)
+        photoHint.translatesAutoresizingMaskIntoConstraints = false
+
+        nameField.text = session?.nightAlias
+        bioNote.spokenText = session?.nightSignature ?? ""
+        paintGender()
+        if let birthDay { birthRow.paint(Self.birthPhrase(birthDay)) }
+        landRow.paint(NightSocialLampAtlas.land(code: landCode).spokenTitle)
+        genderRow.addTarget(self, action: #selector(openGender), for: .touchUpInside)
+        birthRow.addTarget(self, action: #selector(openBirth), for: .touchUpInside)
+        landRow.addTarget(self, action: #selector(openLand), for: .touchUpInside)
+
+        tagStrip.axis = .vertical
+        tagStrip.spacing = 8
+        tagStrip.translatesAutoresizingMaskIntoConstraints = false
+        fillTags()
+
+        let save = NightSocialLoungeChrome.pinkPill(title: NightLang.t(.save))
         save.addTarget(self, action: #selector(saveTap), for: .touchUpInside)
+
+        let stack = UIStackView(arrangedSubviews: [
+            cover,
+            labeled(NightLang.t(.changePhoto), portraitRow(photoHint)),
+            labeled(NightLang.t(.name), nameField),
+            labeled(NightLang.t(.bio), bioNote),
+            labeled(NightLang.t(.gender), genderRow),
+            labeled(NightLang.t(.birthday), birthRow),
+            labeled(NightLang.t(.country), landRow),
+            labeled(NightLang.t(.interests), tagStrip),
+        ])
+        stack.axis = .vertical
+        stack.spacing = 14
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(back)
         view.addSubview(head)
-        view.addSubview(cover)
+        view.addSubview(scroller)
+        scroller.addSubview(stack)
         cover.addSubview(hint)
-        view.addSubview(nameField)
-        view.addSubview(slot)
         view.addSubview(save)
         NSLayoutConstraint.activate([
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
             head.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             head.centerYAnchor.constraint(equalTo: back.centerYAnchor),
-            cover.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            cover.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            cover.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 16),
-            cover.heightAnchor.constraint(equalToConstant: 160),
+            scroller.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 12),
+            scroller.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroller.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroller.bottomAnchor.constraint(equalTo: save.topAnchor, constant: -12),
+            stack.topAnchor.constraint(equalTo: scroller.contentLayoutGuide.topAnchor),
+            stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            stack.bottomAnchor.constraint(equalTo: scroller.contentLayoutGuide.bottomAnchor, constant: -16),
+            stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -32),
+            cover.heightAnchor.constraint(equalToConstant: 150),
             hint.centerXAnchor.constraint(equalTo: cover.centerXAnchor),
             hint.centerYAnchor.constraint(equalTo: cover.centerYAnchor),
-            nameField.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            nameField.trailingAnchor.constraint(equalTo: cover.trailingAnchor),
-            nameField.topAnchor.constraint(equalTo: cover.bottomAnchor, constant: 16),
-            slot.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            slot.topAnchor.constraint(equalTo: nameField.bottomAnchor, constant: 16),
-            slot.widthAnchor.constraint(equalToConstant: 88),
-            slot.heightAnchor.constraint(equalToConstant: 88),
-            save.leadingAnchor.constraint(equalTo: cover.leadingAnchor),
-            save.trailingAnchor.constraint(equalTo: cover.trailingAnchor),
+            portraitSlot.widthAnchor.constraint(equalToConstant: 72),
+            portraitSlot.heightAnchor.constraint(equalToConstant: 72),
+            save.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            save.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             save.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -28),
         ])
     }
+
+    private func labeled(_ title: String, _ field: UIView) -> UIView {
+        let cap = UILabel()
+        cap.text = title
+        cap.font = AfterHoursType.foyerCaption(12)
+        cap.textColor = UIColor.white.withAlphaComponent(0.7)
+        let wrap = UIStackView(arrangedSubviews: [cap, field])
+        wrap.axis = .vertical
+        wrap.spacing = 6
+        wrap.translatesAutoresizingMaskIntoConstraints = false
+        return wrap
+    }
+
+    private func portraitRow(_ hint: UILabel) -> UIView {
+        let row = UIStackView(arrangedSubviews: [portraitSlot, hint])
+        row.axis = .horizontal
+        row.alignment = .center
+        row.spacing = 12
+        row.translatesAutoresizingMaskIntoConstraints = false
+        return row
+    }
+
+    private func fillTags() {
+        tagStrip.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        var line = UIStackView()
+        line.axis = .horizontal
+        line.spacing = 8
+        line.alignment = .center
+        var count = 0
+        for tag in tagChoices {
+            if count == 4 {
+                tagStrip.addArrangedSubview(line)
+                line = UIStackView()
+                line.axis = .horizontal
+                line.spacing = 8
+                line.alignment = .center
+                count = 0
+            }
+            line.addArrangedSubview(tagChip(tag))
+            count += 1
+        }
+        if count > 0 { tagStrip.addArrangedSubview(line) }
+    }
+
+    private func tagChip(_ tag: String) -> UIButton {
+        let on = pickedTags.contains(tag)
+        let chip = UIButton(type: .custom)
+        chip.setTitle("#\(tag)", for: .normal)
+        chip.titleLabel?.font = AfterHoursType.foyerCaption(12)
+        chip.layer.cornerRadius = 14
+        chip.contentEdgeInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        chip.backgroundColor = on ? AfterHoursPalette.loungePink : UIColor.white.withAlphaComponent(0.10)
+        chip.setTitleColor(on ? .white : AfterHoursPalette.loungePink, for: .normal)
+        chip.layer.borderWidth = on ? 0 : 1
+        chip.layer.borderColor = AfterHoursPalette.loungePink.withAlphaComponent(0.7).cgColor
+        chip.accessibilityLabel = tag
+        chip.addTarget(self, action: #selector(toggleTag(_:)), for: .touchUpInside)
+        return chip
+    }
+
+    private func paintGender() {
+        if genderMark.isEmpty {
+            genderRow.paint(NightLang.t(.gender))
+            return
+        }
+        let spoken: String
+        switch genderMark {
+        case "female": spoken = NightLang.t(.female)
+        case "male": spoken = NightLang.t(.male)
+        case "nonbinary": spoken = NightLang.t(.nonbinary)
+        default: spoken = NightLang.t(.preferNot)
+        }
+        genderRow.paint(spoken)
+    }
+
+    @objc private func toggleTag(_ sender: UIButton) {
+        guard let tag = sender.accessibilityLabel else { return }
+        if pickedTags.contains(tag) { pickedTags.remove(tag) } else { pickedTags.insert(tag) }
+        fillTags()
+    }
+
     @objc private func fold() { navigationController?.popViewController(animated: true) }
     @objc private func pickCover() { pickingCover = true; openPicker() }
     @objc private func pickPortrait() { pickingCover = false; openPicker() }
+
     private func openPicker() {
         var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
@@ -881,6 +1031,7 @@ final class NightSocialMirrorEditBoard: UIViewController, PHPickerViewController
         picker.delegate = self
         present(picker, animated: true)
     }
+
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
         guard let provider = results.first?.itemProvider, provider.canLoadObject(ofClass: UIImage.self) else { return }
@@ -888,29 +1039,80 @@ final class NightSocialMirrorEditBoard: UIViewController, PHPickerViewController
             guard let image = object as? UIImage, let self else { return }
             DispatchQueue.main.async {
                 if self.pickingCover {
+                    self.pendingCover = image
                     self.cover.image = image
-                    NightSocialSessionDrawer.shared.writeCover(image)
                 } else {
-                    NightSocialSessionDrawer.shared.finishDeskCard(
-                        nightAlias: NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "Night guest",
-                        nightSignature: NightSocialSessionDrawer.shared.restoredSession()?.nightSignature ?? "",
-                        portrait: image
-                    )
+                    self.pendingPortrait = image
+                    self.portraitSlot.setImage(image, for: .normal)
                 }
             }
         }
     }
+
+    @objc private func openGender() {
+        let titles = [NightLang.t(.female), NightLang.t(.male), NightLang.t(.nonbinary), NightLang.t(.preferNot)]
+        let keys = ["female", "male", "nonbinary", "preferNot"]
+        let pane = FoyerListPickPane(titles: titles, seed: keys.firstIndex(of: genderMark) ?? 0)
+        pane.onPick = { [weak self] index in
+            guard keys.indices.contains(index) else { return }
+            self?.genderMark = keys[index]
+            self?.paintGender()
+        }
+        present(pane, animated: true)
+    }
+
+    @objc private func openBirth() {
+        let pane = FoyerDatePickPane(seed: birthDay ?? Calendar.current.date(byAdding: .year, value: -21, to: Date()))
+        pane.onPick = { [weak self] day in
+            self?.birthDay = day
+            self?.birthRow.paint(Self.birthPhrase(day))
+        }
+        present(pane, animated: true)
+    }
+
+    @objc private func openLand() {
+        let lands = NightSocialLampAtlas.lands
+        let pane = FoyerListPickPane(titles: lands.map(\.spokenTitle), seed: lands.firstIndex(where: { $0.code == landCode }) ?? 0)
+        pane.onPick = { [weak self] index in
+            guard let self, lands.indices.contains(index) else { return }
+            self.landCode = lands[index].code
+            self.landRow.paint(lands[index].spokenTitle)
+        }
+        present(pane, animated: true)
+    }
+
     @objc private func saveTap() {
         let name = NightSocialFoyerGuard.trimmed(nameField.text)
         if name.isEmpty {
-            FoyerNotice.present(on: self, spokenTitle: "Name still empty", spokenBody: "Write a name for this night desk before saving.")
+            FoyerNotice.present(on: self, spokenTitle: NightLang.t(.name), spokenBody: "Write a name before saving.")
             return
         }
         NightSocialSessionDrawer.shared.finishDeskCard(
             nightAlias: name,
-            nightSignature: NightSocialSessionDrawer.shared.restoredSession()?.nightSignature ?? "",
-            portrait: NightSocialSessionDrawer.shared.loadPortrait()
+            nightSignature: NightSocialFoyerGuard.trimmed(bioNote.spokenText),
+            portrait: pendingPortrait ?? NightSocialSessionDrawer.shared.loadPortrait(),
+            birthMeridianPhrase: birthDay.map(Self.birthPhrase),
+            homeCountryCode: landCode
         )
+        if let cover = pendingCover {
+            NightSocialSessionDrawer.shared.writeCover(cover)
+        }
+        NightSocialSessionDrawer.shared.writeGenderMark(genderMark)
+        NightSocialSessionDrawer.shared.writeProfileTags(Array(pickedTags))
         navigationController?.popViewController(animated: true)
+    }
+
+    private static func birthPhrase(_ day: Date) -> String {
+        let form = DateFormatter()
+        form.locale = Locale(identifier: "en_US_POSIX")
+        form.dateFormat = "MMM d, yyyy"
+        return form.string(from: day)
+    }
+
+    private static func parseBirth(_ phrase: String) -> Date? {
+        let form = DateFormatter()
+        form.locale = Locale(identifier: "en_US_POSIX")
+        form.dateFormat = "MMM d, yyyy"
+        return form.date(from: phrase)
     }
 }

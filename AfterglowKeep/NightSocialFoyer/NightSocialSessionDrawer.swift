@@ -100,6 +100,8 @@ final class NightSocialSessionDrawer {
         static let lampReceipts = "lampdesk.nightSocial.lampReceipts.v1"
         static let followedDesks = "lampdesk.nightSocial.followedDesks.v2"
         static let followerDesks = "lampdesk.nightSocial.followerDesks.v1"
+        static let welcomeFansSeeded = "lampdesk.nightSocial.welcomeFansSeeded.v1"
+        static let welcomeFanQueue = "lampdesk.nightSocial.welcomeFanQueue.v1"
         static let blockedDesks = "lampdesk.nightSocial.blockedDesks.v1"
         static let reportedDesks = "lampdesk.nightSocial.reportedDesks.v1"
         static let reportedClips = "lampdesk.nightSocial.reportedClips.v1"
@@ -118,6 +120,8 @@ final class NightSocialSessionDrawer {
         static let likesRead = "lampdesk.nightSocial.likesRead.v1"
         static let spokenTongue = "lampdesk.nightSocial.spokenTongue.v1"
         static let homeCountry = "lampdesk.nightSocial.homeCountry.v1"
+        static let genderMark = "lampdesk.nightSocial.genderMark.v1"
+        static let profileTags = "lampdesk.nightSocial.profileTags.v1"
         static let checkInDays = "lampdesk.nightSocial.checkInDays.v1"
         static let coverFile = "night-social-desk-cover.jpg"
         static let inviteCode = "lampdesk.nightSocial.inviteCode.v1"
@@ -257,6 +261,25 @@ final class NightSocialSessionDrawer {
 
     func writeHomeCountry(_ value: String) {
         defaults.set(value, forKey: DrawerSlot.homeCountry)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    var genderMark: String {
+        defaults.string(forKey: DrawerSlot.genderMark) ?? ""
+    }
+
+    func writeGenderMark(_ value: String) {
+        defaults.set(value, forKey: DrawerSlot.genderMark)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    var profileTags: [String] {
+        defaults.stringArray(forKey: DrawerSlot.profileTags) ?? ["ChillSocial", "LiveTogether"]
+    }
+
+    func writeProfileTags(_ tags: [String]) {
+        defaults.set(tags, forKey: DrawerSlot.profileTags)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
     }
 
     func markSeatedAfterReturn() {
@@ -319,6 +342,44 @@ final class NightSocialSessionDrawer {
         if keys.contains(deskKey) { keys.remove(deskKey) } else { keys.insert(deskKey) }
         defaults.set(Array(keys), forKey: DrawerSlot.followedDesks)
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func addFollower(_ deskKey: String) {
+        var keys = followerDeskKeys()
+        guard keys.insert(deskKey).inserted else { return }
+        defaults.set(Array(keys), forKey: DrawerSlot.followerDesks)
+        NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    func beginWelcomeFansIfNeeded() {
+        if !defaults.bool(forKey: DrawerSlot.welcomeFansSeeded) {
+            let pool = NightSocialLoungeCatalog.creators.map(\.deskKey).filter { !shouldHideDesk($0) }
+            let count = min(pool.count, Int.random(in: 1...3))
+            let picked = Array(pool.shuffled().prefix(count))
+            defaults.set(true, forKey: DrawerSlot.welcomeFansSeeded)
+            defaults.set(picked, forKey: DrawerSlot.welcomeFanQueue)
+        }
+        pumpWelcomeFans()
+    }
+
+    private var welcomeFanPumping = false
+
+    private func pumpWelcomeFans() {
+        guard !welcomeFanPumping else { return }
+        let queue = defaults.stringArray(forKey: DrawerSlot.welcomeFanQueue) ?? []
+        guard !queue.isEmpty else { return }
+        welcomeFanPumping = true
+        let delay = Double.random(in: 5...12)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            guard let self else { return }
+            self.welcomeFanPumping = false
+            var remaining = self.defaults.stringArray(forKey: DrawerSlot.welcomeFanQueue) ?? []
+            guard let next = remaining.first else { return }
+            remaining.removeFirst()
+            self.defaults.set(remaining, forKey: DrawerSlot.welcomeFanQueue)
+            self.addFollower(next)
+            self.pumpWelcomeFans()
+        }
     }
 
     func sentFriendAskKeys() -> Set<String> {
@@ -588,12 +649,14 @@ final class NightSocialSessionDrawer {
         let keys = [
             DrawerSlot.stageSession, DrawerSlot.houseCovenant, DrawerSlot.seatedFlag,
             DrawerSlot.diamondPurse, DrawerSlot.followedDesks, DrawerSlot.followerDesks,
+            DrawerSlot.welcomeFansSeeded, DrawerSlot.welcomeFanQueue,
             DrawerSlot.blockedDesks, DrawerSlot.reportedDesks, DrawerSlot.reportedClips,
             DrawerSlot.reportedLines, DrawerSlot.clipComments, DrawerSlot.pendingClips,
             DrawerSlot.sentFriendAsks, DrawerSlot.incomingFriendAsks, DrawerSlot.acceptedFriends,
             DrawerSlot.recentChambers, DrawerSlot.hostedChambers, DrawerSlot.seatedChamber,
             DrawerSlot.chimeLines, DrawerSlot.chimeRead, DrawerSlot.platformRead,
-            DrawerSlot.likesRead, DrawerSlot.spokenTongue, DrawerSlot.homeCountry, DrawerSlot.checkInDays,
+            DrawerSlot.likesRead, DrawerSlot.spokenTongue, DrawerSlot.homeCountry, DrawerSlot.genderMark,
+            DrawerSlot.profileTags, DrawerSlot.checkInDays,
             DrawerSlot.inviteCode,
         ]
         keys.forEach { defaults.removeObject(forKey: $0) }

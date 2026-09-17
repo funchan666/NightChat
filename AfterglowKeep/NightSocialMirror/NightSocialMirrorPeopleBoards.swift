@@ -8,10 +8,10 @@ enum MirrorPeopleKind {
 
     var spokenTitle: String {
         switch self {
-        case .blacklist: return "Blacklist"
-        case .fans: return "Fans"
-        case .follow: return "Follow"
-        case .friends: return "Friends"
+        case .blacklist: return NightLang.t(.blacklist)
+        case .fans: return NightLang.t(.followers)
+        case .follow: return NightLang.t(.following)
+        case .friends: return NightLang.t(.friends)
         }
     }
 }
@@ -116,7 +116,7 @@ final class NightSocialMirrorPeopleBoard: UIViewController, UITableViewDataSourc
         cell.onChat = { [weak self] in
             self?.navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: desk.deskKey), animated: true)
         }
-        cell.onUnfollow = { [weak self] in
+        cell.onFollowTap = { [weak self] in
             NightSocialSessionDrawer.shared.toggleFollow(desk.deskKey)
             self?.reloadRows()
         }
@@ -132,12 +132,13 @@ final class MirrorPersonRow: UITableViewCell {
     static let reuseId = "MirrorPersonRow"
     var onTrash: (() -> Void)?
     var onChat: (() -> Void)?
-    var onUnfollow: (() -> Void)?
+    var onFollowTap: (() -> Void)?
     private let portrait = UIImageView()
     private let namePlate = UILabel()
     private let trash = UIButton(type: .custom)
     private let chat = UIButton(type: .custom)
     private let follow = UIButton(type: .custom)
+    private var followWidth: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -156,8 +157,8 @@ final class MirrorPersonRow: UITableViewCell {
         trash.addTarget(self, action: #selector(tapTrash), for: .touchUpInside)
         chat.setImage(NightSocialImageCabinet.named("ChatBubble", fallback: "ChatBubble"), for: .normal)
         chat.addTarget(self, action: #selector(tapChat), for: .touchUpInside)
-        follow.setImage(NightSocialImageCabinet.named("ChatBubble", fallback: "ChatBubble"), for: .normal)
-        follow.setTitle("", for: .normal)
+        follow.titleLabel?.font = AfterHoursType.foyerCaption(12)
+        follow.layer.cornerRadius = 14
         follow.addTarget(self, action: #selector(tapUnfollow), for: .touchUpInside)
         [trash, chat, follow].forEach {
             $0.imageView?.contentMode = .scaleAspectFit
@@ -168,13 +169,16 @@ final class MirrorPersonRow: UITableViewCell {
         contentView.addSubview(trash)
         contentView.addSubview(chat)
         contentView.addSubview(follow)
+        followWidth = follow.widthAnchor.constraint(equalToConstant: 76)
         NSLayoutConstraint.activate([
+            followWidth,
             portrait.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             portrait.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             portrait.widthAnchor.constraint(equalToConstant: 40),
             portrait.heightAnchor.constraint(equalToConstant: 40),
             namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 10),
             namePlate.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            namePlate.trailingAnchor.constraint(lessThanOrEqualTo: follow.leadingAnchor, constant: -8),
             trash.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             trash.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             trash.widthAnchor.constraint(equalToConstant: 32),
@@ -185,8 +189,7 @@ final class MirrorPersonRow: UITableViewCell {
             chat.heightAnchor.constraint(equalToConstant: 32),
             follow.trailingAnchor.constraint(equalTo: chat.leadingAnchor, constant: -8),
             follow.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            follow.widthAnchor.constraint(equalToConstant: 32),
-            follow.heightAnchor.constraint(equalToConstant: 32),
+            follow.heightAnchor.constraint(equalToConstant: 28),
         ])
     }
     required init?(coder: NSCoder) { nil }
@@ -199,13 +202,32 @@ final class MirrorPersonRow: UITableViewCell {
         namePlate.text = desk.spokenName
         trash.isHidden = kind != .blacklist
         chat.isHidden = kind == .blacklist
-        follow.isHidden = kind != .follow
-        if kind == .follow {
-            follow.setImage(UIImage(systemName: "person.fill.xmark"), for: .normal)
-            follow.tintColor = AfterHoursPalette.loungePink
+        let following = NightSocialSessionDrawer.shared.isFollowing(desk.deskKey)
+        switch kind {
+        case .follow:
+            follow.isHidden = false
+            styleFollow(title: NightLang.t(.unfollow), filled: false)
+        case .fans:
+            follow.isHidden = false
+            if following {
+                styleFollow(title: NightLang.t(.followed), filled: false)
+            } else {
+                styleFollow(title: NightLang.t(.plusFollow), filled: true)
+            }
+        default:
+            follow.isHidden = true
         }
+        followWidth.constant = follow.isHidden ? 0 : 76
     }
+
+    private func styleFollow(title: String, filled: Bool) {
+        follow.setTitle("  \(title)  ", for: .normal)
+        follow.setImage(nil, for: .normal)
+        follow.backgroundColor = filled ? AfterHoursPalette.loungePink : UIColor.white.withAlphaComponent(0.14)
+        follow.setTitleColor(filled ? .white : AfterHoursPalette.loungePink, for: .normal)
+    }
+
     @objc private func tapTrash() { onTrash?() }
     @objc private func tapChat() { onChat?() }
-    @objc private func tapUnfollow() { onUnfollow?() }
+    @objc private func tapUnfollow() { onFollowTap?() }
 }
