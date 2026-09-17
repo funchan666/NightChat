@@ -2,12 +2,14 @@ import UIKit
 
 final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let deskKey: String
-    private let cover = UIImageView()
-    private let followPill = NightSocialLoungeChrome.pinkPill(title: "+ Follow")
-    private let friendPill = NightSocialLoungeChrome.ghostPill(title: "Add friend")
+    private let scroller = UIScrollView()
+    private let followPill = UIButton(type: .custom)
     private let chatPill = UIButton(type: .custom)
+    private let followedMark = UILabel()
+    private let emptyPane = NightSocialEmptyPane(spoken: "No posts yet.")
     private var clips: [LoungeClipReel] = []
     private var collection: UICollectionView!
+    private var collectionHeight: NSLayoutConstraint!
 
     init(deskKey: String) {
         self.deskKey = deskKey
@@ -23,12 +25,15 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         view.backgroundColor = AfterHoursPalette.loungeInk
         additionalSafeAreaInsets = .zero
         view.insetsLayoutMarginsFromSafeArea = false
+        navigationController?.setNavigationBarHidden(true, animated: false)
         guard let desk = NightSocialLoungeCatalog.creator(deskKey: deskKey) else { return }
-        clips = NightSocialLoungeCatalog.clips(for: deskKey).filter {
-            !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey)
-        }
+        reloadClips()
 
-        cover.image = NightSocialMediaAssets.cover(for: desk.deskKey, size: CGSize(width: 400, height: 640))
+        scroller.alwaysBounceVertical = true
+        scroller.contentInsetAdjustmentBehavior = .never
+        scroller.translatesAutoresizingMaskIntoConstraints = false
+
+        let cover = UIImageView(image: NightSocialMediaAssets.cover(for: desk.deskKey, size: CGSize(width: 430, height: 760)))
         cover.contentMode = .scaleAspectFill
         cover.clipsToBounds = true
         cover.translatesAutoresizingMaskIntoConstraints = false
@@ -38,51 +43,67 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle")
         more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
 
-        let card = UIView()
-        card.backgroundColor = AfterHoursPalette.loungeCard
-        card.layer.cornerRadius = 22
-        card.translatesAutoresizingMaskIntoConstraints = false
+        followedMark.text = "Followed"
+        followedMark.font = AfterHoursType.foyerPill(13)
+        followedMark.textColor = AfterHoursPalette.inkOnSnow
+        followedMark.textAlignment = .center
+        followedMark.backgroundColor = UIColor.white.withAlphaComponent(0.94)
+        followedMark.layer.cornerRadius = 16
+        followedMark.clipsToBounds = true
+        followedMark.translatesAutoresizingMaskIntoConstraints = false
 
         let portrait = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 160, height: 160)))
         portrait.contentMode = .scaleAspectFill
-        portrait.layer.cornerRadius = 28
+        portrait.layer.cornerRadius = 38
         portrait.clipsToBounds = true
+        portrait.layer.borderWidth = 3
+        portrait.layer.borderColor = UIColor.white.cgColor
         portrait.translatesAutoresizingMaskIntoConstraints = false
 
         let namePlate = UILabel()
         namePlate.text = desk.spokenName
-        namePlate.font = AfterHoursType.foyerHeadline(20)
+        namePlate.font = AfterHoursType.foyerHeadline(22)
         namePlate.textColor = .white
         namePlate.translatesAutoresizingMaskIntoConstraints = false
         let cityPlate = UILabel()
         cityPlate.text = desk.cityLabel
-        cityPlate.font = AfterHoursType.foyerCaption(12)
-        cityPlate.textColor = UIColor.white.withAlphaComponent(0.7)
+        cityPlate.font = AfterHoursType.foyerCaption(13)
+        cityPlate.textColor = UIColor.white.withAlphaComponent(0.62)
         cityPlate.translatesAutoresizingMaskIntoConstraints = false
         let handlePlate = UILabel()
         handlePlate.text = desk.handleTag
         handlePlate.font = AfterHoursType.foyerCaption(12)
-        handlePlate.textColor = UIColor.white.withAlphaComponent(0.7)
+        handlePlate.textColor = UIColor.white.withAlphaComponent(0.62)
         handlePlate.translatesAutoresizingMaskIntoConstraints = false
+        let coins = NightSocialDiamondAmount(font: AfterHoursType.foyerCaption(12), gemSize: 12)
+        coins.paint(desk.likeCount)
+        let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
+
         let vibePlate = UILabel()
         vibePlate.text = desk.vibeLine
         vibePlate.font = AfterHoursType.foyerBody(13)
-        vibePlate.textColor = UIColor.white.withAlphaComponent(0.85)
+        vibePlate.textColor = UIColor.white.withAlphaComponent(0.86)
         vibePlate.numberOfLines = 0
         vibePlate.translatesAutoresizingMaskIntoConstraints = false
-        let tags = UILabel()
-        tags.text = desk.vibeTags.map { "#\($0)" }.joined(separator: "  ")
-        tags.font = AfterHoursType.foyerCaption(11)
-        tags.textColor = AfterHoursPalette.loungePink
-        tags.translatesAutoresizingMaskIntoConstraints = false
-        let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
 
+        var tagViews: [UIView] = desk.vibeTags.prefix(2).map { tagChip("#\($0)") }
+        if desk.isLive {
+            tagViews.append(liveChip())
+        }
+        let tagRow = UIStackView(arrangedSubviews: tagViews)
+        tagRow.axis = .horizontal
+        tagRow.spacing = 8
+        tagRow.translatesAutoresizingMaskIntoConstraints = false
+
+        styleActionPill(followPill, title: "+ Follow", symbol: "plus")
         followPill.addTarget(self, action: #selector(flipFollow), for: .touchUpInside)
-        friendPill.addTarget(self, action: #selector(askFriend), for: .touchUpInside)
-        chatPill.setImage(NightSocialImageCabinet.named("ChatButton", fallback: "ChatButton"), for: .normal)
-        chatPill.imageView?.contentMode = .scaleAspectFit
+        styleActionPill(chatPill, title: "Chatting", symbol: "ellipsis.bubble.fill")
         chatPill.addTarget(self, action: #selector(openWhisper), for: .touchUpInside)
-        chatPill.translatesAutoresizingMaskIntoConstraints = false
+        let actions = UIStackView(arrangedSubviews: [followPill, chatPill])
+        actions.axis = .horizontal
+        actions.spacing = 12
+        actions.distribution = .fillEqually
+        actions.translatesAutoresizingMaskIntoConstraints = false
 
         let videoHead = UILabel()
         videoHead.text = "video"
@@ -97,92 +118,182 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         collection.backgroundColor = .clear
         collection.dataSource = self
         collection.delegate = self
+        collection.isScrollEnabled = false
         collection.register(LoungeClipTile.self, forCellWithReuseIdentifier: LoungeClipTile.reuseId)
         collection.translatesAutoresizingMaskIntoConstraints = false
-        collection.contentInsetAdjustmentBehavior = .never
+        collectionHeight = collection.heightAnchor.constraint(equalToConstant: 220)
 
-        view.addSubview(cover)
+        view.addSubview(scroller)
+        scroller.addSubview(cover)
+        scroller.addSubview(followedMark)
+        scroller.addSubview(portrait)
+        scroller.addSubview(namePlate)
+        scroller.addSubview(cityPlate)
+        scroller.addSubview(handlePlate)
+        scroller.addSubview(coins)
+        scroller.addSubview(level)
+        scroller.addSubview(vibePlate)
+        scroller.addSubview(tagRow)
+        scroller.addSubview(actions)
+        scroller.addSubview(videoHead)
+        scroller.addSubview(collection)
+        scroller.addSubview(emptyPane)
         view.addSubview(back)
         view.addSubview(more)
-        view.addSubview(card)
-        card.addSubview(portrait)
-        card.addSubview(namePlate)
-        card.addSubview(cityPlate)
-        card.addSubview(handlePlate)
-        card.addSubview(level)
-        card.addSubview(vibePlate)
-        card.addSubview(tags)
-        card.addSubview(followPill)
-        card.addSubview(friendPill)
-        card.addSubview(chatPill)
-        view.addSubview(videoHead)
-        view.addSubview(collection)
 
         NSLayoutConstraint.activate([
-            cover.topAnchor.constraint(equalTo: view.topAnchor),
+            scroller.topAnchor.constraint(equalTo: view.topAnchor),
+            scroller.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroller.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroller.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            cover.topAnchor.constraint(equalTo: scroller.contentLayoutGuide.topAnchor),
             cover.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             cover.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            cover.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.42),
+            cover.heightAnchor.constraint(equalToConstant: 360),
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
             more.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
             more.centerYAnchor.constraint(equalTo: back.centerYAnchor),
-            card.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            card.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            card.topAnchor.constraint(equalTo: cover.bottomAnchor, constant: -88),
-            portrait.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
-            portrait.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
-            portrait.widthAnchor.constraint(equalToConstant: 56),
-            portrait.heightAnchor.constraint(equalToConstant: 56),
-            namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 10),
-            namePlate.topAnchor.constraint(equalTo: portrait.topAnchor),
+            followedMark.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            followedMark.bottomAnchor.constraint(equalTo: cover.bottomAnchor, constant: -18),
+            followedMark.widthAnchor.constraint(equalToConstant: 108),
+            followedMark.heightAnchor.constraint(equalToConstant: 32),
+            portrait.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            portrait.centerYAnchor.constraint(equalTo: cover.bottomAnchor),
+            portrait.widthAnchor.constraint(equalToConstant: 76),
+            portrait.heightAnchor.constraint(equalToConstant: 76),
+            namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 12),
+            namePlate.topAnchor.constraint(equalTo: cover.bottomAnchor, constant: 10),
             cityPlate.leadingAnchor.constraint(equalTo: namePlate.trailingAnchor, constant: 6),
             cityPlate.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
+            cityPlate.trailingAnchor.constraint(lessThanOrEqualTo: coins.leadingAnchor, constant: -8),
+            coins.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            coins.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
             handlePlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
-            handlePlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 2),
-            level.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
-            level.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
-            vibePlate.leadingAnchor.constraint(equalTo: portrait.leadingAnchor),
-            vibePlate.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
-            vibePlate.topAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 10),
-            tags.leadingAnchor.constraint(equalTo: vibePlate.leadingAnchor),
-            tags.topAnchor.constraint(equalTo: vibePlate.bottomAnchor, constant: 6),
-            followPill.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
-            followPill.topAnchor.constraint(equalTo: tags.bottomAnchor, constant: 12),
-            followPill.widthAnchor.constraint(equalToConstant: 100),
-            friendPill.leadingAnchor.constraint(equalTo: followPill.trailingAnchor, constant: 6),
-            friendPill.centerYAnchor.constraint(equalTo: followPill.centerYAnchor),
-            friendPill.widthAnchor.constraint(equalToConstant: 96),
-            friendPill.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14),
-            chatPill.leadingAnchor.constraint(equalTo: friendPill.trailingAnchor, constant: 6),
-            chatPill.centerYAnchor.constraint(equalTo: followPill.centerYAnchor),
-            chatPill.widthAnchor.constraint(equalToConstant: 88),
-            chatPill.heightAnchor.constraint(equalToConstant: 36),
+            handlePlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 3),
+            level.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            level.centerYAnchor.constraint(equalTo: handlePlate.centerYAnchor),
+            vibePlate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            vibePlate.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            vibePlate.topAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 14),
+            tagRow.leadingAnchor.constraint(equalTo: vibePlate.leadingAnchor),
+            tagRow.topAnchor.constraint(equalTo: vibePlate.bottomAnchor, constant: 10),
+            actions.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            actions.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            actions.topAnchor.constraint(equalTo: tagRow.bottomAnchor, constant: 16),
+            actions.heightAnchor.constraint(equalToConstant: 44),
             videoHead.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            videoHead.topAnchor.constraint(equalTo: card.bottomAnchor, constant: 16),
-            collection.topAnchor.constraint(equalTo: videoHead.bottomAnchor, constant: 8),
+            videoHead.topAnchor.constraint(equalTo: actions.bottomAnchor, constant: 22),
+            collection.topAnchor.constraint(equalTo: videoHead.bottomAnchor, constant: 10),
             collection.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collection.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionHeight,
+            collection.bottomAnchor.constraint(equalTo: scroller.contentLayoutGuide.bottomAnchor, constant: -24),
+            emptyPane.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyPane.topAnchor.constraint(equalTo: videoHead.bottomAnchor, constant: 28),
+            emptyPane.bottomAnchor.constraint(lessThanOrEqualTo: scroller.contentLayoutGuide.bottomAnchor, constant: -24),
         ])
         paintFollow()
-        paintFriend()
+        paintPosts()
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDesk), name: .deskDrawerDidChange, object: nil)
     }
 
     deinit { NotificationCenter.default.removeObserver(self) }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        paintPosts()
+    }
+
+    private func reloadClips() {
+        clips = NightSocialLoungeCatalog.clips(for: deskKey).filter {
+            !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey)
+        }
+    }
+
+    private func paintPosts() {
+        let empty = clips.isEmpty
+        emptyPane.isHidden = !empty
+        collection.isHidden = empty
+        guard !empty else {
+            collectionHeight.constant = 220
+            return
+        }
+        let width = max(120, (view.bounds.width - 42) / 2)
+        let height = width * 1.32
+        let rows = ceil(CGFloat(clips.count) / 2)
+        collectionHeight.constant = rows * height + max(0, rows - 1) * 10
+        collection.reloadData()
+    }
+
+    private func styleActionPill(_ pill: UIButton, title: String, symbol: String) {
+        pill.backgroundColor = AfterHoursPalette.loungePink
+        pill.layer.cornerRadius = 22
+        pill.setTitle(" \(title)", for: .normal)
+        pill.setTitleColor(.white, for: .normal)
+        pill.titleLabel?.font = AfterHoursType.foyerPill(15)
+        pill.setImage(
+            UIImage(systemName: symbol, withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold)),
+            for: .normal
+        )
+        pill.tintColor = .white
+        pill.translatesAutoresizingMaskIntoConstraints = false
+    }
+
+    private func tagChip(_ spoken: String) -> UIView {
+        let wrap = UIView()
+        wrap.layer.cornerRadius = 11
+        wrap.layer.borderWidth = 1
+        wrap.layer.borderColor = AfterHoursPalette.loungePink.withAlphaComponent(0.75).cgColor
+        wrap.translatesAutoresizingMaskIntoConstraints = false
+        let plate = UILabel()
+        plate.text = spoken
+        plate.font = AfterHoursType.foyerCaption(11)
+        plate.textColor = AfterHoursPalette.loungePink
+        plate.translatesAutoresizingMaskIntoConstraints = false
+        wrap.addSubview(plate)
+        NSLayoutConstraint.activate([
+            wrap.heightAnchor.constraint(equalToConstant: 22),
+            plate.leadingAnchor.constraint(equalTo: wrap.leadingAnchor, constant: 10),
+            plate.trailingAnchor.constraint(equalTo: wrap.trailingAnchor, constant: -10),
+            plate.centerYAnchor.constraint(equalTo: wrap.centerYAnchor),
+        ])
+        return wrap
+    }
+
+    private func liveChip() -> UIView {
+        let wrap = UIView()
+        wrap.backgroundColor = AfterHoursPalette.loungePink
+        wrap.layer.cornerRadius = 11
+        wrap.translatesAutoresizingMaskIntoConstraints = false
+        let plate = UILabel()
+        plate.text = "Live now"
+        plate.font = AfterHoursType.foyerCaption(11)
+        plate.textColor = .white
+        plate.translatesAutoresizingMaskIntoConstraints = false
+        wrap.addSubview(plate)
+        NSLayoutConstraint.activate([
+            wrap.heightAnchor.constraint(equalToConstant: 22),
+            plate.leadingAnchor.constraint(equalTo: wrap.leadingAnchor, constant: 10),
+            plate.trailingAnchor.constraint(equalTo: wrap.trailingAnchor, constant: -10),
+            plate.centerYAnchor.constraint(equalTo: wrap.centerYAnchor),
+        ])
+        return wrap
+    }
 
     @objc private func reloadDesk() {
         if NightSocialSessionDrawer.shared.shouldHideDesk(deskKey) {
             navigationController?.popViewController(animated: true)
             return
         }
-        clips = NightSocialLoungeCatalog.clips(for: deskKey).filter {
-            !NightSocialSessionDrawer.shared.shouldHideClip($0.clipKey, authorDeskKey: $0.authorDeskKey)
-        }
-        collection.reloadData()
+        reloadClips()
         paintFollow()
-        paintFriend()
+        paintPosts()
     }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
@@ -194,27 +305,16 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
     private func paintFollow() {
         let on = NightSocialSessionDrawer.shared.isFollowing(deskKey)
-        followPill.setTitle(on ? "Followed" : "+ Follow", for: .normal)
-        followPill.backgroundColor = on ? UIColor.white.withAlphaComponent(0.22) : AfterHoursPalette.loungePink
-    }
-
-    private func paintFriend() {
-        if NightSocialSessionDrawer.shared.isFriend(deskKey) {
-            friendPill.setTitle("Friends", for: .normal)
-            friendPill.isEnabled = false
-        } else if NightSocialSessionDrawer.shared.hasSentFriendAsk(deskKey) {
-            friendPill.setTitle("Asked", for: .normal)
-            friendPill.isEnabled = false
-        } else {
-            friendPill.setTitle("Add friend", for: .normal)
-            friendPill.isEnabled = true
-        }
-    }
-
-    @objc private func askFriend() {
-        NightSocialSessionDrawer.shared.sendFriendAsk(deskKey)
-        paintFriend()
-        NightSocialLampNotices.presentFriendAskSent(from: self)
+        followedMark.isHidden = !on
+        followPill.setTitle(on ? " Followed" : " + Follow", for: .normal)
+        followPill.setImage(
+            UIImage(
+                systemName: on ? "checkmark" : "plus",
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
+            ),
+            for: .normal
+        )
+        followPill.backgroundColor = on ? UIColor.white.withAlphaComponent(0.18) : AfterHoursPalette.loungePink
     }
 
     @objc private func openWhisper() {
@@ -233,10 +333,10 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let col = (collectionView.bounds.width - 42) / 2
-        return CGSize(width: col, height: col * 1.3)
+        return CGSize(width: col, height: col * 1.32)
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 16, bottom: 24, right: 16)
+        UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         navigationController?.pushViewController(NightSocialClipTheater(clipKey: clips[indexPath.item].clipKey), animated: true)

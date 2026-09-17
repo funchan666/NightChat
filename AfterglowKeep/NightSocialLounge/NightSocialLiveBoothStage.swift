@@ -429,7 +429,8 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         }
     }
     @objc private func openHost() {
-        present(NightSocialHostCardSheet(boothKey: boothKey, nav: navigationController), animated: true)
+        guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
+        NightSocialDeskGate.revealDesk(from: self, deskKey: booth.hostDeskKey)
     }
     @objc private func openFacts() {
         present(NightSocialLiveMoreSheet(boothKey: boothKey, host: self), animated: true)
