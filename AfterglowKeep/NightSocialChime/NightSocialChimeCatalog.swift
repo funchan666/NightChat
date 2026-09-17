@@ -13,15 +13,17 @@ struct ChimeNotice: Equatable {
     let minutesAgo: Int
     let speakerDeskKey: String?
     let clipKey: String?
+    let glyph: String
+    let tintKind: Int
 }
 
 enum NightSocialChimeCatalog {
     static let supportDeskKey = "desk.house.support"
 
     static let platformNotices: [ChimeNotice] = [
-        ChimeNotice(noticeKey: "plat.1", spokenTitle: "Night desk", spokenBody: "A house update is waiting on this sitting.", minutesAgo: 5, speakerDeskKey: nil, clipKey: nil),
-        ChimeNotice(noticeKey: "plat.2", spokenTitle: "House rules", spokenBody: "Night sittings were refreshed. Keep the lamp kind.", minutesAgo: 18, speakerDeskKey: nil, clipKey: nil),
-        ChimeNotice(noticeKey: "plat.3", spokenTitle: "Night purse", spokenBody: "Coin activity was recorded on this desk.", minutesAgo: 42, speakerDeskKey: nil, clipKey: nil),
+        ChimeNotice(noticeKey: "plat.1", spokenTitle: "Room update", spokenBody: "Night rooms were refreshed. Take a look when you are free.", minutesAgo: 5, speakerDeskKey: nil, clipKey: nil, glyph: "sparkles", tintKind: 0),
+        ChimeNotice(noticeKey: "plat.2", spokenTitle: "Night note", spokenBody: "Keep rooms kind after dark. Thanks for being here.", minutesAgo: 18, speakerDeskKey: nil, clipKey: nil, glyph: "moon.stars.fill", tintKind: 1),
+        ChimeNotice(noticeKey: "plat.3", spokenTitle: "Coins", spokenBody: "A coin change was added to your balance.", minutesAgo: 42, speakerDeskKey: nil, clipKey: nil, glyph: "diamond.fill", tintKind: 2),
     ]
 
     static var likeNotices: [ChimeNotice] {
@@ -33,9 +35,9 @@ enum NightSocialChimeCatalog {
         let clipA = clips.indices.contains(0) ? clips[0].clipKey : nil
         let clipB = clips.indices.contains(1) ? clips[1].clipKey : nil
         return [
-            ChimeNotice(noticeKey: "like.1", spokenTitle: one?.spokenName ?? "A guest", spokenBody: "liked your night clip.", minutesAgo: 5, speakerDeskKey: one?.deskKey, clipKey: clipA),
-            ChimeNotice(noticeKey: "like.2", spokenTitle: two?.spokenName ?? "A guest", spokenBody: "liked your sitting.", minutesAgo: 5, speakerDeskKey: two?.deskKey, clipKey: clipB),
-            ChimeNotice(noticeKey: "like.3", spokenTitle: three?.spokenName ?? "A guest", spokenBody: "liked your video.", minutesAgo: 9, speakerDeskKey: three?.deskKey, clipKey: clipA),
+            ChimeNotice(noticeKey: "like.1", spokenTitle: one?.spokenName ?? "A guest", spokenBody: "liked your video", minutesAgo: 5, speakerDeskKey: one?.deskKey, clipKey: clipA, glyph: "heart.fill", tintKind: 0),
+            ChimeNotice(noticeKey: "like.2", spokenTitle: two?.spokenName ?? "A guest", spokenBody: "liked your post", minutesAgo: 5, speakerDeskKey: two?.deskKey, clipKey: clipB, glyph: "heart.fill", tintKind: 0),
+            ChimeNotice(noticeKey: "like.3", spokenTitle: three?.spokenName ?? "A guest", spokenBody: "liked your video", minutesAgo: 9, speakerDeskKey: three?.deskKey, clipKey: clipA, glyph: "heart.fill", tintKind: 0),
         ]
     }
 

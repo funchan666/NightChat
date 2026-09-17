@@ -77,8 +77,7 @@ final class NightSocialMirrorPeopleBoard: UIViewController, UITableViewDataSourc
             desks = NightSocialSessionDrawer.shared.followedDeskKeys().compactMap { NightSocialLoungeCatalog.creator(deskKey: $0) }
                 .filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.deskKey) }
         case .friends:
-            desks = NightSocialSessionDrawer.shared.acceptedFriendKeys().compactMap { NightSocialLoungeCatalog.creator(deskKey: $0) }
-                .filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.deskKey) }
+            desks = NightSocialSessionDrawer.shared.mutualFollowDeskKeys().compactMap { NightSocialLoungeCatalog.creator(deskKey: $0) }
         }
         table.reloadData()
         view.viewWithTag(88)?.removeFromSuperview()
@@ -92,7 +91,7 @@ final class NightSocialMirrorPeopleBoard: UIViewController, UITableViewDataSourc
         case .follow:
             spoken = "You are not following anyone yet."
         case .friends:
-            spoken = "No friends yet.\nA friend ask waits for the other desk to agree."
+            spoken = "No friends yet.\nFollow each other and they appear here."
         }
         let empty = NightSocialEmptyPane(spoken: spoken)
         empty.tag = 88

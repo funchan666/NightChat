@@ -215,7 +215,15 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
             return cell
         case .fresh:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeClipTile.reuseId, for: indexPath) as! LoungeClipTile
-            cell.paint(clipItems[indexPath.item], musicMode: false)
+            let clip = clipItems[indexPath.item]
+            cell.paint(clip, musicMode: false)
+            cell.onMore = { [weak self] in
+                guard let self else { return }
+                NightSocialSafetyFlow.presentChooser(
+                    from: self,
+                    target: .clip(clipKey: clip.clipKey, authorDeskKey: clip.authorDeskKey)
+                )
+            }
             return cell
         case .music:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeMusicTile.reuseId, for: indexPath) as! LoungeMusicTile

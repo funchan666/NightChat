@@ -13,22 +13,8 @@ enum ChimeNoticeKind {
 
     var kicker: String {
         switch self {
-        case .platform: return "House notes for this desk"
-        case .likes: return "Who warmed your sitting"
-        }
-    }
-
-    var symbol: String {
-        switch self {
-        case .platform: return "bell.fill"
-        case .likes: return "heart.fill"
-        }
-    }
-
-    var tint: UIColor {
-        switch self {
-        case .platform: return AfterHoursPalette.loungePink
-        case .likes: return AfterHoursPalette.foyerGlowPink
+        case .platform: return "Notes from NightChat"
+        case .likes: return "Who liked your posts"
         }
     }
 
@@ -58,51 +44,38 @@ final class NightSocialChimeNoticeBoard: UIViewController, UITableViewDataSource
         navigationController?.setNavigationBarHidden(true, animated: false)
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
-        let disc = UIView()
-        disc.backgroundColor = kind.tint.withAlphaComponent(0.2)
-        disc.layer.cornerRadius = 16
-        disc.translatesAutoresizingMaskIntoConstraints = false
-        let glyph = UIImageView(image: UIImage(systemName: kind.symbol, withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)))
-        glyph.tintColor = kind.tint
-        glyph.translatesAutoresizingMaskIntoConstraints = false
         let head = UILabel()
         head.text = kind.spokenTitle
         head.font = AfterHoursType.foyerHeadline(22)
         head.textColor = .white
+        head.translatesAutoresizingMaskIntoConstraints = false
         let kicker = UILabel()
         kicker.text = kind.kicker
-        kicker.font = AfterHoursType.foyerCaption(12)
+        kicker.font = AfterHoursType.foyerCaption(13)
         kicker.textColor = UIColor.white.withAlphaComponent(0.55)
-        let titleBlock = UIStackView(arrangedSubviews: [head, kicker])
-        titleBlock.axis = .vertical
-        titleBlock.spacing = 1
-        titleBlock.translatesAutoresizingMaskIntoConstraints = false
+        kicker.translatesAutoresizingMaskIntoConstraints = false
         table.backgroundColor = .clear
         table.separatorStyle = .none
         table.dataSource = self
         table.delegate = self
-        table.rowHeight = 92
+        table.rowHeight = UITableView.automaticDimension
+        table.estimatedRowHeight = 108
         table.register(ChimeNoticeRow.self, forCellReuseIdentifier: ChimeNoticeRow.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
         table.contentInsetAdjustmentBehavior = .never
-        table.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 28, right: 0)
+        table.contentInset = UIEdgeInsets(top: 6, left: 0, bottom: 28, right: 0)
         view.addSubview(back)
-        view.addSubview(disc)
-        disc.addSubview(glyph)
-        view.addSubview(titleBlock)
+        view.addSubview(head)
+        view.addSubview(kicker)
         view.addSubview(table)
         NSLayoutConstraint.activate([
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
-            disc.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            disc.centerYAnchor.constraint(equalTo: back.centerYAnchor),
-            disc.widthAnchor.constraint(equalToConstant: 32),
-            disc.heightAnchor.constraint(equalToConstant: 32),
-            glyph.centerXAnchor.constraint(equalTo: disc.centerXAnchor),
-            glyph.centerYAnchor.constraint(equalTo: disc.centerYAnchor),
-            titleBlock.leadingAnchor.constraint(equalTo: disc.trailingAnchor, constant: 10),
-            titleBlock.centerYAnchor.constraint(equalTo: back.centerYAnchor),
-            table.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 12),
+            head.leadingAnchor.constraint(equalTo: back.trailingAnchor, constant: 10),
+            head.centerYAnchor.constraint(equalTo: back.centerYAnchor, constant: -8),
+            kicker.leadingAnchor.constraint(equalTo: head.leadingAnchor),
+            kicker.topAnchor.constraint(equalTo: head.bottomAnchor, constant: 1),
+            table.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 18),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -133,74 +106,91 @@ final class ChimeNoticeRow: UITableViewCell {
     private let disc = UIView()
     private let glyph = UIImageView()
     private let portrait = UIImageView()
+    private let heartBadge = UIImageView()
     private let titlePlate = UILabel()
     private let bodyPlate = UILabel()
     private let clock = UILabel()
     private let thumb = UIImageView()
+    private var thumbWidth: NSLayoutConstraint!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         selectionStyle = .none
         card.backgroundColor = AfterHoursPalette.loungeCard
-        card.layer.cornerRadius = 18
+        card.layer.cornerRadius = 20
         card.translatesAutoresizingMaskIntoConstraints = false
-        disc.layer.cornerRadius = 18
+        disc.layer.cornerRadius = 22
         disc.translatesAutoresizingMaskIntoConstraints = false
         glyph.contentMode = .scaleAspectFit
         glyph.translatesAutoresizingMaskIntoConstraints = false
         portrait.contentMode = .scaleAspectFill
         portrait.clipsToBounds = true
-        portrait.layer.cornerRadius = 18
+        portrait.layer.cornerRadius = 22
         portrait.translatesAutoresizingMaskIntoConstraints = false
-        titlePlate.font = AfterHoursType.foyerPill(15)
+        heartBadge.image = UIImage(systemName: "heart.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 8, weight: .bold))
+        heartBadge.tintColor = .white
+        heartBadge.backgroundColor = AfterHoursPalette.loungePink
+        heartBadge.layer.cornerRadius = 8
+        heartBadge.clipsToBounds = true
+        heartBadge.contentMode = .center
+        heartBadge.translatesAutoresizingMaskIntoConstraints = false
+        titlePlate.font = AfterHoursType.foyerPill(16)
         titlePlate.textColor = .white
         titlePlate.translatesAutoresizingMaskIntoConstraints = false
-        bodyPlate.font = AfterHoursType.foyerCaption(12)
-        bodyPlate.textColor = UIColor.white.withAlphaComponent(0.62)
+        bodyPlate.font = AfterHoursType.foyerBody(13)
+        bodyPlate.textColor = UIColor.white.withAlphaComponent(0.68)
+        bodyPlate.numberOfLines = 2
         bodyPlate.translatesAutoresizingMaskIntoConstraints = false
         clock.font = AfterHoursType.foyerCaption(11)
-        clock.textColor = UIColor.white.withAlphaComponent(0.38)
+        clock.textColor = UIColor.white.withAlphaComponent(0.42)
         clock.translatesAutoresizingMaskIntoConstraints = false
         thumb.contentMode = .scaleAspectFill
         thumb.clipsToBounds = true
-        thumb.layer.cornerRadius = 10
+        thumb.layer.cornerRadius = 12
         thumb.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(card)
         card.addSubview(disc)
         disc.addSubview(glyph)
         card.addSubview(portrait)
+        card.addSubview(heartBadge)
         card.addSubview(titlePlate)
         card.addSubview(bodyPlate)
         card.addSubview(clock)
         card.addSubview(thumb)
+        thumbWidth = thumb.widthAnchor.constraint(equalToConstant: 52)
         NSLayoutConstraint.activate([
+            thumbWidth,
             card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
-            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
-            disc.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
-            disc.centerYAnchor.constraint(equalTo: card.centerYAnchor),
-            disc.widthAnchor.constraint(equalToConstant: 36),
-            disc.heightAnchor.constraint(equalToConstant: 36),
+            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+            disc.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
+            disc.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
+            disc.widthAnchor.constraint(equalToConstant: 44),
+            disc.heightAnchor.constraint(equalToConstant: 44),
             glyph.centerXAnchor.constraint(equalTo: disc.centerXAnchor),
             glyph.centerYAnchor.constraint(equalTo: disc.centerYAnchor),
-            portrait.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
-            portrait.centerYAnchor.constraint(equalTo: card.centerYAnchor),
-            portrait.widthAnchor.constraint(equalToConstant: 36),
-            portrait.heightAnchor.constraint(equalToConstant: 36),
+            portrait.leadingAnchor.constraint(equalTo: disc.leadingAnchor),
+            portrait.topAnchor.constraint(equalTo: disc.topAnchor),
+            portrait.widthAnchor.constraint(equalToConstant: 44),
+            portrait.heightAnchor.constraint(equalToConstant: 44),
+            heartBadge.trailingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 3),
+            heartBadge.bottomAnchor.constraint(equalTo: portrait.bottomAnchor, constant: 3),
+            heartBadge.widthAnchor.constraint(equalToConstant: 16),
+            heartBadge.heightAnchor.constraint(equalToConstant: 16),
             titlePlate.leadingAnchor.constraint(equalTo: disc.trailingAnchor, constant: 12),
-            titlePlate.trailingAnchor.constraint(lessThanOrEqualTo: thumb.leadingAnchor, constant: -10),
+            titlePlate.trailingAnchor.constraint(lessThanOrEqualTo: thumb.leadingAnchor, constant: -12),
             titlePlate.topAnchor.constraint(equalTo: card.topAnchor, constant: 14),
             bodyPlate.leadingAnchor.constraint(equalTo: titlePlate.leadingAnchor),
             bodyPlate.trailingAnchor.constraint(equalTo: titlePlate.trailingAnchor),
-            bodyPlate.topAnchor.constraint(equalTo: titlePlate.bottomAnchor, constant: 2),
+            bodyPlate.topAnchor.constraint(equalTo: titlePlate.bottomAnchor, constant: 3),
             clock.leadingAnchor.constraint(equalTo: titlePlate.leadingAnchor),
-            clock.topAnchor.constraint(equalTo: bodyPlate.bottomAnchor, constant: 4),
-            thumb.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+            clock.topAnchor.constraint(equalTo: bodyPlate.bottomAnchor, constant: 6),
+            clock.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -14),
+            thumb.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -14),
             thumb.centerYAnchor.constraint(equalTo: card.centerYAnchor),
-            thumb.widthAnchor.constraint(equalToConstant: 44),
-            thumb.heightAnchor.constraint(equalToConstant: 44),
+            thumb.heightAnchor.constraint(equalToConstant: 52),
         ])
     }
 
@@ -209,24 +199,40 @@ final class ChimeNoticeRow: UITableViewCell {
     func paint(_ notice: ChimeNotice, likes: Bool) {
         titlePlate.text = notice.spokenTitle
         bodyPlate.text = notice.spokenBody
-        clock.text = "\(notice.minutesAgo) min ago"
-        let tint = likes ? AfterHoursPalette.foyerGlowPink : AfterHoursPalette.loungePink
+        clock.text = Self.clockPhrase(notice.minutesAgo)
+        let tints = [
+            AfterHoursPalette.loungePink,
+            AfterHoursPalette.levelMint,
+            UIColor(red: 1, green: 0.78, blue: 0.32, alpha: 1),
+        ]
+        let tint = tints[min(notice.tintKind, tints.count - 1)]
         disc.backgroundColor = tint.withAlphaComponent(0.18)
-        glyph.image = UIImage(systemName: likes ? "heart.fill" : "bell.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 14, weight: .semibold))
+        glyph.image = UIImage(systemName: notice.glyph, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold))
         glyph.tintColor = tint
-        if let deskKey = notice.speakerDeskKey {
-            portrait.image = NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 72, height: 72))
+        if likes, let deskKey = notice.speakerDeskKey {
+            portrait.image = NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 88, height: 88))
             portrait.isHidden = false
             disc.isHidden = true
+            heartBadge.isHidden = false
         } else {
             portrait.isHidden = true
             disc.isHidden = false
+            heartBadge.isHidden = true
         }
-        if let clipKey = notice.clipKey {
-            thumb.image = NightSocialMediaAssets.clipCover(clipKey, size: CGSize(width: 88, height: 88))
+        if likes, let clipKey = notice.clipKey {
+            thumb.image = NightSocialMediaAssets.clipCover(clipKey, size: CGSize(width: 104, height: 104))
             thumb.isHidden = false
+            thumbWidth.constant = 52
         } else {
             thumb.isHidden = true
+            thumbWidth.constant = 0
         }
+    }
+
+    private static func clockPhrase(_ minutes: Int) -> String {
+        if minutes < 60 { return "\(minutes) min ago" }
+        let hours = minutes / 60
+        if hours < 24 { return "\(hours)h ago" }
+        return "\(hours / 24)d ago"
     }
 }

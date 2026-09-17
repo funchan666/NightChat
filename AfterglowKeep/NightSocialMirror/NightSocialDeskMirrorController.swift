@@ -435,7 +435,7 @@ final class NightSocialDeskMirrorController: UIViewController {
             : "Live bright, connect with wonderful people."
         followCount.text = "\(NightSocialSessionDrawer.shared.followedDeskKeys().count)"
         fanCount.text = "\(NightSocialSessionDrawer.shared.fanDeskKeys().count)"
-        friendCount.text = "\(NightSocialSessionDrawer.shared.acceptedFriendKeys().count)"
+        friendCount.text = "\(NightSocialSessionDrawer.shared.mutualFollowDeskKeys().count)"
         pursePlate.text = "\(NightSocialSessionDrawer.shared.diamondPurse)"
         landPlate.text = NightSocialLampAtlas.land(code: NightSocialSessionDrawer.shared.homeCountryCode).spokenTitle
         portrait.image = NightSocialSessionDrawer.shared.loadPortrait()

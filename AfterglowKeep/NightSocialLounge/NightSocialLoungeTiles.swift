@@ -218,10 +218,12 @@ final class LoungeBoothTile: UICollectionViewCell {
 
 final class LoungeClipTile: UICollectionViewCell {
     static let reuseId = "LoungeClipTile"
+    var onMore: (() -> Void)?
     private let cover = UIImageView()
     private let playDisc = UIImageView()
     private let captionBar = UIView()
     private let captionPlate = UILabel()
+    private let more = UIButton(type: .custom)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -239,10 +241,17 @@ final class LoungeClipTile: UICollectionViewCell {
         captionPlate.numberOfLines = 2
         captionPlate.lineBreakMode = .byTruncatingTail
         captionPlate.translatesAutoresizingMaskIntoConstraints = false
+        more.setImage(UIImage(systemName: "ellipsis", withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)), for: .normal)
+        more.tintColor = .white
+        more.backgroundColor = UIColor.black.withAlphaComponent(0.42)
+        more.layer.cornerRadius = 12
+        more.addTarget(self, action: #selector(tapMore), for: .touchUpInside)
+        more.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(cover)
         contentView.addSubview(playDisc)
         contentView.addSubview(captionBar)
         captionBar.addSubview(captionPlate)
+        contentView.addSubview(more)
         NSLayoutConstraint.activate([
             cover.topAnchor.constraint(equalTo: contentView.topAnchor),
             cover.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -259,6 +268,10 @@ final class LoungeClipTile: UICollectionViewCell {
             captionPlate.trailingAnchor.constraint(equalTo: captionBar.trailingAnchor, constant: -10),
             captionPlate.topAnchor.constraint(equalTo: captionBar.topAnchor, constant: 8),
             captionPlate.bottomAnchor.constraint(equalTo: captionBar.bottomAnchor, constant: -8),
+            more.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            more.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            more.widthAnchor.constraint(equalToConstant: 24),
+            more.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
 
@@ -268,13 +281,17 @@ final class LoungeClipTile: UICollectionViewCell {
         cover.image = NightSocialMediaAssets.clipCover(clip.clipKey, size: CGSize(width: 320, height: 400))
         captionPlate.text = musicMode ? clip.musicTitle : clip.caption
     }
+
+    @objc private func tapMore() { onMore?() }
 }
 
 final class LoungeMomentTile: UICollectionViewCell {
     static let reuseId = "LoungeMomentTile"
+    var onMore: (() -> Void)?
     private let still = UIImageView()
     private let captionBar = UIView()
     private let captionPlate = UILabel()
+    private let more = UIButton(type: .custom)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -290,9 +307,16 @@ final class LoungeMomentTile: UICollectionViewCell {
         captionPlate.numberOfLines = 2
         captionPlate.lineBreakMode = .byTruncatingTail
         captionPlate.translatesAutoresizingMaskIntoConstraints = false
+        more.setImage(UIImage(systemName: "ellipsis", withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .bold)), for: .normal)
+        more.tintColor = .white
+        more.backgroundColor = UIColor.black.withAlphaComponent(0.42)
+        more.layer.cornerRadius = 12
+        more.addTarget(self, action: #selector(tapMore), for: .touchUpInside)
+        more.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(still)
         contentView.addSubview(captionBar)
         captionBar.addSubview(captionPlate)
+        contentView.addSubview(more)
         NSLayoutConstraint.activate([
             still.topAnchor.constraint(equalTo: contentView.topAnchor),
             still.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -305,6 +329,10 @@ final class LoungeMomentTile: UICollectionViewCell {
             captionPlate.trailingAnchor.constraint(equalTo: captionBar.trailingAnchor, constant: -10),
             captionPlate.topAnchor.constraint(equalTo: captionBar.topAnchor, constant: 8),
             captionPlate.bottomAnchor.constraint(equalTo: captionBar.bottomAnchor, constant: -8),
+            more.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            more.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            more.widthAnchor.constraint(equalToConstant: 24),
+            more.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
     required init?(coder: NSCoder) { nil }
@@ -315,6 +343,8 @@ final class LoungeMomentTile: UICollectionViewCell {
             : NightSocialMediaAssets.portrait(for: moment.deskKey, size: CGSize(width: 320, height: 400))
         captionPlate.text = moment.caption
     }
+
+    @objc private func tapMore() { onMore?() }
 }
 
 final class LoungeMusicTile: UICollectionViewCell {

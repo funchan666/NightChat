@@ -179,9 +179,9 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
 
     private func rebuildFriends() {
         friendsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let friends = NightSocialSessionDrawer.shared.acceptedFriendKeys().compactMap {
+        let friends = NightSocialSessionDrawer.shared.mutualFollowDeskKeys().compactMap {
             NightSocialLoungeCatalog.creator(deskKey: $0)
-        }.filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.deskKey) }
+        }
         if friends.isEmpty {
             friendsRow.isHidden = showingFollow
             friendsHeight?.constant = showingFollow ? 0 : 0
@@ -241,6 +241,10 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             let desk = followDesks[indexPath.row]
             cell.paint(desk)
             cell.onChat = { [weak self] in self?.openThread(desk.deskKey) }
+            cell.onUnfollow = { [weak self] in
+                NightSocialSessionDrawer.shared.toggleFollow(desk.deskKey)
+                self?.reloadBoard()
+            }
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: ChimeThreadRow.reuseId, for: indexPath) as! ChimeThreadRow
@@ -370,10 +374,12 @@ final class ChimeThreadRow: UITableViewCell {
 final class ChimeFollowRow: UITableViewCell {
     static let reuseId = "ChimeFollowRow"
     var onChat: (() -> Void)?
+    var onUnfollow: (() -> Void)?
     private let portrait = UIImageView()
     private let namePlate = UILabel()
     private let metaPlate = UILabel()
     private let liveMark = UIImageView()
+    private let unfollow = UIButton(type: .custom)
     private let chat = UIButton(type: .custom)
     private var levelWrap: UIView?
 
@@ -389,6 +395,7 @@ final class ChimeFollowRow: UITableViewCell {
         portrait.translatesAutoresizingMaskIntoConstraints = false
         namePlate.font = AfterHoursType.foyerPill(15)
         namePlate.textColor = .white
+        namePlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         namePlate.translatesAutoresizingMaskIntoConstraints = false
         metaPlate.font = AfterHoursType.foyerCaption(11)
         metaPlate.textColor = UIColor.white.withAlphaComponent(0.65)
@@ -396,6 +403,13 @@ final class ChimeFollowRow: UITableViewCell {
         liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
         liveMark.translatesAutoresizingMaskIntoConstraints = false
+        unfollow.setTitle("  \(NightLang.t(.unfollow))  ", for: .normal)
+        unfollow.setTitleColor(AfterHoursPalette.loungePink, for: .normal)
+        unfollow.titleLabel?.font = AfterHoursType.foyerCaption(12)
+        unfollow.backgroundColor = UIColor.white.withAlphaComponent(0.14)
+        unfollow.layer.cornerRadius = 14
+        unfollow.addTarget(self, action: #selector(tapUnfollow), for: .touchUpInside)
+        unfollow.translatesAutoresizingMaskIntoConstraints = false
         chat.setImage(NightSocialImageCabinet.named("ChatBubble", fallback: "ChatBubble"), for: .normal)
         chat.imageView?.contentMode = .scaleAspectFit
         chat.addTarget(self, action: #selector(tapChat), for: .touchUpInside)
@@ -404,6 +418,7 @@ final class ChimeFollowRow: UITableViewCell {
         contentView.addSubview(namePlate)
         contentView.addSubview(metaPlate)
         contentView.addSubview(liveMark)
+        contentView.addSubview(unfollow)
         contentView.addSubview(chat)
         NSLayoutConstraint.activate([
             portrait.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
@@ -416,12 +431,18 @@ final class ChimeFollowRow: UITableViewCell {
             liveMark.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
             liveMark.widthAnchor.constraint(equalToConstant: 40),
             liveMark.heightAnchor.constraint(equalToConstant: 16),
+            liveMark.trailingAnchor.constraint(lessThanOrEqualTo: unfollow.leadingAnchor, constant: -8),
             metaPlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
             metaPlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 4),
+            metaPlate.trailingAnchor.constraint(lessThanOrEqualTo: unfollow.leadingAnchor, constant: -8),
             chat.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             chat.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             chat.widthAnchor.constraint(equalToConstant: 36),
             chat.heightAnchor.constraint(equalToConstant: 36),
+            unfollow.trailingAnchor.constraint(equalTo: chat.leadingAnchor, constant: -8),
+            unfollow.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            unfollow.heightAnchor.constraint(equalToConstant: 28),
+            unfollow.widthAnchor.constraint(greaterThanOrEqualToConstant: 76),
         ])
     }
     required init?(coder: NSCoder) { nil }
@@ -444,4 +465,5 @@ final class ChimeFollowRow: UITableViewCell {
         ])
     }
     @objc private func tapChat() { onChat?() }
+    @objc private func tapUnfollow() { onUnfollow?() }
 }

@@ -338,6 +338,10 @@ final class NightSocialSessionDrawer {
         followedDeskKeys().contains(deskKey) && followerDeskKeys().contains(deskKey)
     }
 
+    func mutualFollowDeskKeys() -> Set<String> {
+        followedDeskKeys().intersection(followerDeskKeys()).filter { !shouldHideDesk($0) }
+    }
+
     func toggleFollow(_ deskKey: String) {
         var keys = followedDeskKeys()
         if keys.contains(deskKey) { keys.remove(deskKey) } else { keys.insert(deskKey) }

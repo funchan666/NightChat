@@ -5,7 +5,6 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     private let scroller = UIScrollView()
     private let followPill = UIButton(type: .custom)
     private let chatPill = UIButton(type: .custom)
-    private let followedMark = UILabel()
     private let emptyPane = NightSocialEmptyPane(spoken: NightLang.t(.noPostsYet))
     private var moments: [DeskMoment] = []
     private var collection: UICollectionView!
@@ -42,15 +41,6 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
         let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle")
         more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
-
-        followedMark.text = NightLang.t(.followed)
-        followedMark.font = AfterHoursType.foyerPill(13)
-        followedMark.textColor = AfterHoursPalette.inkOnSnow
-        followedMark.textAlignment = .center
-        followedMark.backgroundColor = UIColor.white.withAlphaComponent(0.94)
-        followedMark.layer.cornerRadius = 16
-        followedMark.clipsToBounds = true
-        followedMark.translatesAutoresizingMaskIntoConstraints = false
 
         let portrait = UIImageView(image: NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 160, height: 160)))
         portrait.contentMode = .scaleAspectFill
@@ -126,7 +116,6 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
         view.addSubview(scroller)
         scroller.addSubview(cover)
-        scroller.addSubview(followedMark)
         scroller.addSubview(portrait)
         scroller.addSubview(namePlate)
         scroller.addSubview(cityPlate)
@@ -155,10 +144,6 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
             back.topAnchor.constraint(equalTo: view.topAnchor, constant: 54),
             more.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
             more.centerYAnchor.constraint(equalTo: back.centerYAnchor),
-            followedMark.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            followedMark.bottomAnchor.constraint(equalTo: cover.bottomAnchor, constant: -18),
-            followedMark.widthAnchor.constraint(equalToConstant: 108),
-            followedMark.heightAnchor.constraint(equalToConstant: 32),
             portrait.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             portrait.centerYAnchor.constraint(equalTo: cover.bottomAnchor),
             portrait.widthAnchor.constraint(equalToConstant: 76),
@@ -311,7 +296,6 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
     private func paintFollow() {
         let on = NightSocialSessionDrawer.shared.isFollowing(deskKey)
-        followedMark.isHidden = !on
         followPill.setTitle(on ? " \(NightLang.t(.followed))" : " \(NightLang.t(.follow))", for: .normal)
         followPill.setImage(
             UIImage(
@@ -337,10 +321,21 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         if let clipKey = moment.clipKey, let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeClipTile.reuseId, for: indexPath) as! LoungeClipTile
             cell.paint(clip, musicMode: false)
+            cell.onMore = { [weak self] in
+                guard let self else { return }
+                NightSocialSafetyFlow.presentChooser(
+                    from: self,
+                    target: .clip(clipKey: clip.clipKey, authorDeskKey: clip.authorDeskKey)
+                )
+            }
             return cell
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeMomentTile.reuseId, for: indexPath) as! LoungeMomentTile
         cell.paint(moment)
+        cell.onMore = { [weak self] in
+            guard let self else { return }
+            NightSocialSafetyFlow.presentChooser(from: self, target: .desk(moment.deskKey))
+        }
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
