@@ -372,7 +372,7 @@ enum NightLang {
         .plusFollow: "+ 팔로우",
     ]
 
-    private static let es: [NightKey: String] = base(en, [
+    private static let es: [NightKey: String] = [
         .cancel: "Cancelar", .confirm: "Confirmar", .more: "Más", .send: "ENVIAR",
         .stay: "Quedarme", .leave: "Salir", .follow: "Seguir", .followed: "Siguiendo",
         .following: "Siguiendo", .followers: "Seguidores", .friends: "Amigos",
@@ -406,9 +406,9 @@ enum NightLang {
         .liveRoomDetails: "Detalles de la sala", .leaveRoom: "¿Salir de esta sala?",
         .leaveRoomBody: "Dejarás el micrófono y volverás a Fiesta.",
         .plusFollow: "+ Seguir",
-    ])
+    ]
 
-    private static let fr: [NightKey: String] = base(en, [
+    private static let fr: [NightKey: String] = [
         .cancel: "Annuler", .confirm: "Confirmer", .more: "Plus", .send: "ENVOYER",
         .stay: "Rester", .leave: "Quitter", .follow: "Suivre", .followed: "Suivi",
         .following: "Abonnements", .followers: "Abonnés", .friends: "Amis",
@@ -431,9 +431,9 @@ enum NightLang {
         .noPostsYet: "Pas encore de publications.",
         .sendGift: "Envoyer un cadeau", .leaveRoom: "Quitter ce salon ?",
         .plusFollow: "+ Suivre",
-    ])
+    ]
 
-    private static let de: [NightKey: String] = base(en, [
+    private static let de: [NightKey: String] = [
         .cancel: "Abbrechen", .confirm: "Bestätigen", .more: "Mehr", .send: "SENDEN",
         .stay: "Bleiben", .leave: "Verlassen", .follow: "Folgen", .followed: "Gefolgt",
         .following: "Folgst du", .followers: "Follower", .friends: "Freunde",
@@ -455,9 +455,9 @@ enum NightLang {
         .deleteConversation: "Chat löschen", .noPostsYet: "Noch keine Beiträge.",
         .sendGift: "Geschenk senden", .leaveRoom: "Diesen Raum verlassen?",
         .plusFollow: "+ Folgen",
-    ])
+    ]
 
-    private static let ar: [NightKey: String] = base(en, [
+    private static let ar: [NightKey: String] = [
         .cancel: "إلغاء", .confirm: "تأكيد", .more: "المزيد", .send: "إرسال",
         .stay: "بقاء", .leave: "خروج", .follow: "متابعة", .followed: "متابَع",
         .following: "المتابَعون", .followers: "المتابِعون", .friends: "أصدقاء",
@@ -479,9 +479,9 @@ enum NightLang {
         .deleteConversation: "حذف المحادثة", .noPostsYet: "لا منشورات بعد.",
         .sendGift: "إرسال هدية", .leaveRoom: "مغادرة هذه الغرفة؟",
         .plusFollow: "+ متابعة",
-    ])
+    ]
 
-    private static let pt: [NightKey: String] = base(en, [
+    private static let pt: [NightKey: String] = [
         .cancel: "Cancelar", .confirm: "Confirmar", .more: "Mais", .send: "ENVIAR",
         .stay: "Ficar", .leave: "Sair", .follow: "Seguir", .followed: "Seguindo",
         .following: "Seguindo", .followers: "Seguidores", .friends: "Amigos",
@@ -499,9 +499,9 @@ enum NightLang {
         .deleteConversation: "Excluir conversa", .noPostsYet: "Ainda não há publicações.",
         .sendGift: "Enviar presente", .leaveRoom: "Sair desta sala?",
         .plusFollow: "+ Seguir",
-    ])
+    ]
 
-    private static let it: [NightKey: String] = base(en, [
+    private static let it: [NightKey: String] = [
         .cancel: "Annulla", .confirm: "Conferma", .more: "Altro", .send: "INVIA",
         .stay: "Resta", .leave: "Esci", .follow: "Segui", .followed: "Seguito",
         .following: "Seguiti", .followers: "Follower", .friends: "Amici",
@@ -518,9 +518,9 @@ enum NightLang {
         .deleteConversation: "Elimina conversazione", .noPostsYet: "Nessun post ancora.",
         .sendGift: "Invia un regalo", .leaveRoom: "Lasciare questa stanza?",
         .plusFollow: "+ Segui",
-    ])
+    ]
 
-    private static let ru: [NightKey: String] = base(en, [
+    private static let ru: [NightKey: String] = [
         .cancel: "Отмена", .confirm: "Подтвердить", .more: "Ещё", .send: "ОТПРАВИТЬ",
         .stay: "Остаться", .leave: "Выйти", .follow: "Подписаться", .followed: "Вы подписаны",
         .following: "Подписки", .followers: "Подписчики", .friends: "Друзья",
@@ -537,9 +537,9 @@ enum NightLang {
         .deleteConversation: "Удалить переписку", .noPostsYet: "Пока нет публикаций.",
         .sendGift: "Отправить подарок", .leaveRoom: "Покинуть комнату?",
         .plusFollow: "+ Подписка",
-    ])
+    ]
 
-    private static let hi: [NightKey: String] = base(en, [
+    private static let hi: [NightKey: String] = [
         .cancel: "रद्द करें", .confirm: "पुष्टि करें", .more: "और", .send: "भेजें",
         .stay: "रहें", .leave: "बाहर जाएँ", .follow: "फ़ॉलो", .followed: "फ़ॉलो किया",
         .following: "फ़ॉलोइंग", .followers: "फ़ॉलोअर्स", .friends: "दोस्त",
@@ -556,9 +556,9 @@ enum NightLang {
         .deleteConversation: "चैट हटाएँ", .noPostsYet: "अभी कोई पोस्ट नहीं।",
         .sendGift: "गिफ़्ट भेजें", .leaveRoom: "यह रूम छोड़ें?",
         .plusFollow: "+ फ़ॉलो",
-    ])
+    ]
 
-    private static let tr: [NightKey: String] = base(en, [
+    private static let tr: [NightKey: String] = [
         .cancel: "İptal", .confirm: "Onayla", .more: "Daha fazla", .send: "GÖNDER",
         .stay: "Kal", .leave: "Çık", .follow: "Takip et", .followed: "Takipte",
         .following: "Takip", .followers: "Takipçi", .friends: "Arkadaşlar",
@@ -575,9 +575,9 @@ enum NightLang {
         .deleteConversation: "Sohbeti sil", .noPostsYet: "Henüz gönderi yok.",
         .sendGift: "Hediye gönder", .leaveRoom: "Bu odadan çıkılsın mı?",
         .plusFollow: "+ Takip et",
-    ])
+    ]
 
-    private static let th: [NightKey: String] = base(en, [
+    private static let th: [NightKey: String] = [
         .cancel: "ยกเลิก", .confirm: "ยืนยัน", .more: "เพิ่มเติม", .send: "ส่ง",
         .stay: "อยู่ต่อ", .leave: "ออก", .follow: "ติดตาม", .followed: "กำลังติดตาม",
         .following: "กำลังติดตาม", .followers: "ผู้ติดตาม", .friends: "เพื่อน",
@@ -594,9 +594,9 @@ enum NightLang {
         .deleteConversation: "ลบแชท", .noPostsYet: "ยังไม่มีโพสต์",
         .sendGift: "ส่งของขวัญ", .leaveRoom: "ออกจากห้องนี้?",
         .plusFollow: "+ ติดตาม",
-    ])
+    ]
 
-    private static let vi: [NightKey: String] = base(en, [
+    private static let vi: [NightKey: String] = [
         .cancel: "Hủy", .confirm: "Xác nhận", .more: "Thêm", .send: "GỬI",
         .stay: "Ở lại", .leave: "Rời", .follow: "Theo dõi", .followed: "Đã theo dõi",
         .following: "Đang theo dõi", .followers: "Người theo dõi", .friends: "Bạn bè",
@@ -613,9 +613,9 @@ enum NightLang {
         .deleteConversation: "Xóa cuộc trò chuyện", .noPostsYet: "Chưa có bài đăng.",
         .sendGift: "Tặng quà", .leaveRoom: "Rời phòng này?",
         .plusFollow: "+ Theo dõi",
-    ])
+    ]
 
-    private static let id: [NightKey: String] = base(en, [
+    private static let id: [NightKey: String] = [
         .cancel: "Batal", .confirm: "Konfirmasi", .more: "Lainnya", .send: "KIRIM",
         .stay: "Tetap", .leave: "Keluar", .follow: "Ikuti", .followed: "Mengikuti",
         .following: "Mengikuti", .followers: "Pengikut", .friends: "Teman",
@@ -632,9 +632,9 @@ enum NightLang {
         .deleteConversation: "Hapus percakapan", .noPostsYet: "Belum ada kiriman.",
         .sendGift: "Kirim hadiah", .leaveRoom: "Keluar dari ruang ini?",
         .plusFollow: "+ Ikuti",
-    ])
+    ]
 
-    private static let nl: [NightKey: String] = base(en, [
+    private static let nl: [NightKey: String] = [
         .cancel: "Annuleren", .confirm: "Bevestigen", .more: "Meer", .send: "VERZENDEN",
         .stay: "Blijven", .leave: "Verlaten", .follow: "Volgen", .followed: "Volgend",
         .following: "Volgend", .followers: "Volgers", .friends: "Vrienden",
@@ -651,9 +651,9 @@ enum NightLang {
         .deleteConversation: "Gesprek verwijderen", .noPostsYet: "Nog geen berichten.",
         .sendGift: "Cadeau sturen", .leaveRoom: "Deze kamer verlaten?",
         .plusFollow: "+ Volgen",
-    ])
+    ]
 
-    private static let pl: [NightKey: String] = base(en, [
+    private static let pl: [NightKey: String] = [
         .cancel: "Anuluj", .confirm: "Potwierdź", .more: "Więcej", .send: "WYŚLIJ",
         .stay: "Zostań", .leave: "Wyjdź", .follow: "Obserwuj", .followed: "Obserwujesz",
         .following: "Obserwowani", .followers: "Obserwujący", .friends: "Znajomi",
@@ -670,11 +670,6 @@ enum NightLang {
         .deleteConversation: "Usuń rozmowę", .noPostsYet: "Brak postów.",
         .sendGift: "Wyślij prezent", .leaveRoom: "Opuścić ten pokój?",
         .plusFollow: "+ Obserwuj",
-    ])
+    ]
 
-    private static func base(_ fallback: [NightKey: String], _ overlay: [NightKey: String]) -> [NightKey: String] {
-        var pack = fallback
-        overlay.forEach { pack[$0.key] = $0.value }
-        return pack
-    }
 }

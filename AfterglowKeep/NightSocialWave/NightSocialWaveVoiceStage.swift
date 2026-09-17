@@ -678,21 +678,21 @@ final class NightSocialVoiceLeavePrompt: UIViewController {
         card.layer.cornerRadius = 24
         card.translatesAutoresizingMaskIntoConstraints = false
         let title = UILabel()
-        title.text = "Leave this room?"
+        title.text = NightLang.t(.leaveRoom)
         title.font = AfterHoursType.foyerHeadline(20)
         title.textColor = .white
         title.textAlignment = .center
         title.translatesAutoresizingMaskIntoConstraints = false
         let body = UILabel()
-        body.text = "You'll drop the mic and go back to Party."
+        body.text = NightLang.t(.leaveRoomBody)
         body.font = AfterHoursType.foyerBody(14)
         body.textColor = UIColor.white.withAlphaComponent(0.72)
         body.textAlignment = .center
         body.numberOfLines = 0
         body.translatesAutoresizingMaskIntoConstraints = false
-        let stay = NightSocialLoungeChrome.ghostPill(title: "Stay")
+        let stay = NightSocialLoungeChrome.ghostPill(title: NightLang.t(.stay))
         stay.addTarget(self, action: #selector(fold), for: .touchUpInside)
-        let leave = NightSocialLoungeChrome.pinkPill(title: "Leave")
+        let leave = NightSocialLoungeChrome.pinkPill(title: NightLang.t(.leave))
         leave.addTarget(self, action: #selector(confirmLeave), for: .touchUpInside)
         view.addSubview(card)
         card.addSubview(title)

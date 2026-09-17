@@ -789,6 +789,7 @@ final class NightSocialLanguageLane: UIControl {
         self.tongue = tongue
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
+        isUserInteractionEnabled = true
         isAccessibilityElement = true
         accessibilityTraits = .button
         accessibilityLabel = tongue

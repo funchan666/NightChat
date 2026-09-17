@@ -61,11 +61,11 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
         let fans = desk?.followerCount ?? "0"
         let follow = desk?.friendCount ?? "0"
         let statsText = NSMutableAttributedString(
-            string: "Fans ",
+            string: "\(NightLang.t(.fans)) ",
             attributes: [.font: AfterHoursType.foyerCaption(11), .foregroundColor: UIColor.white.withAlphaComponent(0.62)]
         )
         statsText.append(NSAttributedString(string: fans, attributes: [.font: AfterHoursType.foyerPill(12), .foregroundColor: UIColor.white]))
-        statsText.append(NSAttributedString(string: "    Follow ", attributes: [.font: AfterHoursType.foyerCaption(11), .foregroundColor: UIColor.white.withAlphaComponent(0.62)]))
+        statsText.append(NSAttributedString(string: "    \(NightLang.t(.followStat)) ", attributes: [.font: AfterHoursType.foyerCaption(11), .foregroundColor: UIColor.white.withAlphaComponent(0.62)]))
         statsText.append(NSAttributedString(string: follow, attributes: [.font: AfterHoursType.foyerPill(12), .foregroundColor: UIColor.white]))
         stats.attributedText = statsText
         stats.translatesAutoresizingMaskIntoConstraints = false

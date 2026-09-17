@@ -27,7 +27,7 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeCard
         let title = UILabel()
-        title.text = "Send a gift"
+        title.text = NightLang.t(.sendGift)
         title.font = AfterHoursType.foyerHeadline(18)
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
