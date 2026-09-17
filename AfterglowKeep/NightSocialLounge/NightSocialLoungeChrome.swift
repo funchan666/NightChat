@@ -119,20 +119,39 @@ final class NightSocialEmptyPane: UIView {
         plate.textAlignment = .center
         plate.numberOfLines = 0
         plate.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(mascot)
-        addSubview(plate)
+        let stack = UIStackView(arrangedSubviews: [mascot, plate])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 12
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(stack)
         NSLayoutConstraint.activate([
-            mascot.topAnchor.constraint(equalTo: topAnchor),
-            mascot.centerXAnchor.constraint(equalTo: centerXAnchor),
             mascot.widthAnchor.constraint(equalToConstant: 140),
             mascot.heightAnchor.constraint(equalToConstant: 130),
-            plate.topAnchor.constraint(equalTo: mascot.bottomAnchor, constant: 12),
-            plate.leadingAnchor.constraint(equalTo: leadingAnchor),
-            plate.trailingAnchor.constraint(equalTo: trailingAnchor),
-            plate.bottomAnchor.constraint(equalTo: bottomAnchor),
-            widthAnchor.constraint(equalToConstant: 280),
+            stack.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stack.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -16),
         ])
     }
 
     required init?(coder: NSCoder) { nil }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: 280, height: 168)
+    }
+
+    static func tableBackdrop(spoken: String, lift: CGFloat = 0) -> UIView {
+        let wrap = UIView()
+        wrap.isUserInteractionEnabled = false
+        let pane = NightSocialEmptyPane(spoken: spoken)
+        wrap.addSubview(pane)
+        NSLayoutConstraint.activate([
+            pane.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
+            pane.centerYAnchor.constraint(equalTo: wrap.centerYAnchor, constant: lift),
+            pane.leadingAnchor.constraint(greaterThanOrEqualTo: wrap.leadingAnchor, constant: 16),
+            pane.trailingAnchor.constraint(lessThanOrEqualTo: wrap.trailingAnchor, constant: -16),
+        ])
+        return wrap
+    }
 }

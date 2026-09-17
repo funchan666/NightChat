@@ -269,11 +269,22 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         plus.addTarget(self, action: #selector(followHost), for: .touchUpInside)
         plus.translatesAutoresizingMaskIntoConstraints = false
 
-        let watchPlate = UILabel()
-        watchPlate.text = "♡ \(booth.watcherCount)"
-        watchPlate.textColor = .white
-        watchPlate.font = AfterHoursType.foyerCaption(12)
-        watchPlate.translatesAutoresizingMaskIntoConstraints = false
+        let watchChip = UIButton(type: .custom)
+        watchChip.backgroundColor = UIColor.black.withAlphaComponent(0.35)
+        watchChip.layer.cornerRadius = 16
+        watchChip.addTarget(self, action: #selector(openCrowdFromLive), for: .touchUpInside)
+        watchChip.translatesAutoresizingMaskIntoConstraints = false
+        let heart = UIImageView(image: UIImage(systemName: "heart.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 11, weight: .semibold)))
+        heart.tintColor = AfterHoursPalette.loungePink
+        heart.contentMode = .scaleAspectFit
+        heart.translatesAutoresizingMaskIntoConstraints = false
+        let watchCount = UILabel()
+        watchCount.text = "\(booth.watcherCount)"
+        watchCount.font = AfterHoursType.foyerCaption(12)
+        watchCount.textColor = .white
+        watchCount.translatesAutoresizingMaskIntoConstraints = false
+        watchChip.addSubview(heart)
+        watchChip.addSubview(watchCount)
         let more = NightSocialLoungeChrome.iconControl(catalog: "MoreIcon", fallback: "MoreIcon", edge: 32)
         more.addTarget(self, action: #selector(openFacts), for: .touchUpInside)
         let close = NightSocialLoungeChrome.iconControl(catalog: "CloseIcon", fallback: "CloseIcon", edge: 32)
@@ -327,7 +338,7 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         hostChip.addSubview(hostPic)
         hostChip.addSubview(hostName)
         hostChip.addSubview(plus)
-        view.addSubview(watchPlate)
+        view.addSubview(watchChip)
         view.addSubview(more)
         view.addSubview(close)
         view.addSubview(stats)
@@ -361,8 +372,16 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
             close.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
             more.trailingAnchor.constraint(equalTo: close.leadingAnchor, constant: -8),
             more.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
-            watchPlate.trailingAnchor.constraint(equalTo: more.leadingAnchor, constant: -8),
-            watchPlate.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
+            watchChip.trailingAnchor.constraint(equalTo: more.leadingAnchor, constant: -8),
+            watchChip.centerYAnchor.constraint(equalTo: hostChip.centerYAnchor),
+            watchChip.heightAnchor.constraint(equalToConstant: 32),
+            heart.leadingAnchor.constraint(equalTo: watchChip.leadingAnchor, constant: 10),
+            heart.centerYAnchor.constraint(equalTo: watchChip.centerYAnchor),
+            heart.widthAnchor.constraint(equalToConstant: 12),
+            heart.heightAnchor.constraint(equalToConstant: 12),
+            watchCount.leadingAnchor.constraint(equalTo: heart.trailingAnchor, constant: 4),
+            watchCount.centerYAnchor.constraint(equalTo: watchChip.centerYAnchor),
+            watchCount.trailingAnchor.constraint(equalTo: watchChip.trailingAnchor, constant: -10),
             stats.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             stats.topAnchor.constraint(equalTo: hostChip.bottomAnchor, constant: 8),
             stats.heightAnchor.constraint(equalToConstant: 24),
@@ -417,6 +436,13 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     }
     @objc private func openLadder() {
         present(NightSocialBoothLadderSheet(boothKey: boothKey), animated: true)
+    }
+    @objc private func openCrowdFromLive() {
+        guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
+        present(
+            NightSocialBoothCrowdSheet(hostDeskKey: booth.hostDeskKey, watcherCount: booth.watcherCount),
+            animated: true
+        )
     }
     @objc private func openTribute() {
         present(NightSocialTributeTray(boothKey: boothKey), animated: true)

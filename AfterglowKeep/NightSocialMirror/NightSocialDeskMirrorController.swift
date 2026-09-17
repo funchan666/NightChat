@@ -114,14 +114,20 @@ final class NightSocialDeskMirrorController: UIViewController {
 
         let wallet = perkCard(
             image: NightSocialImageCabinet.named("WalletCard", fallback: "WalletCard"),
+            go: NightSocialImageCabinet.named("GoButton", fallback: "GoButton"),
+            goSize: CGSize(width: 60, height: 22),
             action: #selector(openWallet)
         )
         let check = perkCard(
             image: NightSocialImageCabinet.named("CheckInCard", fallback: "CheckInCard"),
+            go: NightSocialImageCabinet.named("GoCheckInButton", fallback: "GoCheckInButton"),
+            goSize: CGSize(width: 40, height: 18),
             action: #selector(openCheckIn)
         )
         let levelCard = perkCard(
             image: NightSocialImageCabinet.named("LevelCard", fallback: "LevelCard"),
+            go: NightSocialImageCabinet.named("GoLevelButton", fallback: "GoLevelButton"),
+            goSize: CGSize(width: 40, height: 18),
             action: #selector(openLevel)
         )
 
@@ -242,16 +248,16 @@ final class NightSocialDeskMirrorController: UIViewController {
             friendTap.heightAnchor.constraint(equalTo: stats.heightAnchor),
             wallet.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             wallet.topAnchor.constraint(equalTo: stats.bottomAnchor, constant: 12),
-            wallet.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.44),
-            wallet.heightAnchor.constraint(equalTo: wallet.widthAnchor, multiplier: 360.0 / 374.0),
-            check.leadingAnchor.constraint(equalTo: wallet.trailingAnchor, constant: 10),
-            check.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            wallet.widthAnchor.constraint(equalToConstant: 187),
+            wallet.heightAnchor.constraint(equalToConstant: 180),
+            check.leadingAnchor.constraint(equalTo: wallet.trailingAnchor, constant: 8),
             check.topAnchor.constraint(equalTo: wallet.topAnchor),
+            check.widthAnchor.constraint(equalToConstant: 168.24),
+            check.heightAnchor.constraint(equalToConstant: 85.67),
             levelCard.leadingAnchor.constraint(equalTo: check.leadingAnchor),
-            levelCard.trailingAnchor.constraint(equalTo: check.trailingAnchor),
-            levelCard.bottomAnchor.constraint(equalTo: wallet.bottomAnchor),
-            levelCard.topAnchor.constraint(equalTo: check.bottomAnchor, constant: 8),
-            check.heightAnchor.constraint(equalTo: levelCard.heightAnchor),
+            levelCard.topAnchor.constraint(equalTo: check.bottomAnchor, constant: 9.09),
+            levelCard.widthAnchor.constraint(equalToConstant: 188),
+            levelCard.heightAnchor.constraint(equalToConstant: 85.24),
             menus.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             menus.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             menus.topAnchor.constraint(equalTo: wallet.bottomAnchor, constant: 14),
@@ -330,23 +336,32 @@ final class NightSocialDeskMirrorController: UIViewController {
         return wrap
     }
 
-    private func perkCard(image: UIImage?, action: Selector) -> UIButton {
+    private func perkCard(image: UIImage?, go: UIImage?, goSize: CGSize, action: Selector) -> UIButton {
         let card = UIButton(type: .custom)
         card.adjustsImageWhenHighlighted = false
         card.clipsToBounds = true
-        card.layer.cornerRadius = 20
+        card.layer.cornerRadius = 22
         card.translatesAutoresizingMaskIntoConstraints = false
         let art = UIImageView(image: image)
-        art.contentMode = .scaleAspectFit
+        art.contentMode = .scaleToFill
         art.clipsToBounds = true
         art.isUserInteractionEnabled = false
         art.translatesAutoresizingMaskIntoConstraints = false
+        let goMark = UIImageView(image: go)
+        goMark.contentMode = .scaleAspectFit
+        goMark.isUserInteractionEnabled = false
+        goMark.translatesAutoresizingMaskIntoConstraints = false
         card.addSubview(art)
+        card.addSubview(goMark)
         NSLayoutConstraint.activate([
             art.topAnchor.constraint(equalTo: card.topAnchor),
             art.leadingAnchor.constraint(equalTo: card.leadingAnchor),
             art.trailingAnchor.constraint(equalTo: card.trailingAnchor),
             art.bottomAnchor.constraint(equalTo: card.bottomAnchor),
+            goMark.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
+            goMark.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -12),
+            goMark.widthAnchor.constraint(equalToConstant: goSize.width),
+            goMark.heightAnchor.constraint(equalToConstant: goSize.height),
         ])
         card.addTarget(self, action: action, for: .touchUpInside)
         return card

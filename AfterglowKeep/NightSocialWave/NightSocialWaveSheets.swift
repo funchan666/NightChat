@@ -255,7 +255,7 @@ final class NightSocialWaveOpenRoomsSheet: UIViewController, UITableViewDataSour
     required init?(coder: NSCoder) { nil }
     private var rows: [WaveVoiceChamber] {
         switch filter {
-        case 1: return allRows.filter { $0.heatScore >= 2000 }
+        case 1: return allRows.filter { $0.heatScore >= 90 }
         case 2: return allRows.filter { $0.vibeTags.contains("Voice") }
         case 3: return allRows.filter { $0.vibeTags.contains("Music") }
         default: return allRows
@@ -482,8 +482,7 @@ final class NightSocialWaveRoomListSheet: UIViewController, UITableViewDataSourc
             join.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
         ])
         if rows.isEmpty {
-            let empty = NightSocialEmptyPane(spoken: "No rooms in this list yet.")
-            table.backgroundView = empty
+            table.backgroundView = NightSocialEmptyPane.tableBackdrop(spoken: "No rooms in this list yet.")
         }
     }
 

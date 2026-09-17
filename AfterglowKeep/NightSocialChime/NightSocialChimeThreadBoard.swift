@@ -270,7 +270,7 @@ final class NightSocialChimeComposeBoard: UIViewController, UITableViewDataSourc
             view.addSubview(empty)
             NSLayoutConstraint.activate([
                 empty.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                empty.topAnchor.constraint(equalTo: table.topAnchor, constant: 36),
+                empty.centerYAnchor.constraint(equalTo: table.centerYAnchor, constant: -24),
             ])
         }
     }

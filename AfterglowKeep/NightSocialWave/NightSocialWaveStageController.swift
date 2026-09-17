@@ -208,11 +208,14 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         paintBanners()
         table.reloadData()
         table.backgroundView = rows.isEmpty
-            ? NightSocialEmptyPane(spoken: partyLane == .follow
-                ? "No followed rooms yet."
-                : partyLane == .recent
-                    ? "No recent rooms yet."
-                    : "No live rooms right now.")
+            ? NightSocialEmptyPane.tableBackdrop(
+                spoken: partyLane == .follow
+                    ? "No followed rooms yet."
+                    : partyLane == .recent
+                        ? "No recent rooms yet."
+                        : "No live rooms right now.",
+                lift: -36
+            )
             : nil
     }
 
