@@ -6,7 +6,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     private let followPill = UIButton(type: .custom)
     private let chatPill = UIButton(type: .custom)
     private let followedMark = UILabel()
-    private let emptyPane = NightSocialEmptyPane(spoken: "No posts yet.")
+    private let emptyPane = NightSocialEmptyPane(spoken: NightLang.t(.noPostsYet))
     private var clips: [LoungeClipReel] = []
     private var collection: UICollectionView!
     private var collectionHeight: NSLayoutConstraint!
@@ -43,7 +43,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle")
         more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
 
-        followedMark.text = "Followed"
+        followedMark.text = NightLang.t(.followed)
         followedMark.font = AfterHoursType.foyerPill(13)
         followedMark.textColor = AfterHoursPalette.inkOnSnow
         followedMark.textAlignment = .center
@@ -95,9 +95,9 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         tagRow.spacing = 8
         tagRow.translatesAutoresizingMaskIntoConstraints = false
 
-        styleActionPill(followPill, title: "+ Follow", symbol: "plus")
+        styleActionPill(followPill, title: NightLang.t(.plusFollow), symbol: "plus")
         followPill.addTarget(self, action: #selector(flipFollow), for: .touchUpInside)
-        styleActionPill(chatPill, title: "Chatting", symbol: "ellipsis.bubble.fill")
+        styleActionPill(chatPill, title: NightLang.t(.chatting), symbol: "ellipsis.bubble.fill")
         chatPill.addTarget(self, action: #selector(openWhisper), for: .touchUpInside)
         let actions = UIStackView(arrangedSubviews: [followPill, chatPill])
         actions.axis = .horizontal
@@ -106,7 +106,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         actions.translatesAutoresizingMaskIntoConstraints = false
 
         let videoHead = UILabel()
-        videoHead.text = "video"
+        videoHead.text = NightLang.t(.video)
         videoHead.font = AfterHoursType.foyerPill(16)
         videoHead.textColor = .white
         videoHead.translatesAutoresizingMaskIntoConstraints = false
@@ -279,7 +279,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         wrap.layer.cornerRadius = 11
         wrap.translatesAutoresizingMaskIntoConstraints = false
         let plate = UILabel()
-        plate.text = "Live now"
+        plate.text = NightLang.t(.liveNow)
         plate.font = AfterHoursType.foyerCaption(11)
         plate.textColor = .white
         plate.translatesAutoresizingMaskIntoConstraints = false
@@ -313,7 +313,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     private func paintFollow() {
         let on = NightSocialSessionDrawer.shared.isFollowing(deskKey)
         followedMark.isHidden = !on
-        followPill.setTitle(on ? " Followed" : " + Follow", for: .normal)
+        followPill.setTitle(on ? " \(NightLang.t(.followed))" : " \(NightLang.t(.plusFollow))", for: .normal)
         followPill.setImage(
             UIImage(
                 systemName: on ? "checkmark" : "plus",
