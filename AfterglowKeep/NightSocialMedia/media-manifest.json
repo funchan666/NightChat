@@ -4,7 +4,7 @@
   "people": [
     {
       "deskKey": "desk.marisol.vega",
-      "spokenName": "Marisol Vega",
+      "spokenName": "Marisol",
       "portrait": "portrait_marisol_vega.jpg",
       "cover": "cover_marisol_vega.jpg",
       "presentation": "feminine",
@@ -13,7 +13,7 @@
     },
     {
       "deskKey": "desk.ellis.hart",
-      "spokenName": "Ellis Hart",
+      "spokenName": "Ellis",
       "portrait": "portrait_ellis_hart.jpg",
       "cover": "cover_ellis_hart.jpg",
       "presentation": "masculine",
@@ -22,7 +22,7 @@
     },
     {
       "deskKey": "desk.priya.raman",
-      "spokenName": "Priya Raman",
+      "spokenName": "Priya",
       "portrait": "portrait_priya_raman.jpg",
       "cover": "cover_priya_raman.jpg",
       "presentation": "feminine",
@@ -31,7 +31,7 @@
     },
     {
       "deskKey": "desk.kohei.tanaka",
-      "spokenName": "Kohei Tanaka",
+      "spokenName": "Kohei",
       "portrait": "portrait_kohei_tanaka.jpg",
       "cover": "cover_kohei_tanaka.jpg",
       "presentation": "masculine",
@@ -40,7 +40,7 @@
     },
     {
       "deskKey": "desk.sable.quinn",
-      "spokenName": "Sable Quinn",
+      "spokenName": "Sable",
       "portrait": "portrait_sable_quinn.jpg",
       "cover": "cover_sable_quinn.jpg",
       "presentation": "feminine",
@@ -49,7 +49,7 @@
     },
     {
       "deskKey": "desk.nadine.okonkwo",
-      "spokenName": "Nadine Okonkwo",
+      "spokenName": "Nadine",
       "portrait": "portrait_nadine_okonkwo.jpg",
       "cover": "cover_nadine_okonkwo.jpg",
       "presentation": "feminine",
@@ -58,7 +58,7 @@
     },
     {
       "deskKey": "desk.wren.solano",
-      "spokenName": "Wren Solano",
+      "spokenName": "Wren",
       "portrait": "portrait_wren_solano.jpg",
       "cover": "cover_wren_solano.jpg",
       "presentation": "feminine",
@@ -67,7 +67,7 @@
     },
     {
       "deskKey": "desk.jonah.ellison",
-      "spokenName": "Jonah Ellison",
+      "spokenName": "Jonah",
       "portrait": "portrait_jonah_ellison.jpg",
       "cover": "cover_jonah_ellison.jpg",
       "presentation": "masculine",
@@ -76,7 +76,7 @@
     },
     {
       "deskKey": "desk.lila.moreau",
-      "spokenName": "Lila Moreau",
+      "spokenName": "Lila",
       "portrait": "portrait_lila_moreau.jpg",
       "cover": "cover_lila_moreau.jpg",
       "presentation": "feminine",
@@ -85,7 +85,7 @@
     },
     {
       "deskKey": "desk.idris.belkacem",
-      "spokenName": "Idris Belkacem",
+      "spokenName": "Idris",
       "portrait": "portrait_idris_belkacem.jpg",
       "cover": "cover_idris_belkacem.jpg",
       "presentation": "masculine",
@@ -94,7 +94,7 @@
     },
     {
       "deskKey": "desk.amara.diallo",
-      "spokenName": "Amara Diallo",
+      "spokenName": "Amara",
       "portrait": "portrait_amara_diallo.jpg",
       "cover": "cover_amara_diallo.jpg",
       "presentation": "feminine",
@@ -103,7 +103,7 @@
     },
     {
       "deskKey": "desk.yara.haddad",
-      "spokenName": "Yara Haddad",
+      "spokenName": "Yara",
       "portrait": "portrait_yara_haddad.jpg",
       "cover": "cover_yara_haddad.jpg",
       "presentation": "feminine",
@@ -112,7 +112,7 @@
     },
     {
       "deskKey": "desk.sophia.lane",
-      "spokenName": "Sophia Lane",
+      "spokenName": "Sofia",
       "portrait": "portrait_sophia_lane.jpg",
       "cover": "cover_sophia_lane.jpg",
       "presentation": "feminine",
@@ -121,7 +121,7 @@
     },
     {
       "deskKey": "desk.theo.miles",
-      "spokenName": "Theo Miles",
+      "spokenName": "Theo",
       "portrait": "portrait_theo_miles.jpg",
       "cover": "cover_theo_miles.jpg",
       "presentation": "masculine",
@@ -130,7 +130,7 @@
     },
     {
       "deskKey": "desk.emma.reed",
-      "spokenName": "Emma Reed",
+      "spokenName": "Emmie",
       "portrait": "portrait_emma_reed.jpg",
       "cover": "cover_emma_reed.jpg",
       "presentation": "feminine",
@@ -139,7 +139,7 @@
     },
     {
       "deskKey": "desk.luca.brooks",
-      "spokenName": "Luca Brooks",
+      "spokenName": "Luca",
       "portrait": "portrait_luca_brooks.jpg",
       "cover": "cover_luca_brooks.jpg",
       "presentation": "masculine",
@@ -148,7 +148,7 @@
     },
     {
       "deskKey": "desk.isla.west",
-      "spokenName": "Isla West",
+      "spokenName": "Isla",
       "portrait": "portrait_isla_west.jpg",
       "cover": "cover_isla_west.jpg",
       "presentation": "feminine",
@@ -157,7 +157,7 @@
     },
     {
       "deskKey": "desk.felix.hayes",
-      "spokenName": "Faye Hayes",
+      "spokenName": "Faye",
       "portrait": "portrait_faye_hayes.jpg",
       "cover": "cover_faye_hayes.jpg",
       "presentation": "feminine",
@@ -166,7 +166,7 @@
     },
     {
       "deskKey": "desk.nora.blake",
-      "spokenName": "Nora Blake",
+      "spokenName": "Nora",
       "portrait": "portrait_nora_blake.jpg",
       "cover": "cover_nora_blake.jpg",
       "presentation": "feminine",
@@ -175,7 +175,7 @@
     },
     {
       "deskKey": "desk.noah.rivers",
-      "spokenName": "Noah Rivers",
+      "spokenName": "Noah",
       "portrait": "portrait_noah_rivers.jpg",
       "cover": "cover_noah_rivers.jpg",
       "presentation": "masculine",
@@ -184,7 +184,7 @@
     },
     {
       "deskKey": "desk.maya.rose",
-      "spokenName": "Maya Rose",
+      "spokenName": "Maya",
       "portrait": "portrait_maya_rose.jpg",
       "cover": "cover_maya_rose.jpg",
       "presentation": "feminine",
@@ -193,7 +193,7 @@
     },
     {
       "deskKey": "desk.leo.gray",
-      "spokenName": "Leo Gray",
+      "spokenName": "Leo",
       "portrait": "portrait_leo_gray.jpg",
       "cover": "cover_leo_gray.jpg",
       "presentation": "masculine",
@@ -202,7 +202,7 @@
     },
     {
       "deskKey": "desk.ivy.stone",
-      "spokenName": "Ivy Stone",
+      "spokenName": "Ivy",
       "portrait": "portrait_ivy_stone.jpg",
       "cover": "cover_ivy_stone.jpg",
       "presentation": "feminine",
@@ -211,7 +211,7 @@
     },
     {
       "deskKey": "desk.jude.ford",
-      "spokenName": "Jude Ford",
+      "spokenName": "Jude",
       "portrait": "portrait_jude_ford.jpg",
       "cover": "cover_jude_ford.jpg",
       "presentation": "masculine",
@@ -220,7 +220,7 @@
     },
     {
       "deskKey": "desk.zoe.wells",
-      "spokenName": "Zoe Wells",
+      "spokenName": "Zoey",
       "portrait": "portrait_zoe_wells.jpg",
       "cover": "cover_zoe_wells.jpg",
       "presentation": "feminine",
@@ -229,7 +229,7 @@
     },
     {
       "deskKey": "desk.ada.bell",
-      "spokenName": "Ada Bell",
+      "spokenName": "Ada",
       "portrait": "portrait_ada_bell.jpg",
       "cover": "cover_ada_bell.jpg",
       "presentation": "feminine",
@@ -238,7 +238,7 @@
     },
     {
       "deskKey": "desk.clara.june",
-      "spokenName": "Clara June",
+      "spokenName": "Clara",
       "portrait": "portrait_clara_june.jpg",
       "cover": "cover_clara_june.jpg",
       "presentation": "feminine",
@@ -247,7 +247,7 @@
     },
     {
       "deskKey": "desk.ella.moss",
-      "spokenName": "Ella Moss",
+      "spokenName": "Ella",
       "portrait": "portrait_ella_moss.jpg",
       "cover": "cover_ella_moss.jpg",
       "presentation": "feminine",
@@ -256,7 +256,7 @@
     },
     {
       "deskKey": "desk.owen.hill",
-      "spokenName": "Owen Hill",
+      "spokenName": "Owen",
       "portrait": "portrait_owen_hill.jpg",
       "cover": "cover_owen_hill.jpg",
       "presentation": "masculine",
@@ -265,7 +265,7 @@
     },
     {
       "deskKey": "desk.finn.woods",
-      "spokenName": "Finn Woods",
+      "spokenName": "Finn",
       "portrait": "portrait_finn_woods.jpg",
       "cover": "cover_finn_woods.jpg",
       "presentation": "masculine",
@@ -274,7 +274,7 @@
     },
     {
       "deskKey": "desk.alex.park",
-      "spokenName": "Alex Park",
+      "spokenName": "Alex",
       "portrait": "portrait_alex_park.jpg",
       "cover": "cover_alex_park.jpg",
       "presentation": "mixed",
@@ -283,7 +283,7 @@
     },
     {
       "deskKey": "desk.ruby.lake",
-      "spokenName": "Ruby Lake",
+      "spokenName": "Ruby",
       "portrait": "portrait_ruby_lake.jpg",
       "cover": "cover_ruby_lake.jpg",
       "presentation": "feminine",
