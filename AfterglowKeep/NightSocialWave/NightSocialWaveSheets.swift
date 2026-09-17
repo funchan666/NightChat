@@ -578,7 +578,7 @@ final class WaveHostPickRow: UITableViewCell {
         portrait.layer.borderWidth = 2
         portrait.layer.borderColor = AfterHoursPalette.loungePink.cgColor
         portrait.translatesAutoresizingMaskIntoConstraints = false
-        hot.image = NightSocialImageCabinet.named("LoungeHotBadge", fallback: "Group_734")
+        hot.image = NightSocialImageCabinet.named("HotBadge", fallback: "HotBadge")
         hot.contentMode = .scaleAspectFit
         hot.translatesAutoresizingMaskIntoConstraints = false
         titlePlate.font = AfterHoursType.foyerPill(16)
@@ -802,11 +802,11 @@ final class NightSocialWaveCreateSheet: UIViewController {
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
         let live = makeCreateCard(
-            image: NightSocialImageCabinet.named("WaveGoLivePill", fallback: "Group_909"),
+            image: NightSocialImageCabinet.named("GoLiveButton", fallback: "GoLiveButton"),
             action: #selector(goLive)
         )
         let post = makeCreateCard(
-            image: NightSocialImageCabinet.named("WavePostPill", fallback: "Group_910"),
+            image: NightSocialImageCabinet.named("PostClipButton", fallback: "PostClipButton"),
             action: #selector(postVideo)
         )
         view.addSubview(title)

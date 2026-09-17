@@ -142,11 +142,11 @@ enum NightSocialLoungeCatalog {
     ]
 
     private static let originalBooths: [LoungeLiveBooth] = [
-        LoungeLiveBooth(boothKey: "booth.random.hangout", boothTitle: "Random Hangout", moodLine: "Evening Ramble", hostDeskKey: "desk.ellis.hart", hostSpokenName: "Ellis Hart", hostAge: 32, hostCity: "Halifax", vibeTags: ["CasualTalk", "NewFriends"], watcherCount: 256, giftCount: 2400, likeCount: 12, durationPhrase: "01:14:58", regionLabel: "Canada", meridian: .europe),
-        LoungeLiveBooth(boothKey: "booth.mood.sharing", boothTitle: "Mood Sharing", moodLine: "Evening Ramble", hostDeskKey: "desk.marisol.vega", hostSpokenName: "Marisol Vega", hostAge: 34, hostCity: "Mexico City", vibeTags: ["MoodTalk", "RelaxChat"], watcherCount: 256, giftCount: 1800, likeCount: 18, durationPhrase: "00:47:12", regionLabel: "Mexico", meridian: .latin),
-        LoungeLiveBooth(boothKey: "booth.chill.vent", boothTitle: "Chill & Vent", moodLine: "Evening Ramble", hostDeskKey: "desk.kohei.tanaka", hostSpokenName: "Kohei Tanaka", hostAge: 41, hostCity: "Osaka", vibeTags: ["CasualTalk", "NewFriends"], watcherCount: 256, giftCount: 3200, likeCount: 22, durationPhrase: "02:03:40", regionLabel: "Japan", meridian: .eastAsia),
-        LoungeLiveBooth(boothKey: "booth.thin.board", boothTitle: "Dispatch Window", moodLine: "Night Board", hostDeskKey: "desk.idris.belkacem", hostSpokenName: "Idris Belkacem", hostAge: 38, hostCity: "Algiers", vibeTags: ["MoodTalk", "Dispatch"], watcherCount: 188, giftCount: 960, likeCount: 9, durationPhrase: "00:33:05", regionLabel: "Algeria", meridian: .africa),
-        LoungeLiveBooth(boothKey: "booth.kiln.quiet", boothTitle: "Kiln Quiet", moodLine: "Late Studio", hostDeskKey: "desk.wren.solano", hostSpokenName: "Wren Solano", hostAge: 36, hostCity: "Santa Fe", vibeTags: ["RelaxChat", "Clay"], watcherCount: 94, giftCount: 410, likeCount: 6, durationPhrase: "00:21:18", regionLabel: "USA", meridian: .latin),
+        LoungeLiveBooth(boothKey: "booth.random.hangout", boothTitle: "Random Hangout", moodLine: "Evening Ramble", hostDeskKey: "desk.ellis.hart", hostSpokenName: "Ellis Hart", hostAge: 32, hostCity: "Halifax", vibeTags: ["CasualTalk", "NewFriends"], watcherCount: 58, giftCount: 67, likeCount: 142, durationPhrase: "01:14:58", regionLabel: "Canada", meridian: .europe),
+        LoungeLiveBooth(boothKey: "booth.mood.sharing", boothTitle: "Mood Sharing", moodLine: "Evening Ramble", hostDeskKey: "desk.marisol.vega", hostSpokenName: "Marisol Vega", hostAge: 34, hostCity: "Mexico City", vibeTags: ["MoodTalk", "RelaxChat"], watcherCount: 41, giftCount: 36, likeCount: 118, durationPhrase: "00:47:12", regionLabel: "Mexico", meridian: .latin),
+        LoungeLiveBooth(boothKey: "booth.chill.vent", boothTitle: "Chill & Vent", moodLine: "Evening Ramble", hostDeskKey: "desk.kohei.tanaka", hostSpokenName: "Kohei Tanaka", hostAge: 41, hostCity: "Osaka", vibeTags: ["CasualTalk", "NewFriends"], watcherCount: 72, giftCount: 94, likeCount: 186, durationPhrase: "02:03:40", regionLabel: "Japan", meridian: .eastAsia),
+        LoungeLiveBooth(boothKey: "booth.thin.board", boothTitle: "Dispatch Window", moodLine: "Night Board", hostDeskKey: "desk.idris.belkacem", hostSpokenName: "Idris Belkacem", hostAge: 38, hostCity: "Algiers", vibeTags: ["MoodTalk", "Dispatch"], watcherCount: 29, giftCount: 21, likeCount: 77, durationPhrase: "00:33:05", regionLabel: "Algeria", meridian: .africa),
+        LoungeLiveBooth(boothKey: "booth.kiln.quiet", boothTitle: "Kiln Quiet", moodLine: "Late Studio", hostDeskKey: "desk.wren.solano", hostSpokenName: "Wren Solano", hostAge: 36, hostCity: "Santa Fe", vibeTags: ["RelaxChat", "Clay"], watcherCount: 16, giftCount: 8, likeCount: 34, durationPhrase: "00:21:18", regionLabel: "USA", meridian: .latin),
     ]
 
     static let creators: [LoungeCreatorDesk] = originalCreators + NightSocialMediaAssets.people
@@ -167,11 +167,15 @@ enum NightSocialLoungeCatalog {
     static let booths: [LoungeLiveBooth] = originalBooths + NightSocialMediaAssets.people
         .filter { person in person.video != nil && !originalBooths.contains { $0.hostDeskKey == person.deskKey } }
         .map { person in
-            LoungeLiveBooth(
+            let stats = modestLiveStats(for: person.deskKey)
+            return LoungeLiveBooth(
                 boothKey: "booth.media." + person.deskKey, boothTitle: person.spokenName + "'s room",
                 moodLine: "Come say hello", hostDeskKey: person.deskKey, hostSpokenName: person.spokenName,
                 hostAge: 25, hostCity: "NightChat", vibeTags: ["CasualTalk", "NewFriends"],
-                watcherCount: 0, giftCount: 0, likeCount: 0, durationPhrase: "00:00:00",
+                watcherCount: stats.watchers,
+                giftCount: stats.gifts,
+                likeCount: stats.likes,
+                durationPhrase: stats.duration,
                 regionLabel: "Global", meridian: .global
             )
         }
@@ -228,6 +232,25 @@ enum NightSocialLoungeCatalog {
 
     static func visibleBooths() -> [LoungeLiveBooth] {
         booths.filter { !NightSocialSessionDrawer.shared.shouldHideDesk($0.hostDeskKey) }
+    }
+
+    static func liveHeatRank(boothKey: String) -> Int {
+        let ordered = visibleBooths().sorted {
+            if $0.giftCount != $1.giftCount { return $0.giftCount > $1.giftCount }
+            return $0.likeCount > $1.likeCount
+        }
+        return (ordered.firstIndex { $0.boothKey == boothKey } ?? ordered.count) + 1
+    }
+
+    private static func modestLiveStats(for deskKey: String) -> (watchers: Int, likes: Int, gifts: Int, duration: String) {
+        let seed = deskKey.utf8.reduce(0) { ($0 &* 31) &+ Int($1) }
+        let watchers = 9 + abs(seed) % 46
+        var likes = 24 + abs(seed / 7) % 98
+        var gifts = 5 + abs(seed / 13) % 41
+        if likes == gifts { likes += 11 }
+        let minutes = 8 + abs(seed / 3) % 52
+        let duration = String(format: "00:%02d:%02d", minutes, abs(seed) % 60)
+        return (watchers, likes, gifts, duration)
     }
 
     static func discussLines(for clipKey: String) -> [LoungeDiscussLine] {

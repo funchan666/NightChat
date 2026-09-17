@@ -104,7 +104,7 @@ final class LookupDeskRow: UITableViewCell {
         handlePlate.font = AfterHoursType.foyerCaption(11)
         handlePlate.textColor = UIColor.white.withAlphaComponent(0.65)
         handlePlate.translatesAutoresizingMaskIntoConstraints = false
-        liveMark.image = NightSocialImageCabinet.named("LoungeLiveBadge", fallback: "Group_668@2x(1)")
+        liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
         liveMark.translatesAutoresizingMaskIntoConstraints = false
         let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))

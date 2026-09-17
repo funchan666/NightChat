@@ -22,7 +22,7 @@ enum NightSocialMediaAssets {
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode(Manifest.self, from: data) else {
             assertionFailure("Missing or invalid media-manifest.json")
-            return Manifest(localPortrait: "DdRRhFgjMbk.jpg", people: [])
+            return Manifest(localPortrait: "portrait_me.jpg", people: [])
         }
         return decoded
     }()
@@ -39,7 +39,7 @@ enum NightSocialMediaAssets {
 
     static func portrait(for key: String, size: CGSize) -> UIImage {
         if key == NightSocialChimeCatalog.supportDeskKey || key == "Support" {
-            return NightSocialImageCabinet.named("ChimeSupportTile", fallback: "Group_920") ?? UIImage()
+            return NightSocialImageCabinet.named("SupportAvatar", fallback: "SupportAvatar") ?? UIImage()
         }
         if let person = person(key) { return image(person.portrait, size: size) }
         return localPortrait(size: size)

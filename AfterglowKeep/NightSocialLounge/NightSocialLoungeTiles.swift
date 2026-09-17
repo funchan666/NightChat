@@ -44,10 +44,10 @@ final class LoungeCreatorTile: UICollectionViewCell {
         cover.translatesAutoresizingMaskIntoConstraints = false
         dim.isUserInteractionEnabled = false
         dim.translatesAutoresizingMaskIntoConstraints = false
-        liveMark.image = NightSocialImageCabinet.named("LoungeLiveBadge", fallback: "Group_668@2x(1)")
+        liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
         liveMark.translatesAutoresizingMaskIntoConstraints = false
-        hotMark.image = NightSocialImageCabinet.named("LoungeHotBadge", fallback: "Group_734")
+        hotMark.image = NightSocialImageCabinet.named("HotBadge", fallback: "HotBadge")
         hotMark.contentMode = .scaleAspectFit
         hotMark.translatesAutoresizingMaskIntoConstraints = false
         likePlate.font = AfterHoursType.foyerCaption(10)
@@ -143,7 +143,7 @@ final class LoungeBoothTile: UICollectionViewCell {
         thumb.clipsToBounds = true
         thumb.layer.cornerRadius = 14
         thumb.translatesAutoresizingMaskIntoConstraints = false
-        liveMark.image = NightSocialImageCabinet.named("LoungeLiveBadge", fallback: "Group_668@2x(1)")
+        liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
         liveMark.translatesAutoresizingMaskIntoConstraints = false
         titlePlate.font = AfterHoursType.foyerPill(16)

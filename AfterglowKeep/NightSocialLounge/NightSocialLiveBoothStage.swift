@@ -127,7 +127,11 @@ final class LiveRankRow: UITableViewCell {
     private let rankDisc = UILabel()
     private let pic = UIImageView()
     private let namePlate = UILabel()
-    private let scorePlate = UILabel()
+    private let scorePlate = NightSocialDiamondAmount(
+        font: AfterHoursType.foyerCaption(12),
+        gemSize: 11,
+        color: UIColor.white.withAlphaComponent(0.72)
+    )
     private let card = UIView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -149,9 +153,6 @@ final class LiveRankRow: UITableViewCell {
         namePlate.font = AfterHoursType.foyerPill(15)
         namePlate.textColor = .white
         namePlate.translatesAutoresizingMaskIntoConstraints = false
-        scorePlate.font = AfterHoursType.foyerCaption(12)
-        scorePlate.textColor = UIColor.white.withAlphaComponent(0.72)
-        scorePlate.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(card)
         card.addSubview(rankDisc)
         card.addSubview(pic)
@@ -184,7 +185,7 @@ final class LiveRankRow: UITableViewCell {
         rankDisc.text = "\(rank)"
         pic.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 80, height: 80))
         namePlate.text = desk.spokenName
-        scorePlate.text = "◆ \(desk.activityScore)"
+        scorePlate.paint(desk.activityScore)
         switch rank {
         case 1:
             rankDisc.backgroundColor = UIColor(red: 1.00, green: 0.82, blue: 0.28, alpha: 1)
@@ -273,13 +274,13 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         watchPlate.textColor = .white
         watchPlate.font = AfterHoursType.foyerCaption(12)
         watchPlate.translatesAutoresizingMaskIntoConstraints = false
-        let more = NightSocialLoungeChrome.iconControl(catalog: "LoungeMoreMark", fallback: "Frame@2x(8)", edge: 32)
+        let more = NightSocialLoungeChrome.iconControl(catalog: "MoreIcon", fallback: "MoreIcon", edge: 32)
         more.addTarget(self, action: #selector(openFacts), for: .touchUpInside)
-        let close = NightSocialLoungeChrome.iconControl(catalog: "LoungeCloseMark", fallback: "Frame@2x(76)", edge: 32)
+        let close = NightSocialLoungeChrome.iconControl(catalog: "CloseIcon", fallback: "CloseIcon", edge: 32)
         close.addTarget(self, action: #selector(fold), for: .touchUpInside)
 
         let stats = UIButton(type: .system)
-        stats.setTitle("  \(formatCount(booth.watcherCount * 7))    \(formatCount(booth.giftCount))    NO.10  >  ", for: .normal)
+        stats.setTitle("  \(formatCount(booth.likeCount))    \(formatCount(booth.giftCount))    NO.\(NightSocialLoungeCatalog.liveHeatRank(boothKey: booth.boothKey))  >  ", for: .normal)
         stats.setTitleColor(.white, for: .normal)
         stats.titleLabel?.font = AfterHoursType.foyerCaption(11)
         stats.backgroundColor = UIColor.black.withAlphaComponent(0.28)
@@ -314,9 +315,9 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         send.tintColor = .white
         send.addTarget(self, action: #selector(sendChat), for: .touchUpInside)
         send.translatesAutoresizingMaskIntoConstraints = false
-        let gift = NightSocialLoungeChrome.iconControl(catalog: "LoungeGiftBox", fallback: "Group_782@2x(1)", edge: 36)
+        let gift = NightSocialLoungeChrome.iconControl(catalog: "GiftBox", fallback: "GiftBox", edge: 36)
         gift.addTarget(self, action: #selector(openTribute), for: .touchUpInside)
-        let crown = NightSocialLoungeChrome.iconControl(catalog: "LoungeCrownMark", fallback: "Group_781", edge: 34)
+        let crown = NightSocialLoungeChrome.iconControl(catalog: "CrownIcon", fallback: "CrownIcon", edge: 34)
         crown.addTarget(self, action: #selector(openLadder), for: .touchUpInside)
 
         view.addSubview(cover)
@@ -663,7 +664,11 @@ final class NightSocialLiveMoreSheet: UIViewController {
 
     @objc private func openAudience() {
         dismiss(animated: true) { [weak self] in
-            self?.host?.present(NightSocialBoothCrowdSheet(), animated: true)
+            guard let self, let booth = NightSocialLoungeCatalog.booth(boothKey: self.boothKey) else { return }
+            self.host?.present(
+                NightSocialBoothCrowdSheet(hostDeskKey: booth.hostDeskKey, watcherCount: booth.watcherCount),
+                animated: true
+            )
         }
     }
 
@@ -682,92 +687,416 @@ final class NightSocialBoothFactsSheet: UIViewController {
         self.boothKey = boothKey
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .pageSheet
-        sheetPresentationController?.detents = [.medium()]
+        sheetPresentationController?.detents = [
+            .custom(identifier: .init("facts")) { _ in 448 }
+        ]
+        sheetPresentationController?.prefersGrabberVisible = true
+        sheetPresentationController?.preferredCornerRadius = 26
     }
     required init?(coder: NSCoder) { nil }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeCard
         guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
+
         let title = UILabel()
         title.text = "Live Room Details"
-        title.font = AfterHoursType.foyerHeadline(20)
+        title.font = AfterHoursType.foyerHeadline(22)
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
-        let body = UILabel()
-        body.numberOfLines = 0
-        body.textColor = UIColor.white.withAlphaComponent(0.9)
-        body.font = AfterHoursType.foyerBody(14)
-        body.text = "\(booth.boothTitle)\n\(booth.moodLine)\n\(booth.hostSpokenName)\n\(booth.vibeTags.joined(separator: "  "))\n\n\(booth.watcherCount) Viewers\n\(booth.durationPhrase) Duration\n\(booth.giftCount) Gifts\n\(booth.likeCount) Likes\n\(booth.activityScorePhrase)\n\(booth.regionLabel) Region"
-        body.translatesAutoresizingMaskIntoConstraints = false
+        let kicker = UILabel()
+        kicker.text = booth.boothTitle
+        kicker.font = AfterHoursType.foyerCaption(13)
+        kicker.textColor = UIColor.white.withAlphaComponent(0.62)
+        kicker.translatesAutoresizingMaskIntoConstraints = false
+
+        let hostCard = makeHostCard(booth)
+        let statsCard = makeStatsCard(booth)
+        let metaRow = makeMetaRow(booth)
+
         view.addSubview(title)
-        view.addSubview(body)
+        view.addSubview(kicker)
+        view.addSubview(hostCard)
+        view.addSubview(statsCard)
+        view.addSubview(metaRow)
         NSLayoutConstraint.activate([
             title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            body.leadingAnchor.constraint(equalTo: title.leadingAnchor),
-            body.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            body.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 14),
+            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 18),
+            kicker.leadingAnchor.constraint(equalTo: title.leadingAnchor),
+            kicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            kicker.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 4),
+            hostCard.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            hostCard.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            hostCard.topAnchor.constraint(equalTo: kicker.bottomAnchor, constant: 16),
+            statsCard.leadingAnchor.constraint(equalTo: hostCard.leadingAnchor),
+            statsCard.trailingAnchor.constraint(equalTo: hostCard.trailingAnchor),
+            statsCard.topAnchor.constraint(equalTo: hostCard.bottomAnchor, constant: 12),
+            metaRow.leadingAnchor.constraint(equalTo: hostCard.leadingAnchor),
+            metaRow.trailingAnchor.constraint(equalTo: hostCard.trailingAnchor),
+            metaRow.topAnchor.constraint(equalTo: statsCard.bottomAnchor, constant: 12),
         ])
+    }
+
+    private func makeHostCard(_ booth: LoungeLiveBooth) -> UIView {
+        let card = UIView()
+        card.backgroundColor = UIColor.white.withAlphaComponent(0.08)
+        card.layer.cornerRadius = 18
+        card.translatesAutoresizingMaskIntoConstraints = false
+
+        let pic = UIImageView(image: NightSocialMediaAssets.portrait(for: booth.hostDeskKey, size: CGSize(width: 112, height: 112)))
+        pic.contentMode = .scaleAspectFill
+        pic.clipsToBounds = true
+        pic.layer.cornerRadius = 26
+        pic.translatesAutoresizingMaskIntoConstraints = false
+        let liveMark = UIImageView(image: NightSocialImageCabinet.named("LiveBadge"))
+        liveMark.contentMode = .scaleAspectFit
+        liveMark.translatesAutoresizingMaskIntoConstraints = false
+        let name = UILabel()
+        name.text = booth.hostSpokenName
+        name.font = AfterHoursType.foyerHeadline(18)
+        name.textColor = .white
+        name.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        name.translatesAutoresizingMaskIntoConstraints = false
+        let meta = UILabel()
+        meta.text = "\(booth.hostAge)  ·  \(booth.hostCity)"
+        meta.font = AfterHoursType.foyerCaption(12)
+        meta.textColor = UIColor.white.withAlphaComponent(0.62)
+        meta.translatesAutoresizingMaskIntoConstraints = false
+        let mood = UILabel()
+        mood.text = booth.moodLine
+        mood.font = AfterHoursType.foyerBody(13)
+        mood.textColor = UIColor.white.withAlphaComponent(0.82)
+        mood.translatesAutoresizingMaskIntoConstraints = false
+
+        let tags = UIStackView()
+        tags.axis = .horizontal
+        tags.spacing = 8
+        tags.translatesAutoresizingMaskIntoConstraints = false
+        for tag in booth.vibeTags.prefix(2) {
+            tags.addArrangedSubview(tagChip(tag))
+        }
+
+        card.addSubview(pic)
+        card.addSubview(liveMark)
+        card.addSubview(name)
+        card.addSubview(meta)
+        card.addSubview(mood)
+        card.addSubview(tags)
+        NSLayoutConstraint.activate([
+            card.heightAnchor.constraint(equalToConstant: 148),
+            pic.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
+            pic.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
+            pic.widthAnchor.constraint(equalToConstant: 52),
+            pic.heightAnchor.constraint(equalToConstant: 52),
+            name.leadingAnchor.constraint(equalTo: pic.trailingAnchor, constant: 12),
+            name.topAnchor.constraint(equalTo: pic.topAnchor, constant: 4),
+            liveMark.leadingAnchor.constraint(equalTo: name.trailingAnchor, constant: 8),
+            liveMark.centerYAnchor.constraint(equalTo: name.centerYAnchor),
+            liveMark.widthAnchor.constraint(equalToConstant: 40),
+            liveMark.heightAnchor.constraint(equalToConstant: 16),
+            liveMark.trailingAnchor.constraint(lessThanOrEqualTo: card.trailingAnchor, constant: -12),
+            meta.leadingAnchor.constraint(equalTo: name.leadingAnchor),
+            meta.topAnchor.constraint(equalTo: name.bottomAnchor, constant: 3),
+            mood.leadingAnchor.constraint(equalTo: pic.leadingAnchor),
+            mood.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+            mood.topAnchor.constraint(equalTo: pic.bottomAnchor, constant: 12),
+            tags.leadingAnchor.constraint(equalTo: pic.leadingAnchor),
+            tags.topAnchor.constraint(equalTo: mood.bottomAnchor, constant: 8),
+        ])
+        return card
+    }
+
+    private func makeStatsCard(_ booth: LoungeLiveBooth) -> UIView {
+        let card = UIView()
+        card.backgroundColor = UIColor.white.withAlphaComponent(0.08)
+        card.layer.cornerRadius = 18
+        card.translatesAutoresizingMaskIntoConstraints = false
+
+        let viewers = statCell(value: "\(booth.watcherCount)", caption: "Viewers")
+        let likes = statCell(value: "\(booth.likeCount)", caption: "Likes")
+        let gifts = giftStatCell(booth.giftCount)
+        let live = statCell(value: booth.spokenDuration, caption: "Live")
+        let row = UIStackView(arrangedSubviews: [viewers, likes, gifts, live])
+        row.axis = .horizontal
+        row.distribution = .fillEqually
+        row.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(row)
+        NSLayoutConstraint.activate([
+            card.heightAnchor.constraint(equalToConstant: 78),
+            row.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            row.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            row.topAnchor.constraint(equalTo: card.topAnchor),
+            row.bottomAnchor.constraint(equalTo: card.bottomAnchor),
+        ])
+        return card
+    }
+
+    private func makeMetaRow(_ booth: LoungeLiveBooth) -> UIView {
+        let rank = metaCard(caption: "Room rank", value: "NO.\(NightSocialLoungeCatalog.liveHeatRank(boothKey: booth.boothKey))")
+        let region = metaCard(caption: "Region", value: booth.regionLabel)
+        let row = UIStackView(arrangedSubviews: [rank, region])
+        row.axis = .horizontal
+        row.spacing = 10
+        row.distribution = .fillEqually
+        row.translatesAutoresizingMaskIntoConstraints = false
+        return row
+    }
+
+    private func tagChip(_ text: String) -> UILabel {
+        let plate = PaddingLabel()
+        plate.text = text
+        plate.font = AfterHoursType.foyerCaption(11)
+        plate.textColor = AfterHoursPalette.loungePink
+        plate.backgroundColor = AfterHoursPalette.loungePink.withAlphaComponent(0.16)
+        plate.layer.cornerRadius = 11
+        plate.clipsToBounds = true
+        plate.translatesAutoresizingMaskIntoConstraints = false
+        plate.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        return plate
+    }
+
+    private func statCell(value: String, caption: String) -> UIView {
+        let wrap = UIView()
+        let number = UILabel()
+        number.text = value
+        number.font = AfterHoursType.foyerHeadline(18)
+        number.textColor = .white
+        number.textAlignment = .center
+        number.translatesAutoresizingMaskIntoConstraints = false
+        let label = UILabel()
+        label.text = caption
+        label.font = AfterHoursType.foyerCaption(11)
+        label.textColor = UIColor.white.withAlphaComponent(0.55)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        wrap.addSubview(number)
+        wrap.addSubview(label)
+        NSLayoutConstraint.activate([
+            number.topAnchor.constraint(equalTo: wrap.topAnchor, constant: 14),
+            number.leadingAnchor.constraint(equalTo: wrap.leadingAnchor, constant: 4),
+            number.trailingAnchor.constraint(equalTo: wrap.trailingAnchor, constant: -4),
+            label.topAnchor.constraint(equalTo: number.bottomAnchor, constant: 2),
+            label.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
+        ])
+        return wrap
+    }
+
+    private func giftStatCell(_ amount: Int) -> UIView {
+        let wrap = UIView()
+        let gems = NightSocialDiamondAmount(font: AfterHoursType.foyerHeadline(18), gemSize: 14)
+        gems.paint(amount)
+        let label = UILabel()
+        label.text = "Gifts"
+        label.font = AfterHoursType.foyerCaption(11)
+        label.textColor = UIColor.white.withAlphaComponent(0.55)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        wrap.addSubview(gems)
+        wrap.addSubview(label)
+        NSLayoutConstraint.activate([
+            gems.topAnchor.constraint(equalTo: wrap.topAnchor, constant: 16),
+            gems.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
+            label.topAnchor.constraint(equalTo: gems.bottomAnchor, constant: 4),
+            label.centerXAnchor.constraint(equalTo: wrap.centerXAnchor),
+        ])
+        return wrap
+    }
+
+    private func metaCard(caption: String, value: String) -> UIView {
+        let card = UIView()
+        card.backgroundColor = UIColor.white.withAlphaComponent(0.08)
+        card.layer.cornerRadius = 16
+        card.translatesAutoresizingMaskIntoConstraints = false
+        let cap = UILabel()
+        cap.text = caption
+        cap.font = AfterHoursType.foyerCaption(11)
+        cap.textColor = UIColor.white.withAlphaComponent(0.55)
+        cap.translatesAutoresizingMaskIntoConstraints = false
+        let val = UILabel()
+        val.text = value
+        val.font = AfterHoursType.foyerPill(15)
+        val.textColor = .white
+        val.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(cap)
+        card.addSubview(val)
+        NSLayoutConstraint.activate([
+            card.heightAnchor.constraint(equalToConstant: 62),
+            cap.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
+            cap.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
+            val.leadingAnchor.constraint(equalTo: cap.leadingAnchor),
+            val.topAnchor.constraint(equalTo: cap.bottomAnchor, constant: 4),
+        ])
+        return card
+    }
+}
+
+private final class PaddingLabel: UILabel {
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width + 16, height: max(22, size.height))
+    }
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.insetBy(dx: 8, dy: 0))
     }
 }
 
 extension LoungeLiveBooth {
-    var activityScorePhrase: String { "\(watcherCount + giftCount / 10) Score" }
+    var spokenDuration: String {
+        let parts = durationPhrase.split(separator: ":").compactMap { Int($0) }
+        guard parts.count == 3 else { return durationPhrase }
+        let hours = parts[0], minutes = parts[1]
+        if hours > 0 { return "\(hours)h \(minutes)m" }
+        if minutes > 0 { return "\(minutes)m" }
+        return "\(parts[2])s"
+    }
 }
 
 final class NightSocialBoothCrowdSheet: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    private let hostDeskKey: String?
     private let rows: [LoungeCreatorDesk]
-    init() {
-        self.rows = NightSocialLoungeCatalog.visibleCreators()
+
+    init(hostDeskKey: String? = nil, watcherCount: Int? = nil) {
+        self.hostDeskKey = hostDeskKey
+        var people = NightSocialLoungeCatalog.visibleCreators()
+        if let hostDeskKey {
+            people.sort {
+                if $0.deskKey == hostDeskKey { return true }
+                if $1.deskKey == hostDeskKey { return false }
+                return $0.activityScore > $1.activityScore
+            }
+        }
+        let cap = min(people.count, max(8, watcherCount ?? 12))
+        self.rows = Array(people.prefix(cap))
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .pageSheet
-        sheetPresentationController?.detents = [.medium(), .large()]
+        sheetPresentationController?.detents = [
+            .custom(identifier: .init("crowd")) { _ in 520 },
+            .large(),
+        ]
+        sheetPresentationController?.prefersGrabberVisible = true
+        sheetPresentationController?.preferredCornerRadius = 26
     }
     required init?(coder: NSCoder) { nil }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeCard
         let title = UILabel()
-        title.text = "audience"
-        title.font = AfterHoursType.foyerHeadline(20)
+        title.text = "Audience"
+        title.font = AfterHoursType.foyerHeadline(22)
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
+        let kicker = UILabel()
+        kicker.text = "\(rows.count) watching this sitting"
+        kicker.font = AfterHoursType.foyerCaption(13)
+        kicker.textColor = UIColor.white.withAlphaComponent(0.62)
+        kicker.translatesAutoresizingMaskIntoConstraints = false
         let table = UITableView()
         table.backgroundColor = .clear
         table.separatorStyle = .none
+        table.rowHeight = 72
         table.dataSource = self
         table.delegate = self
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "crowd")
+        table.register(LiveCrowdRow.self, forCellReuseIdentifier: LiveCrowdRow.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
+        table.contentInset = UIEdgeInsets(top: 4, left: 0, bottom: 16, right: 0)
         view.addSubview(title)
+        view.addSubview(kicker)
         view.addSubview(table)
         NSLayoutConstraint.activate([
             title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            table.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 8),
+            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 18),
+            kicker.leadingAnchor.constraint(equalTo: title.leadingAnchor),
+            kicker.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 4),
+            table.topAnchor.constraint(equalTo: kicker.bottomAnchor, constant: 12),
             table.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { rows.count }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "crowd", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: LiveCrowdRow.reuseId, for: indexPath) as! LiveCrowdRow
         let desk = rows[indexPath.row]
-        cell.backgroundColor = .clear
-        cell.textLabel?.textColor = .white
-        cell.textLabel?.numberOfLines = 2
-        cell.textLabel?.text = "\(desk.spokenName)  \(desk.cityLabel)\n\(desk.handleTag)  \(desk.vibeLine)"
-        cell.imageView?.contentMode = .scaleAspectFill
-        cell.imageView?.clipsToBounds = true
-        cell.imageView?.layer.cornerRadius = 8
-        cell.imageView?.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 48, height: 48))
-        cell.selectionStyle = .none
+        cell.paint(desk, isHost: desk.deskKey == hostDeskKey)
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         NightSocialDeskGate.revealDesk(from: self, deskKey: rows[indexPath.row].deskKey)
+    }
+}
+
+final class LiveCrowdRow: UITableViewCell {
+    static let reuseId = "LiveCrowdRow"
+    private let card = UIView()
+    private let pic = UIImageView()
+    private let namePlate = UILabel()
+    private let cityPlate = UILabel()
+    private let hostMark = UILabel()
+    private var hostWidth: NSLayoutConstraint!
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        backgroundColor = .clear
+        selectionStyle = .none
+        card.backgroundColor = UIColor.white.withAlphaComponent(0.08)
+        card.layer.cornerRadius = 16
+        card.translatesAutoresizingMaskIntoConstraints = false
+        pic.contentMode = .scaleAspectFill
+        pic.clipsToBounds = true
+        pic.layer.cornerRadius = 22
+        pic.translatesAutoresizingMaskIntoConstraints = false
+        namePlate.font = AfterHoursType.foyerPill(15)
+        namePlate.textColor = .white
+        namePlate.translatesAutoresizingMaskIntoConstraints = false
+        cityPlate.font = AfterHoursType.foyerCaption(12)
+        cityPlate.textColor = UIColor.white.withAlphaComponent(0.58)
+        cityPlate.translatesAutoresizingMaskIntoConstraints = false
+        hostMark.text = "Host"
+        hostMark.font = AfterHoursType.foyerCaption(10)
+        hostMark.textColor = AfterHoursPalette.loungePink
+        hostMark.textAlignment = .center
+        hostMark.backgroundColor = AfterHoursPalette.loungePink.withAlphaComponent(0.16)
+        hostMark.layer.cornerRadius = 9
+        hostMark.clipsToBounds = true
+        hostMark.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(card)
+        card.addSubview(pic)
+        card.addSubview(namePlate)
+        card.addSubview(cityPlate)
+        card.addSubview(hostMark)
+        hostWidth = hostMark.widthAnchor.constraint(equalToConstant: 44)
+        NSLayoutConstraint.activate([
+            hostWidth,
+            card.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            card.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            card.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            card.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            pic.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
+            pic.centerYAnchor.constraint(equalTo: card.centerYAnchor),
+            pic.widthAnchor.constraint(equalToConstant: 44),
+            pic.heightAnchor.constraint(equalToConstant: 44),
+            namePlate.leadingAnchor.constraint(equalTo: pic.trailingAnchor, constant: 12),
+            namePlate.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
+            namePlate.trailingAnchor.constraint(lessThanOrEqualTo: hostMark.leadingAnchor, constant: -8),
+            cityPlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
+            cityPlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 2),
+            cityPlate.trailingAnchor.constraint(lessThanOrEqualTo: hostMark.leadingAnchor, constant: -8),
+            hostMark.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+            hostMark.centerYAnchor.constraint(equalTo: card.centerYAnchor),
+            hostMark.heightAnchor.constraint(equalToConstant: 18),
+        ])
+    }
+    required init?(coder: NSCoder) { nil }
+
+    func paint(_ desk: LoungeCreatorDesk, isHost: Bool) {
+        pic.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 88, height: 88))
+        namePlate.text = desk.spokenName
+        cityPlate.text = desk.cityLabel
+        hostMark.isHidden = !isHost
+        hostWidth.constant = isHost ? 44 : 0
     }
 }
 

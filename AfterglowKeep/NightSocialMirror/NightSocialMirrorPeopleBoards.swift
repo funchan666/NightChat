@@ -152,11 +152,11 @@ final class MirrorPersonRow: UITableViewCell {
         namePlate.font = AfterHoursType.foyerPill(15)
         namePlate.textColor = .white
         namePlate.translatesAutoresizingMaskIntoConstraints = false
-        trash.setImage(NightSocialImageCabinet.named("MirrorTrashMark", fallback: "Frame@2x(16)"), for: .normal)
+        trash.setImage(NightSocialImageCabinet.named("TrashIcon", fallback: "TrashIcon"), for: .normal)
         trash.addTarget(self, action: #selector(tapTrash), for: .touchUpInside)
-        chat.setImage(NightSocialImageCabinet.named("ChimeBubbleMark", fallback: "Group_819"), for: .normal)
+        chat.setImage(NightSocialImageCabinet.named("ChatBubble", fallback: "ChatBubble"), for: .normal)
         chat.addTarget(self, action: #selector(tapChat), for: .touchUpInside)
-        follow.setImage(NightSocialImageCabinet.named("ChimeBubbleMark", fallback: "Group_819"), for: .normal)
+        follow.setImage(NightSocialImageCabinet.named("ChatBubble", fallback: "ChatBubble"), for: .normal)
         follow.setTitle("", for: .normal)
         follow.addTarget(self, action: #selector(tapUnfollow), for: .touchUpInside)
         [trash, chat, follow].forEach {

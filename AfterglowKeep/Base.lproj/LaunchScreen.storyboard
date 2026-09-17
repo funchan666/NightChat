@@ -14,17 +14,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="MagentaStageWash" translatesAutoresizingMaskIntoConstraints="NO" id="wash-cloth">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" image="WelcomeBackground" translatesAutoresizingMaskIntoConstraints="NO" id="wash-cloth">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="NightSocialStageMark" translatesAutoresizingMaskIntoConstraints="NO" id="stage-mark">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="AppLogo" translatesAutoresizingMaskIntoConstraints="NO" id="stage-mark">
                                 <rect key="frame" x="148.5" y="378" width="96" height="96"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="96" id="mark-w"/>
                                     <constraint firstAttribute="height" constant="96" id="mark-h"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchEmberDots" translatesAutoresizingMaskIntoConstraints="NO" id="ember-dots">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchDots" translatesAutoresizingMaskIntoConstraints="NO" id="ember-dots">
                                 <rect key="frame" x="169.5" y="496" width="54" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="54" id="dots-w"/>
@@ -51,8 +51,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="MagentaStageWash" width="390" height="844"/>
-        <image name="NightSocialStageMark" width="100" height="100"/>
-        <image name="LaunchEmberDots" width="162" height="42"/>
+        <image name="WelcomeBackground" width="390" height="844"/>
+        <image name="AppLogo" width="100" height="100"/>
+        <image name="LaunchDots" width="162" height="42"/>
     </resources>
 </document>

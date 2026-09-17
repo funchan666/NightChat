@@ -3,7 +3,7 @@ import UIKit
 enum NightSocialLoungeChrome {
     static func backControl() -> UIButton {
         let control = UIButton(type: .custom)
-        control.setImage(NightSocialImageCabinet.named("LoungeBackMark", fallback: "Frame@2x(41)"), for: .normal)
+        control.setImage(NightSocialImageCabinet.named("BackIcon", fallback: "BackIcon"), for: .normal)
         control.imageView?.contentMode = .scaleAspectFit
         control.translatesAutoresizingMaskIntoConstraints = false
         control.widthAnchor.constraint(equalToConstant: 36).isActive = true
@@ -24,7 +24,7 @@ enum NightSocialLoungeChrome {
     static func mintLevelPlate(_ level: Int) -> UIView {
         let wrap = UIView()
         wrap.translatesAutoresizingMaskIntoConstraints = false
-        let cloth = UIImageView(image: NightSocialImageCabinet.named("LoungeLevelCapsule", fallback: "Rectangle_1276"))
+        let cloth = UIImageView(image: NightSocialImageCabinet.named("LevelBadge", fallback: "LevelBadge"))
         cloth.contentMode = .scaleToFill
         cloth.translatesAutoresizingMaskIntoConstraints = false
         let plate = UILabel()
@@ -76,12 +76,40 @@ enum NightSocialLoungeChrome {
     }
 }
 
+final class NightSocialDiamondAmount: UIStackView {
+    private let gem = UIImageView(image: NightSocialImageCabinet.named("DiamondIcon"))
+    private let plate = UILabel()
+
+    init(font: UIFont, gemSize: CGFloat = 12, color: UIColor = .white) {
+        super.init(frame: .zero)
+        axis = .horizontal
+        alignment = .center
+        spacing = 3
+        translatesAutoresizingMaskIntoConstraints = false
+        isUserInteractionEnabled = false
+        gem.contentMode = .scaleAspectFit
+        gem.translatesAutoresizingMaskIntoConstraints = false
+        gem.widthAnchor.constraint(equalToConstant: gemSize).isActive = true
+        gem.heightAnchor.constraint(equalToConstant: gemSize).isActive = true
+        plate.font = font
+        plate.textColor = color
+        addArrangedSubview(gem)
+        addArrangedSubview(plate)
+    }
+
+    required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func paint(_ amount: Int) {
+        plate.text = "\(amount)"
+    }
+}
+
 final class NightSocialEmptyPane: UIView {
     init(spoken: String) {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         isUserInteractionEnabled = false
-        let mascot = UIImageView(image: NightSocialImageCabinet.named("LampReviewMascot", fallback: "image_652"))
+        let mascot = UIImageView(image: NightSocialImageCabinet.named("EmptyMascot", fallback: "EmptyMascot"))
         mascot.contentMode = .scaleAspectFit
         mascot.translatesAutoresizingMaskIntoConstraints = false
         let plate = UILabel()

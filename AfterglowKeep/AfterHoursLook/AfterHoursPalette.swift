@@ -68,43 +68,27 @@ enum AfterHoursType {
 }
 
 enum NightSocialImageCabinet {
-    static var stageWash: UIImage? {
-        UIImage(named: "MagentaStageWash") ?? UIImage(named: "background")
-    }
-
-    static var stageMark: UIImage? {
-        UIImage(named: "NightSocialStageMark") ?? UIImage(named: "Group_891")
-    }
-
-    static var portraitLens: UIImage? {
-        UIImage(named: "PortraitLensBadge") ?? UIImage(named: "Frame_1")
-    }
+    static var stageWash: UIImage? { UIImage(named: "WelcomeBackground") }
+    static var stageMark: UIImage? { UIImage(named: "AppLogo") }
+    static var portraitLens: UIImage? { UIImage(named: "CameraBadge") }
 
     static func dockHouse(lit: Bool) -> UIImage? {
-        lit
-            ? (UIImage(named: "DockHouseLit") ?? UIImage(named: "Group_146@2x(1)"))
-            : (UIImage(named: "DockHouseIdle") ?? UIImage(named: "tab1"))
+        UIImage(named: lit ? "TabHomeSelected" : "TabHome")
     }
 
     static func dockWave(lit: Bool) -> UIImage? {
-        lit
-            ? (UIImage(named: "DockWaveLit") ?? UIImage(named: "Frame@2x(59)"))
-            : (UIImage(named: "DockWaveIdle") ?? UIImage(named: "tab2"))
+        UIImage(named: lit ? "TabPartySelected" : "TabParty")
     }
 
     static func dockChime(lit: Bool) -> UIImage? {
-        lit
-            ? (UIImage(named: "DockChimeLit") ?? UIImage(named: "Group_150@2x(1)"))
-            : (UIImage(named: "DockChimeIdle") ?? UIImage(named: "tab3"))
+        UIImage(named: lit ? "TabMessagesSelected" : "TabMessages")
     }
 
     static func dockSmile(lit: Bool) -> UIImage? {
-        lit
-            ? (UIImage(named: "DockSmileLit") ?? UIImage(named: "Group_148@2x(1)"))
-            : (UIImage(named: "DockSmileIdle") ?? UIImage(named: "tab4"))
+        UIImage(named: lit ? "TabProfileSelected" : "TabProfile")
     }
 
-    static func named(_ catalog: String, fallback: String) -> UIImage? {
-        UIImage(named: catalog) ?? UIImage(named: fallback)
+    static func named(_ catalog: String, fallback: String? = nil) -> UIImage? {
+        UIImage(named: catalog) ?? fallback.flatMap { UIImage(named: $0) }
     }
 }

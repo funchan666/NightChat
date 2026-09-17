@@ -53,9 +53,9 @@ final class NightSocialLoungeFloorController: UIViewController, UICollectionView
             browseRow.addArrangedSubview(mark)
         }
 
-        let lookup = NightSocialLoungeChrome.iconControl(catalog: "LoungeLookupMark", fallback: "Group_646", edge: 34)
+        let lookup = NightSocialLoungeChrome.iconControl(catalog: "SearchIcon", fallback: "SearchIcon", edge: 34)
         lookup.addTarget(self, action: #selector(openLookup), for: .touchUpInside)
-        let crown = NightSocialLoungeChrome.iconControl(catalog: "LoungeCrownMark", fallback: "Group_781", edge: 34)
+        let crown = NightSocialLoungeChrome.iconControl(catalog: "CrownIcon", fallback: "CrownIcon", edge: 34)
         crown.addTarget(self, action: #selector(openCrown), for: .touchUpInside)
 
         meridianRow.showsHorizontalScrollIndicator = false

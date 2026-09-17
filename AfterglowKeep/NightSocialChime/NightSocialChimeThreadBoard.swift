@@ -31,9 +31,9 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
         name.isUserInteractionEnabled = true
         name.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openDesk)))
         name.translatesAutoresizingMaskIntoConstraints = false
-        let more = NightSocialLoungeChrome.iconControl(catalog: "ChimeTrashMark", fallback: "Group_220", edge: 32)
+        let more = NightSocialLoungeChrome.iconControl(catalog: "DeleteIcon", fallback: "DeleteIcon", edge: 32)
         more.addTarget(self, action: #selector(clearThread), for: .touchUpInside)
-        let video = NightSocialLoungeChrome.iconControl(catalog: "ChimeVideoMark", fallback: "Group_656", edge: 32)
+        let video = NightSocialLoungeChrome.iconControl(catalog: "VideoCallIcon", fallback: "VideoCallIcon", edge: 32)
         video.addTarget(self, action: #selector(openCall), for: .touchUpInside)
         video.isHidden = deskKey == NightSocialChimeCatalog.supportDeskKey
 
@@ -61,7 +61,7 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
         stats.font = AfterHoursType.foyerCaption(11)
         stats.textColor = UIColor.white.withAlphaComponent(0.85)
         stats.translatesAutoresizingMaskIntoConstraints = false
-        let gift = NightSocialLoungeChrome.iconControl(catalog: "LoungeGiftBox", fallback: "Group_782@2x(1)", edge: 32)
+        let gift = NightSocialLoungeChrome.iconControl(catalog: "GiftBox", fallback: "GiftBox", edge: 32)
         gift.addTarget(self, action: #selector(openGift), for: .touchUpInside)
 
         table.backgroundColor = .clear

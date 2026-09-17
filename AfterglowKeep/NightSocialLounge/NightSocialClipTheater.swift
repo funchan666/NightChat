@@ -67,7 +67,7 @@ final class NightSocialClipTheater: UIViewController {
 
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
-        let more = NightSocialLoungeChrome.iconControl(catalog: "LoungeMoreDisc", fallback: "Frame@2x(24)")
+        let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle")
         more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
 
         likePlate.textColor = .white

@@ -16,7 +16,7 @@ final class NightSocialCrownBoard: UIViewController, UITableViewDataSource, UITa
         additionalSafeAreaInsets = .zero
         view.insetsLayoutMarginsFromSafeArea = false
 
-        let wash = UIImageView(image: NightSocialImageCabinet.named("CrownBoardWash", fallback: "Rectangle_1291"))
+        let wash = UIImageView(image: NightSocialImageCabinet.named("RankBackground", fallback: "RankBackground"))
         wash.contentMode = .scaleAspectFill
         wash.clipsToBounds = true
         wash.translatesAutoresizingMaskIntoConstraints = false
@@ -185,7 +185,7 @@ final class CrownPodiumSeat: UIControl {
         scorePlate.textColor = UIColor(red: 0.95, green: 0.62, blue: 0.08, alpha: 1)
         scorePlate.textAlignment = .center
         scorePlate.translatesAutoresizingMaskIntoConstraints = false
-        spark.image = NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle")
+        spark.image = NightSocialImageCabinet.named("Sparkle", fallback: "Sparkle")
         spark.contentMode = .scaleAspectFit
         spark.translatesAutoresizingMaskIntoConstraints = false
         levelHost.translatesAutoresizingMaskIntoConstraints = false
@@ -247,9 +247,9 @@ final class CrownPodiumSeat: UIControl {
 
     private static func frameImage(_ rank: Int) -> UIImage? {
         switch rank {
-        case 1: return NightSocialImageCabinet.named("RankFrameGold", fallback: "image_623")
-        case 2: return NightSocialImageCabinet.named("RankFrameSilver", fallback: "image_625")
-        default: return NightSocialImageCabinet.named("RankFrameBronze", fallback: "image_626")
+        case 1: return NightSocialImageCabinet.named("RankFrameGold", fallback: "RankFrameGold")
+        case 2: return NightSocialImageCabinet.named("RankFrameSilver", fallback: "RankFrameSilver")
+        default: return NightSocialImageCabinet.named("RankFrameBronze", fallback: "RankFrameBronze")
         }
     }
 
@@ -291,7 +291,7 @@ final class CrownListRow: UITableViewCell {
         scorePlate.font = AfterHoursType.foyerPill(14)
         scorePlate.textColor = UIColor(red: 0.95, green: 0.62, blue: 0.08, alpha: 1)
         scorePlate.translatesAutoresizingMaskIntoConstraints = false
-        spark.image = NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle")
+        spark.image = NightSocialImageCabinet.named("Sparkle", fallback: "Sparkle")
         spark.contentMode = .scaleAspectFit
         spark.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(rankDisc)

@@ -10,7 +10,7 @@ final class NightSocialMirrorCheckInBoard: UIViewController {
         additionalSafeAreaInsets = .zero
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
-        let banner = UIImageView(image: NightSocialImageCabinet.named("MirrorCheckBanner", fallback: "Group_921"))
+        let banner = UIImageView(image: NightSocialImageCabinet.named("CheckInBanner", fallback: "CheckInBanner"))
         banner.contentMode = .scaleAspectFill
         banner.clipsToBounds = true
         banner.translatesAutoresizingMaskIntoConstraints = false
@@ -31,7 +31,7 @@ final class NightSocialMirrorCheckInBoard: UIViewController {
                 cell.layer.cornerRadius = 16
                 cell.tag = day
                 cell.addTarget(self, action: #selector(pickDay(_:)), for: .touchUpInside)
-                let coin = UIImageView(image: NightSocialImageCabinet.named("MirrorCoinDay", fallback: "Frame@2x(42)"))
+                let coin = UIImageView(image: NightSocialImageCabinet.named("DailyCoin", fallback: "DailyCoin"))
                 coin.contentMode = .scaleAspectFit
                 coin.translatesAutoresizingMaskIntoConstraints = false
                 let plate = UILabel()
@@ -164,7 +164,7 @@ final class NightSocialMirrorBackpackBoard: UIViewController {
             ("GiftBalloons", "Hot air balloon", "x46"),
             ("GiftWhistle", "Whistle", "x36"),
             ("GiftLaugh", "expression", "x46"),
-            ("MirrorCoinMark", "integral", "x456"),
+            ("CoinIcon", "integral", "x456"),
         ]
         for row in 0..<4 {
             let line = UIStackView()
@@ -217,7 +217,7 @@ final class NightSocialMirrorLevelBoard: UIViewController {
         head.font = AfterHoursType.foyerHeadline(20)
         head.textColor = .white
         head.translatesAutoresizingMaskIntoConstraints = false
-        let wash = UIImageView(image: NightSocialImageCabinet.named("MirrorLevelWash", fallback: "Group_922"))
+        let wash = UIImageView(image: NightSocialImageCabinet.named("LevelBackground", fallback: "LevelBackground"))
         wash.contentMode = .scaleAspectFill
         wash.clipsToBounds = true
         wash.layer.cornerRadius = 22
@@ -439,7 +439,7 @@ final class NightSocialMirrorInviteBoard: UIViewController {
         head.font = AfterHoursType.foyerHeadline(20)
         head.textColor = .white
         head.translatesAutoresizingMaskIntoConstraints = false
-        let gift = UIImageView(image: NightSocialImageCabinet.named("MirrorInviteGift", fallback: "image_647"))
+        let gift = UIImageView(image: NightSocialImageCabinet.named("InviteGift", fallback: "InviteGift"))
         gift.contentMode = .scaleAspectFit
         gift.translatesAutoresizingMaskIntoConstraints = false
         let line = UILabel()
@@ -524,7 +524,7 @@ final class NightSocialMirrorSupportBoard: UIViewController, UITableViewDataSour
         head.font = AfterHoursType.foyerHeadline(20)
         head.textColor = .white
         head.translatesAutoresizingMaskIntoConstraints = false
-        let bunny = UIImageView(image: NightSocialImageCabinet.named("MirrorBunny", fallback: "Group_923"))
+        let bunny = UIImageView(image: NightSocialImageCabinet.named("EmptyBunny", fallback: "EmptyBunny"))
         bunny.contentMode = .scaleAspectFit
         bunny.translatesAutoresizingMaskIntoConstraints = false
         table.backgroundColor = .clear
@@ -625,7 +625,7 @@ final class NightSocialMirrorRechargeBoard: UIViewController {
         hint.font = AfterHoursType.foyerCaption(12)
         hint.textColor = UIColor.white.withAlphaComponent(0.85)
         hint.translatesAutoresizingMaskIntoConstraints = false
-        let gem = UIImageView(image: NightSocialImageCabinet.named("MirrorDiamondPack", fallback: "image_650"))
+        let gem = UIImageView(image: NightSocialImageCabinet.named("CoinPack", fallback: "CoinIcon"))
         gem.contentMode = .scaleAspectFit
         gem.translatesAutoresizingMaskIntoConstraints = false
 

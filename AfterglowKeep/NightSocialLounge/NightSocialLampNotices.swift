@@ -57,7 +57,7 @@ final class EmberReportSettledPane: UIViewController {
         glow.backgroundColor = UIColor(red: 1, green: 0.82, blue: 0.38, alpha: 0.16)
         glow.layer.cornerRadius = 36
         glow.translatesAutoresizingMaskIntoConstraints = false
-        let shield = UIImageView(image: NightSocialImageCabinet.named("SafetyShieldMark", fallback: "Frame@2x(12)"))
+        let shield = UIImageView(image: NightSocialImageCabinet.named("SafetyShield", fallback: "SafetyShield"))
         shield.contentMode = .scaleAspectFit
         shield.translatesAutoresizingMaskIntoConstraints = false
         let title = UILabel()
@@ -206,7 +206,7 @@ final class EmberReviewHoldPane: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = lampDimCloth()
-        let mascot = UIImageView(image: NightSocialImageCabinet.named("LampReviewMascot", fallback: "image_652"))
+        let mascot = UIImageView(image: NightSocialImageCabinet.named("EmptyMascot", fallback: "EmptyMascot"))
         mascot.contentMode = .scaleAspectFit
         mascot.translatesAutoresizingMaskIntoConstraints = false
         let card = UIView()
@@ -370,7 +370,7 @@ final class EmberFriendAskPane: UIViewController {
         card.backgroundColor = AfterHoursPalette.loungeCard
         card.layer.cornerRadius = 28
         card.translatesAutoresizingMaskIntoConstraints = false
-        let pic = UIImageView(image: NightSocialImageCabinet.named("LampReviewMascot", fallback: "image_652"))
+        let pic = UIImageView(image: NightSocialImageCabinet.named("EmptyMascot", fallback: "EmptyMascot"))
         pic.contentMode = .scaleAspectFit
         pic.translatesAutoresizingMaskIntoConstraints = false
         let title = UILabel()

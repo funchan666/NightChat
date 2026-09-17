@@ -6,15 +6,15 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
         kind: .blacklist,
         title: "Blacklist",
         hint: "Desks you hid from this sitting",
-        catalog: "MirrorPersonMark",
-        fallback: "Frame@2x(37)"
+        catalog: "PersonIcon",
+        fallback: "PersonIcon"
     )
     private let languageLane = NightSocialSettingsLane(
         kind: .language,
         title: "Language",
         hint: "Spoken labels on this desk",
-        catalog: "MirrorGlobeMark",
-        fallback: "Frame@2x(64)"
+        catalog: "LanguageIcon",
+        fallback: "LanguageIcon"
     )
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
@@ -52,15 +52,15 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
             kind: .community,
             title: "Community Rules",
             hint: "How we keep the house kind",
-            catalog: "SafetyShieldMark",
-            fallback: "Frame@2x(37)"
+            catalog: "SafetyShield",
+            fallback: "PersonIcon"
         )
         let privacy = NightSocialSettingsLane(
             kind: .privacy,
             title: "Privacy agreement",
             hint: "How NightChat holds your data",
-            catalog: "MirrorLockMark",
-            fallback: "Frame@2x(37)"
+            catalog: "LockIcon",
+            fallback: "PersonIcon"
         )
         let agreement = NightSocialSettingsLane(
             kind: .agreement,
@@ -80,8 +80,8 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
             kind: .deleteDesk,
             title: "Deletion of account",
             hint: "Erase this night desk",
-            catalog: "MirrorTrashMark",
-            fallback: "Frame@2x(37)",
+            catalog: "TrashIcon",
+            fallback: "PersonIcon",
             showsChevron: false,
             tone: .erase
         )
@@ -381,7 +381,7 @@ final class NightSocialSettingsDeskCard: UIView {
         chipCloth.translatesAutoresizingMaskIntoConstraints = false
         chipCloth.addSubview(chip)
 
-        let sparkle = UIImageView(image: NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle"))
+        let sparkle = UIImageView(image: NightSocialImageCabinet.named("Sparkle", fallback: "Sparkle"))
         sparkle.contentMode = .scaleAspectFit
         sparkle.translatesAutoresizingMaskIntoConstraints = false
 
@@ -603,7 +603,7 @@ final class NightSocialLeaveConfirm: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.45)
-        let cloth = UIImageView(image: NightSocialImageCabinet.named("DiamondPromptCloth", fallback: "image_622"))
+        let cloth = UIImageView(image: NightSocialImageCabinet.named("CoinSheetBackground", fallback: "CoinSheetBackground"))
         cloth.contentMode = .scaleAspectFill
         cloth.clipsToBounds = true
         cloth.layer.cornerRadius = 24
@@ -858,7 +858,7 @@ final class NightSocialLanguageConfirm: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.45)
-        let cloth = UIImageView(image: NightSocialImageCabinet.named("DiamondPromptCloth", fallback: "image_622"))
+        let cloth = UIImageView(image: NightSocialImageCabinet.named("CoinSheetBackground", fallback: "CoinSheetBackground"))
         cloth.contentMode = .scaleAspectFill
         cloth.clipsToBounds = true
         cloth.layer.cornerRadius = 24

@@ -18,7 +18,7 @@ final class NightSocialCommunityLampBoard: UIViewController {
         scroller.alwaysBounceVertical = true
         scroller.contentInsetAdjustmentBehavior = .never
         scroller.translatesAutoresizingMaskIntoConstraints = false
-        let mascot = UIImageView(image: NightSocialImageCabinet.named("LampReviewMascot", fallback: "image_652"))
+        let mascot = UIImageView(image: NightSocialImageCabinet.named("EmptyMascot", fallback: "EmptyMascot"))
         mascot.contentMode = .scaleAspectFit
         mascot.translatesAutoresizingMaskIntoConstraints = false
         let card = UIView()

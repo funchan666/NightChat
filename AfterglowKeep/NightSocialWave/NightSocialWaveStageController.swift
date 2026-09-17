@@ -31,7 +31,7 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
             mark.addTarget(self, action: #selector(pickParty(_:)), for: .touchUpInside)
             partyRow.addArrangedSubview(mark)
         }
-        let lookup = NightSocialLoungeChrome.iconControl(catalog: "LoungeLookupMark", fallback: "Group_646", edge: 34)
+        let lookup = NightSocialLoungeChrome.iconControl(catalog: "SearchIcon", fallback: "SearchIcon", edge: 34)
         lookup.addTarget(self, action: #selector(openLookup), for: .touchUpInside)
         let plus = UIButton(type: .system)
         plus.setTitle("+", for: .normal)
@@ -166,16 +166,16 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         }
         switch partyLane {
         case .party:
-            bannerA.paint(image: NightSocialImageCabinet.named("WaveBannerHosts", fallback: "Group_898"), seats: liveHosts)
-            bannerB.paint(image: NightSocialImageCabinet.named("WaveBannerOpen", fallback: "Group_899"), seats: Array(liveHosts.dropFirst(1)))
+            bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerHosts", fallback: "PartyBannerHosts"), seats: liveHosts)
+            bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerOpen", fallback: "PartyBannerOpen"), seats: Array(liveHosts.dropFirst(1)))
             headPlate.text = "Live voice rooms"
         case .follow:
-            bannerA.paint(image: NightSocialImageCabinet.named("WaveBannerFollow", fallback: "Group_902"), seats: followHosts)
-            bannerB.paint(image: NightSocialImageCabinet.named("WaveBannerSoon", fallback: "Group_903"), seats: followHosts)
+            bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerFollow", fallback: "PartyBannerFollow"), seats: followHosts)
+            bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerSoon", fallback: "PartyBannerSoon"), seats: followHosts)
             headPlate.text = "Followed rooms"
         case .recent:
-            bannerA.paint(image: NightSocialImageCabinet.named("WaveBannerReturn", fallback: "Group_900"), seats: recentHosts)
-            bannerB.paint(image: NightSocialImageCabinet.named("WaveBannerActive", fallback: "Group_901"), seats: recentHosts)
+            bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerRecent", fallback: "PartyBannerRecent"), seats: recentHosts)
+            bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerActive", fallback: "PartyBannerActive"), seats: recentHosts)
             headPlate.text = "Recently joined"
         }
     }
@@ -377,7 +377,7 @@ final class WaveChamberRow: UITableViewCell {
         titlePlate.textColor = .white
         titlePlate.translatesAutoresizingMaskIntoConstraints = false
         hostPlate.translatesAutoresizingMaskIntoConstraints = false
-        heatMark.image = NightSocialImageCabinet.named("WaveHeatMark", fallback: "Frame@2x(7)")
+        heatMark.image = NightSocialImageCabinet.named("HeatIcon", fallback: "HeatIcon")
         heatMark.contentMode = .scaleAspectFit
         heatMark.translatesAutoresizingMaskIntoConstraints = false
         heatPlate.font = AfterHoursType.foyerCaption(12)

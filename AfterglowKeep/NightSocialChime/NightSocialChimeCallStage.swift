@@ -62,7 +62,7 @@ final class NightSocialChimeCallStage: UIViewController {
         clock.translatesAutoresizingMaskIntoConstraints = false
         let speaker = circleButton(system: "speaker.wave.2.fill", #selector(flipSpeaker))
         let hang = UIButton(type: .custom)
-        hang.setImage(NightSocialImageCabinet.named("ChimeHangupMark", fallback: "Group_49"), for: .normal)
+        hang.setImage(NightSocialImageCabinet.named("CallHangUp", fallback: "CallHangUp"), for: .normal)
         hang.imageView?.contentMode = .scaleAspectFit
         hang.addTarget(self, action: #selector(fold), for: .touchUpInside)
         hang.translatesAutoresizingMaskIntoConstraints = false

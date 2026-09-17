@@ -26,7 +26,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         view.insetsLayoutMarginsFromSafeArea = false
         drawStarCloth()
 
-        let exit = NightSocialLoungeChrome.iconControl(catalog: "WaveExitMark", fallback: "Group_648", edge: 34)
+        let exit = NightSocialLoungeChrome.iconControl(catalog: "ExitIcon", fallback: "ExitIcon", edge: 34)
         exit.addTarget(self, action: #selector(fold), for: .touchUpInside)
         let hostName = NightSocialWaveCatalog.hostName(chamber)
         let hostChip = UIButton(type: .custom)
@@ -56,9 +56,9 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         crowd.setTitleColor(.white, for: .normal)
         crowd.addTarget(self, action: #selector(openCrowd), for: .touchUpInside)
         crowd.translatesAutoresizingMaskIntoConstraints = false
-        let more = NightSocialLoungeChrome.iconControl(catalog: "WaveMoreDots", fallback: "Frame@2x(17)", edge: 32)
+        let more = NightSocialLoungeChrome.iconControl(catalog: "MoreDots", fallback: "MoreDots", edge: 32)
         more.addTarget(self, action: #selector(openMore), for: .touchUpInside)
-        let crown = NightSocialLoungeChrome.iconControl(catalog: "WaveCrownGlyph", fallback: "Frame@2x(14)", edge: 32)
+        let crown = NightSocialLoungeChrome.iconControl(catalog: "PartyCrown", fallback: "PartyCrown", edge: 32)
         crown.addTarget(self, action: #selector(openRank), for: .touchUpInside)
         let heat = UILabel()
         heat.text = " \(chamber.heatScore) "
@@ -107,7 +107,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         table.register(UITableViewCell.self, forCellReuseIdentifier: "wavechat")
         table.translatesAutoresizingMaskIntoConstraints = false
 
-        let mic = NightSocialLoungeChrome.iconControl(catalog: "WaveMicMark", fallback: "Group_904", edge: 28)
+        let mic = NightSocialLoungeChrome.iconControl(catalog: "MicIcon", fallback: "MicIcon", edge: 28)
         field.placeholder = "Tell me your opinion..."
         field.attributedPlaceholder = NSAttributedString(string: "Tell me your opinion...", attributes: [.foregroundColor: UIColor.white.withAlphaComponent(0.5)])
         field.textColor = .white
@@ -121,7 +121,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         send.tintColor = .white
         send.addTarget(self, action: #selector(sendChat), for: .touchUpInside)
         send.translatesAutoresizingMaskIntoConstraints = false
-        let gift = NightSocialLoungeChrome.iconControl(catalog: "LoungeGiftBox", fallback: "Group_782@2x(1)", edge: 34)
+        let gift = NightSocialLoungeChrome.iconControl(catalog: "GiftBox", fallback: "GiftBox", edge: 34)
         gift.addTarget(self, action: #selector(openGift), for: .touchUpInside)
 
         view.addSubview(exit)
@@ -282,7 +282,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         button.backgroundColor = UIColor.white.withAlphaComponent(0.12)
         button.layer.cornerRadius = 28
         button.translatesAutoresizingMaskIntoConstraints = false
-        let mic = UIImageView(image: NightSocialImageCabinet.named("WaveMicMark", fallback: "Group_904"))
+        let mic = UIImageView(image: NightSocialImageCabinet.named("MicIcon", fallback: "MicIcon"))
         mic.contentMode = .scaleAspectFit
         mic.translatesAutoresizingMaskIntoConstraints = false
         let plate = UILabel()
@@ -358,7 +358,7 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         navigationController?.pushViewController(NightSocialCreatorDeskBoard(deskKey: chamber.hostDeskKey), animated: true)
     }
     @objc private func openCrowd() {
-        present(NightSocialBoothCrowdSheet(), animated: true)
+        present(NightSocialBoothCrowdSheet(hostDeskKey: chamber.hostDeskKey), animated: true)
     }
     @objc private func openRank() {
         present(NightSocialWaveRankSheet(chamber: chamber), animated: true)

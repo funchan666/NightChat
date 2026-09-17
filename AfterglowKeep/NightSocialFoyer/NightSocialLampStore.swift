@@ -263,7 +263,7 @@ final class NightSocialLampWelcomePane: UIViewController {
         mark.clipsToBounds = true
         mark.translatesAutoresizingMaskIntoConstraints = false
 
-        let coin = UIImageView(image: NightSocialImageCabinet.named("MirrorCoinMark", fallback: "image_650"))
+        let coin = UIImageView(image: NightSocialImageCabinet.named("CoinIcon", fallback: "CoinIcon"))
         coin.contentMode = .scaleAspectFit
         coin.translatesAutoresizingMaskIntoConstraints = false
 
@@ -301,7 +301,7 @@ final class NightSocialLampWelcomePane: UIViewController {
         view.addSubview(take)
 
         for index in 0..<6 {
-            let spark = UIImageView(image: NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle"))
+            let spark = UIImageView(image: NightSocialImageCabinet.named("Sparkle", fallback: "Sparkle"))
             spark.tag = 200 + index
             spark.alpha = 0
             spark.translatesAutoresizingMaskIntoConstraints = false

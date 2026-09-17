@@ -35,7 +35,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(fold), for: .touchUpInside)
-        let more = NightSocialLoungeChrome.iconControl(catalog: "LoungeMoreDisc", fallback: "Frame@2x(24)")
+        let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle")
         more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
 
         let card = UIView()
@@ -79,7 +79,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
         followPill.addTarget(self, action: #selector(flipFollow), for: .touchUpInside)
         friendPill.addTarget(self, action: #selector(askFriend), for: .touchUpInside)
-        chatPill.setImage(NightSocialImageCabinet.named("LoungeChatPill", fallback: "Group_560"), for: .normal)
+        chatPill.setImage(NightSocialImageCabinet.named("ChatButton", fallback: "ChatButton"), for: .normal)
         chatPill.imageView?.contentMode = .scaleAspectFit
         chatPill.addTarget(self, action: #selector(openWhisper), for: .touchUpInside)
         chatPill.translatesAutoresizingMaskIntoConstraints = false

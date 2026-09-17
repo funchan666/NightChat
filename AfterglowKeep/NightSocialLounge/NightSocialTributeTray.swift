@@ -4,7 +4,10 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
     private let boothKey: String
     private var picked: LoungeGiftToken?
     private var quantity = 1
-    private let pursePlate = UILabel()
+    private let pursePlate = NightSocialDiamondAmount(
+        font: AfterHoursType.foyerBody(13, weight: .semibold),
+        gemSize: 14
+    )
     private let qtyPlate = UILabel()
     private var collection: UICollectionView!
 
@@ -38,9 +41,6 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
         collection.translatesAutoresizingMaskIntoConstraints = false
         collection.register(GiftGlyphCell.self, forCellWithReuseIdentifier: GiftGlyphCell.reuseId)
 
-        pursePlate.textColor = .white
-        pursePlate.font = AfterHoursType.foyerBody(13, weight: .semibold)
-        pursePlate.translatesAutoresizingMaskIntoConstraints = false
         let minus = UIButton(type: .system)
         minus.setTitle("−", for: .normal)
         minus.setTitleColor(.white, for: .normal)
@@ -56,7 +56,7 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
         plus.translatesAutoresizingMaskIntoConstraints = false
         qtyPlate.translatesAutoresizingMaskIntoConstraints = false
         let send = UIButton(type: .custom)
-        send.setImage(NightSocialImageCabinet.named("LoungeGiftPill", fallback: "Group_782@2x(2)"), for: .normal)
+        send.setImage(NightSocialImageCabinet.named("GiftButton", fallback: "GiftButton"), for: .normal)
         send.imageView?.contentMode = .scaleAspectFit
         send.addTarget(self, action: #selector(offerGift), for: .touchUpInside)
         send.translatesAutoresizingMaskIntoConstraints = false
@@ -97,7 +97,7 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
     deinit { NotificationCenter.default.removeObserver(self) }
 
     @objc private func paintPurse() {
-        pursePlate.text = "◆ \(NightSocialSessionDrawer.shared.diamondPurse)"
+        pursePlate.paint(NightSocialSessionDrawer.shared.diamondPurse)
         qtyPlate.text = "\(quantity)"
     }
 
@@ -142,16 +142,12 @@ final class NightSocialTributeTray: UIViewController, UICollectionViewDataSource
 final class GiftGlyphCell: UICollectionViewCell {
     static let reuseId = "GiftGlyphCell"
     private let glyph = UIImageView()
-    private let costPlate = UILabel()
+    private let costPlate = NightSocialDiamondAmount(font: AfterHoursType.foyerCaption(11), gemSize: 11)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         glyph.contentMode = .scaleAspectFit
         glyph.translatesAutoresizingMaskIntoConstraints = false
-        costPlate.font = AfterHoursType.foyerCaption(11)
-        costPlate.textColor = .white
-        costPlate.textAlignment = .center
-        costPlate.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(glyph)
         contentView.addSubview(costPlate)
         NSLayoutConstraint.activate([
@@ -166,7 +162,7 @@ final class GiftGlyphCell: UICollectionViewCell {
     required init?(coder: NSCoder) { nil }
     func paint(_ gift: LoungeGiftToken, chosen: Bool) {
         glyph.image = UIImage(named: gift.glyphCatalog)
-        costPlate.text = "◆ \(gift.diamondCost)"
+        costPlate.paint(gift.diamondCost)
         contentView.alpha = chosen ? 1 : 0.7
         contentView.layer.borderWidth = chosen ? 1.5 : 0
         contentView.layer.borderColor = AfterHoursPalette.loungePink.cgColor
@@ -195,7 +191,7 @@ final class NightSocialDiamondPrompt: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.45)
-        let cloth = UIImageView(image: NightSocialImageCabinet.named("DiamondPromptCloth", fallback: "image_622"))
+        let cloth = UIImageView(image: NightSocialImageCabinet.named("CoinSheetBackground", fallback: "CoinSheetBackground"))
         cloth.contentMode = .scaleAspectFill
         cloth.clipsToBounds = true
         cloth.layer.cornerRadius = 24

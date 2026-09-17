@@ -58,11 +58,11 @@ final class NightSocialSafetySheet: UIViewController {
         card.layer.cornerRadius = 22
         card.translatesAutoresizingMaskIntoConstraints = false
         let block = UIButton(type: .custom)
-        block.setImage(NightSocialImageCabinet.named("LoungeBlockTile", fallback: "Group_136"), for: .normal)
+        block.setImage(NightSocialImageCabinet.named("BlockIcon", fallback: "BlockIcon"), for: .normal)
         block.imageView?.contentMode = .scaleAspectFit
         block.addTarget(self, action: #selector(blockDesk), for: .touchUpInside)
         let report = UIButton(type: .custom)
-        report.setImage(NightSocialImageCabinet.named("LoungeReportTile", fallback: "Group_135"), for: .normal)
+        report.setImage(NightSocialImageCabinet.named("ReportIcon", fallback: "ReportIcon"), for: .normal)
         report.imageView?.contentMode = .scaleAspectFit
         report.addTarget(self, action: #selector(reportDesk), for: .touchUpInside)
         block.translatesAutoresizingMaskIntoConstraints = false

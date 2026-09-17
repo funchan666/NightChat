@@ -31,7 +31,7 @@ final class NightSocialDeskMirrorController: UIViewController {
         cover.clipsToBounds = true
         cover.translatesAutoresizingMaskIntoConstraints = false
 
-        let word = UIImageView(image: NightSocialImageCabinet.named("MirrorProfileMark", fallback: "Sing_Clip"))
+        let word = UIImageView(image: NightSocialImageCabinet.named("ProfileTitle", fallback: "ProfileTitle"))
         word.contentMode = .scaleAspectFit
         word.translatesAutoresizingMaskIntoConstraints = false
         let globe = magentaChip(symbol: "globe")
@@ -74,7 +74,7 @@ final class NightSocialDeskMirrorController: UIViewController {
         pursePlate.font = AfterHoursType.foyerCaption(11)
         pursePlate.textColor = .white
         pursePlate.translatesAutoresizingMaskIntoConstraints = false
-        let diamond = UIImageView(image: NightSocialImageCabinet.named("WaveDiamondMark", fallback: "diamond"))
+        let diamond = UIImageView(image: NightSocialImageCabinet.named("DiamondIcon", fallback: "DiamondIcon"))
         diamond.contentMode = .scaleAspectFit
         diamond.translatesAutoresizingMaskIntoConstraints = false
         landPlate.font = AfterHoursType.foyerCaption(11)
@@ -84,7 +84,7 @@ final class NightSocialDeskMirrorController: UIViewController {
         pin.tintColor = AfterHoursPalette.loungePink
         pin.translatesAutoresizingMaskIntoConstraints = false
 
-        let vibeMark = UIImageView(image: NightSocialImageCabinet.named("MirrorFeedbackMark", fallback: "Frame@2x(66)"))
+        let vibeMark = UIImageView(image: NightSocialImageCabinet.named("FeedbackIcon", fallback: "FeedbackIcon"))
         vibeMark.contentMode = .scaleAspectFit
         vibeMark.translatesAutoresizingMaskIntoConstraints = false
         vibePlate.font = AfterHoursType.foyerBody(13)
@@ -113,15 +113,15 @@ final class NightSocialDeskMirrorController: UIViewController {
         friendTap.translatesAutoresizingMaskIntoConstraints = false
 
         let wallet = perkCard(
-            image: NightSocialImageCabinet.named("MirrorWalletCard", fallback: "Group_915"),
+            image: NightSocialImageCabinet.named("WalletCard", fallback: "WalletCard"),
             action: #selector(openWallet)
         )
         let check = perkCard(
-            image: NightSocialImageCabinet.named("MirrorCheckCard", fallback: "Group_917"),
+            image: NightSocialImageCabinet.named("CheckInCard", fallback: "CheckInCard"),
             action: #selector(openCheckIn)
         )
         let levelCard = perkCard(
-            image: NightSocialImageCabinet.named("MirrorLevelCard", fallback: "Group_919"),
+            image: NightSocialImageCabinet.named("LevelCard", fallback: "LevelCard"),
             action: #selector(openLevel)
         )
 

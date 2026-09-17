@@ -345,7 +345,7 @@ final class VelvetNoticePane: UIViewController {
     }
 
     private func makeSpark(alpha: CGFloat, edge: CGFloat) -> UIImageView {
-        let spark = UIImageView(image: NightSocialImageCabinet.named("SparkleMark", fallback: "sparkle"))
+        let spark = UIImageView(image: NightSocialImageCabinet.named("Sparkle", fallback: "Sparkle"))
         spark.alpha = alpha
         spark.contentMode = .scaleAspectFit
         spark.translatesAutoresizingMaskIntoConstraints = false

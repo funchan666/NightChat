@@ -32,9 +32,9 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         compose.addTarget(self, action: #selector(openCompose), for: .touchUpInside)
         compose.translatesAutoresizingMaskIntoConstraints = false
 
-        let platform = tileButton("ChimePlatformTile", "Group_912", #selector(openPlatform))
-        let likes = tileButton("ChimeLikesTile", "Group_913", #selector(openLikes))
-        let support = tileButton("ChimeSupportTile", "Group_914", #selector(openSupport))
+        let platform = tileButton("PlatformTile", "PlatformTile", #selector(openPlatform))
+        let likes = tileButton("LikesTile", "LikesTile", #selector(openLikes))
+        let support = tileButton("SupportAvatar", "SupportAvatar", #selector(openSupport))
         let tiles = UIStackView(arrangedSubviews: [platform, likes, support])
         tiles.axis = .horizontal
         tiles.spacing = 10
@@ -198,7 +198,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             pic.layer.cornerRadius = 24
             pic.clipsToBounds = true
             pic.translatesAutoresizingMaskIntoConstraints = false
-            let ring = UIImageView(image: NightSocialImageCabinet.named("ChimeLiveRing", fallback: "Group_892"))
+            let ring = UIImageView(image: NightSocialImageCabinet.named("LiveAvatarRing", fallback: "LiveAvatarRing"))
             ring.contentMode = .scaleAspectFit
             ring.isHidden = !desk.isLive
             ring.translatesAutoresizingMaskIntoConstraints = false
@@ -393,10 +393,10 @@ final class ChimeFollowRow: UITableViewCell {
         metaPlate.font = AfterHoursType.foyerCaption(11)
         metaPlate.textColor = UIColor.white.withAlphaComponent(0.65)
         metaPlate.translatesAutoresizingMaskIntoConstraints = false
-        liveMark.image = NightSocialImageCabinet.named("LoungeLiveBadge", fallback: "Group_668@2x(1)")
+        liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
         liveMark.translatesAutoresizingMaskIntoConstraints = false
-        chat.setImage(NightSocialImageCabinet.named("ChimeBubbleMark", fallback: "Group_819"), for: .normal)
+        chat.setImage(NightSocialImageCabinet.named("ChatBubble", fallback: "ChatBubble"), for: .normal)
         chat.imageView?.contentMode = .scaleAspectFit
         chat.addTarget(self, action: #selector(tapChat), for: .touchUpInside)
         chat.translatesAutoresizingMaskIntoConstraints = false

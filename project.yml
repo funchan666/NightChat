@@ -11,6 +11,8 @@ settings:
     SWIFT_VERSION: "5.0"
     TARGETED_DEVICE_FAMILY: "1"
     IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    DEVELOPMENT_TEAM: JPTS6M4T5B
+    CODE_SIGN_IDENTITY: "iPhone Developer"
 targets:
   NightChat:
     type: application
@@ -19,9 +21,6 @@ targets:
       - path: AfterglowKeep
         excludes:
           - "**/*.md"
-      - path: assets/images
-        type: group
-        buildPhase: resources
       - path: assets/pics
         type: folder
         buildPhase: resources
