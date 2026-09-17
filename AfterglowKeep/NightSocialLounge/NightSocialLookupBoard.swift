@@ -89,35 +89,74 @@ final class LookupDeskRow: UITableViewCell {
     private let metaPlate = UILabel()
     private let liveMark = UIImageView()
     private let levelHost = UIView()
-    private let chevron = UIImageView(image: UIImage(systemName: "chevron.right", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)))
+    private let levelPlate = UILabel()
+    private let chevron = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         selectionStyle = .none
+        contentView.backgroundColor = .clear
+
         portrait.contentMode = .scaleAspectFill
-        portrait.layer.cornerRadius = 24
         portrait.clipsToBounds = true
+        portrait.layer.cornerRadius = 24
+        portrait.backgroundColor = UIColor.white.withAlphaComponent(0.08)
         portrait.translatesAutoresizingMaskIntoConstraints = false
+
         namePlate.font = AfterHoursType.foyerPill(16)
         namePlate.textColor = .white
+        namePlate.numberOfLines = 1
+        namePlate.lineBreakMode = .byTruncatingTail
+        namePlate.setContentHuggingPriority(.required, for: .horizontal)
         namePlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        namePlate.translatesAutoresizingMaskIntoConstraints = false
+
         metaPlate.font = AfterHoursType.foyerCaption(12)
-        metaPlate.textColor = UIColor.white.withAlphaComponent(0.58)
+        metaPlate.textColor = UIColor.white.withAlphaComponent(0.55)
+        metaPlate.numberOfLines = 1
         metaPlate.lineBreakMode = .byTruncatingTail
-        metaPlate.translatesAutoresizingMaskIntoConstraints = false
+        metaPlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
         liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
+        liveMark.setContentHuggingPriority(.required, for: .horizontal)
         liveMark.setContentCompressionResistancePriority(.required, for: .horizontal)
         liveMark.translatesAutoresizingMaskIntoConstraints = false
+
+        let levelCloth = UIImageView(image: NightSocialImageCabinet.named("LevelBadge", fallback: "LevelBadge"))
+        levelCloth.contentMode = .scaleToFill
+        levelCloth.translatesAutoresizingMaskIntoConstraints = false
+        levelPlate.textColor = AfterHoursPalette.inkOnSnow
+        levelPlate.font = AfterHoursType.foyerCaption(10)
+        levelPlate.textAlignment = .center
+        levelPlate.translatesAutoresizingMaskIntoConstraints = false
         levelHost.translatesAutoresizingMaskIntoConstraints = false
-        chevron.tintColor = UIColor.white.withAlphaComponent(0.35)
+        levelHost.addSubview(levelCloth)
+        levelHost.addSubview(levelPlate)
+
+        chevron.image = UIImage(systemName: "chevron.right", withConfiguration: UIImage.SymbolConfiguration(pointSize: 11, weight: .semibold))
+        chevron.tintColor = UIColor.white.withAlphaComponent(0.32)
+        chevron.contentMode = .scaleAspectFit
         chevron.translatesAutoresizingMaskIntoConstraints = false
+
+        let spacer = UIView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        spacer.setContentCompressionResistancePriority(.fittingSizeLevel, for: .horizontal)
+
+        let nameRow = UIStackView(arrangedSubviews: [namePlate, liveMark, spacer])
+        nameRow.axis = .horizontal
+        nameRow.alignment = .center
+        nameRow.spacing = 6
+
+        let textCol = UIStackView(arrangedSubviews: [nameRow, metaPlate])
+        textCol.axis = .vertical
+        textCol.alignment = .fill
+        textCol.spacing = 4
+        textCol.translatesAutoresizingMaskIntoConstraints = false
+        textCol.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
         contentView.addSubview(portrait)
-        contentView.addSubview(namePlate)
-        contentView.addSubview(metaPlate)
-        contentView.addSubview(liveMark)
+        contentView.addSubview(textCol)
         contentView.addSubview(levelHost)
         contentView.addSubview(chevron)
         NSLayoutConstraint.activate([
@@ -127,21 +166,23 @@ final class LookupDeskRow: UITableViewCell {
             portrait.heightAnchor.constraint(equalToConstant: 48),
             chevron.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             chevron.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            chevron.widthAnchor.constraint(equalToConstant: 10),
-            levelHost.trailingAnchor.constraint(equalTo: chevron.leadingAnchor, constant: -10),
-            levelHost.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
+            chevron.widthAnchor.constraint(equalToConstant: 8),
+            chevron.heightAnchor.constraint(equalToConstant: 14),
+            levelHost.trailingAnchor.constraint(equalTo: chevron.leadingAnchor, constant: -8),
+            levelHost.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             levelHost.widthAnchor.constraint(equalToConstant: 52),
             levelHost.heightAnchor.constraint(equalToConstant: 18),
-            namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 12),
-            namePlate.topAnchor.constraint(equalTo: portrait.topAnchor, constant: 4),
-            liveMark.leadingAnchor.constraint(equalTo: namePlate.trailingAnchor, constant: 8),
-            liveMark.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
+            levelCloth.topAnchor.constraint(equalTo: levelHost.topAnchor),
+            levelCloth.leadingAnchor.constraint(equalTo: levelHost.leadingAnchor),
+            levelCloth.trailingAnchor.constraint(equalTo: levelHost.trailingAnchor),
+            levelCloth.bottomAnchor.constraint(equalTo: levelHost.bottomAnchor),
+            levelPlate.centerXAnchor.constraint(equalTo: levelHost.centerXAnchor),
+            levelPlate.centerYAnchor.constraint(equalTo: levelHost.centerYAnchor),
             liveMark.widthAnchor.constraint(equalToConstant: 40),
             liveMark.heightAnchor.constraint(equalToConstant: 16),
-            liveMark.trailingAnchor.constraint(lessThanOrEqualTo: levelHost.leadingAnchor, constant: -8),
-            metaPlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
-            metaPlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 5),
-            metaPlate.trailingAnchor.constraint(equalTo: levelHost.leadingAnchor, constant: -8),
+            textCol.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 12),
+            textCol.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            textCol.trailingAnchor.constraint(equalTo: levelHost.leadingAnchor, constant: -10),
         ])
     }
 
@@ -152,14 +193,6 @@ final class LookupDeskRow: UITableViewCell {
         namePlate.text = desk.spokenName
         metaPlate.text = "\(desk.handleTag)  ·  \(desk.cityLabel)"
         liveMark.isHidden = !desk.isLive
-        levelHost.subviews.forEach { $0.removeFromSuperview() }
-        let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
-        levelHost.addSubview(level)
-        NSLayoutConstraint.activate([
-            level.topAnchor.constraint(equalTo: levelHost.topAnchor),
-            level.leadingAnchor.constraint(equalTo: levelHost.leadingAnchor),
-            level.trailingAnchor.constraint(equalTo: levelHost.trailingAnchor),
-            level.bottomAnchor.constraint(equalTo: levelHost.bottomAnchor),
-        ])
+        levelPlate.text = "Lv.\(desk.levelMark)"
     }
 }
