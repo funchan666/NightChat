@@ -354,6 +354,33 @@ enum NightSocialLoungeCatalog {
         return (ordered.firstIndex { $0.boothKey == boothKey } ?? ordered.count) + 1
     }
 
+    private static func generatedHint(for deskKey: String) -> (city: String, handle: String, vibe: String, tags: [String], fans: String, meridian: LoungeMeridianLane) {
+        switch deskKey {
+        case "desk.sophia.lane": return ("Lisbon", "@sofi.after", "Quiet nights and a window that stays up.", ["VoiceChat", "NightBake"], "1.2k", .europe)
+        case "desk.theo.miles": return ("Austin", "@theo.late", "Playlists that only work after midnight.", ["MoodTalk", "Harbor"], "860", .global)
+        case "desk.emma.reed": return ("Dublin", "@emmie", "Coffee at two, talk until four.", ["CasualTalk", "Overlap"], "2.1k", .europe)
+        case "desk.luca.brooks": return ("Milan", "@luca.n", "A room, a lamp, not much else.", ["RelaxChat", "Studio"], "740", .europe)
+        case "desk.isla.west": return ("Edinburgh", "@isla.w", "Soup, rain, and a slow hour.", ["MoodTalk", "Kitchen"], "980", .europe)
+        case "desk.felix.hayes": return ("Denver", "@faye.h", "Still up. Come sit if you are too.", ["NewFriends", "CasualTalk"], "560", .global)
+        case "desk.nora.blake": return ("Denver", "@nora.b", "Roof light on. City can wait.", ["NewFriends", "Roof"], "1.5k", .global)
+        case "desk.noah.rivers": return ("Seattle", "@noah.r", "Rain on the glass. I am still here.", ["MoodTalk", "Harbor"], "430", .global)
+        case "desk.maya.rose": return ("Marseille", "@maya.r", "Headphones off. Talk if you want.", ["VoiceChat", "SignOff"], "1.8k", .europe)
+        case "desk.leo.gray": return ("Chicago", "@leo.g", "Late shift energy, nothing fancy.", ["CasualTalk", "NightFloor"], "690", .global)
+        case "desk.ivy.stone": return ("Vancouver", "@ivy.s", "Quiet company after the last train.", ["RelaxChat", "Lobby"], "320", .global)
+        case "desk.jude.ford": return ("Bristol", "@jude.f", "Forty minutes and a kind room.", ["CasualTalk", "NightFloor"], "810", .europe)
+        case "desk.zoe.wells": return ("Melbourne", "@zoey.w", "Warm light and no rush.", ["RelaxChat", "Clay"], "1.1k", .global)
+        case "desk.ada.bell": return ("Nashville", "@ada.b", "Open mic, low volume.", ["VoiceChat", "Talk"], "2.4k", .global)
+        case "desk.clara.june": return ("Prague", "@clara.j", "A small room after dark.", ["MoodTalk", "Studio"], "540", .europe)
+        case "desk.ella.moss": return ("Copenhagen", "@ella.m", "Still awake. That is enough.", ["NewFriends", "CasualTalk"], "1.6k", .europe)
+        case "desk.owen.hill": return ("Minneapolis", "@owen.h", "Kiln is off. Talk is on.", ["RelaxChat", "Clay"], "390", .global)
+        case "desk.finn.woods": return ("Oslo", "@finn.w", "Cold window, warm room.", ["MoodTalk", "Night"], "720", .europe)
+        case "desk.alex.park": return ("Seoul", "@alex.p", "Night radio, no schedule.", ["VoiceChat", "Roof"], "3.0k", .eastAsia)
+        case "desk.ruby.lake": return ("Cape Town", "@ruby.l", "Tide talk until morning.", ["VoiceChat", "Tide"], "880", .africa)
+        default:
+            return ("NightChat", "@" + deskKey.dropFirst(5), "Up late with the lamp on.", ["CasualTalk"], "120", .global)
+        }
+    }
+
     private static func modestLiveStats(for deskKey: String) -> (watchers: Int, likes: Int, gifts: Int, duration: String) {
         let seed = deskKey.utf8.reduce(0) { ($0 &* 31) &+ Int($1) }
         let watchers = 9 + abs(seed) % 46
