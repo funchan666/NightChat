@@ -120,6 +120,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         collection.delegate = self
         collection.isScrollEnabled = false
         collection.register(LoungeMomentTile.self, forCellWithReuseIdentifier: LoungeMomentTile.reuseId)
+        collection.register(LoungeClipTile.self, forCellWithReuseIdentifier: LoungeClipTile.reuseId)
         collection.translatesAutoresizingMaskIntoConstraints = false
         collectionHeight = collection.heightAnchor.constraint(equalToConstant: 220)
 
@@ -332,8 +333,14 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { moments.count }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let moment = moments[indexPath.item]
+        if let clipKey = moment.clipKey, let clip = NightSocialLoungeCatalog.clip(clipKey: clipKey) {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeClipTile.reuseId, for: indexPath) as! LoungeClipTile
+            cell.paint(clip, musicMode: false)
+            return cell
+        }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LoungeMomentTile.reuseId, for: indexPath) as! LoungeMomentTile
-        cell.paint(moments[indexPath.item])
+        cell.paint(moment)
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -344,7 +351,12 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        navigationController?.pushViewController(NightSocialMomentBoard(moment: moments[indexPath.item]), animated: true)
+        let moment = moments[indexPath.item]
+        if let clipKey = moment.clipKey {
+            navigationController?.pushViewController(NightSocialClipTheater(clipKey: clipKey), animated: true)
+        } else {
+            navigationController?.pushViewController(NightSocialMomentBoard(moment: moment), animated: true)
+        }
     }
 }
 

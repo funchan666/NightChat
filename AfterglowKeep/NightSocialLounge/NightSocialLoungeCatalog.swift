@@ -89,6 +89,7 @@ struct DeskMoment: Equatable {
     let deskKey: String
     let caption: String
     let useCover: Bool
+    let clipKey: String?
 }
 
 struct LoungeClipReel: Equatable {
@@ -212,14 +213,14 @@ enum NightSocialLoungeCatalog {
         }
 
     static let clips: [LoungeClipReel] = [
-        LoungeClipReel(clipKey: "clip.marisol.1", authorDeskKey: "desk.marisol.vega", authorSpokenName: "Marisol Vega", caption: "Keep my world soft, and meet interesting souls in live spaces.", placeLabel: "Mexico City", timePhrase: "2026-04-11 01:12", likeCount: 2254, commentCount: 154, shareCount: 88, meridian: .latin, musicTitle: "Cardamom After Rain"),
-        LoungeClipReel(clipKey: "clip.ellis.1", authorDeskKey: "desk.ellis.hart", authorSpokenName: "Ellis Hart", caption: "The wind off the dock still knows my name.", placeLabel: "Halifax", timePhrase: "2026-04-10 23:40", likeCount: 1802, commentCount: 96, shareCount: 41, meridian: .europe, musicTitle: "Late Tide"),
-        LoungeClipReel(clipKey: "clip.priya.1", authorDeskKey: "desk.priya.raman", authorSpokenName: "Priya Raman", caption: "Two offices, one lamp, no daylight required.", placeLabel: "London", timePhrase: "2026-04-09 21:05", likeCount: 990, commentCount: 44, shareCount: 19, meridian: .europe, musicTitle: "Two Offices"),
-        LoungeClipReel(clipKey: "clip.nadine.1", authorDeskKey: "desk.nadine.okonkwo", authorSpokenName: "Nadine Okonkwo", caption: "A phrase I will not play until morning.", placeLabel: "Lagos", timePhrase: "2026-04-08 02:18", likeCount: 1340, commentCount: 71, shareCount: 28, meridian: .africa, musicTitle: "Clay and Strings"),
-        LoungeClipReel(clipKey: "clip.sable.1", authorDeskKey: "desk.sable.quinn", authorSpokenName: "Sable Quinn", caption: "Soup is a form of sitting.", placeLabel: "Portland", timePhrase: "2026-04-07 02:02", likeCount: 640, commentCount: 33, shareCount: 12, meridian: .global, musicTitle: "Kitchen at Two"),
-        LoungeClipReel(clipKey: "clip.yara.1", authorDeskKey: "desk.yara.haddad", authorSpokenName: "Yara Haddad", caption: "Keep the roof lamp low so the city can rest.", placeLabel: "Beirut", timePhrase: "2026-04-06 00:55", likeCount: 870, commentCount: 51, shareCount: 17, meridian: .eastAsia, musicTitle: "Roof Radio"),
-        LoungeClipReel(clipKey: "clip.kohei.1", authorDeskKey: "desk.kohei.tanaka", authorSpokenName: "Kohei Tanaka", caption: "Headphones on the hook. Come sit without the microphone.", placeLabel: "Osaka", timePhrase: "2026-04-05 23:11", likeCount: 2110, commentCount: 120, shareCount: 64, meridian: .eastAsia, musicTitle: "After Sign-off"),
-        LoungeClipReel(clipKey: "clip.jonah.1", authorDeskKey: "desk.jonah.ellison", authorSpokenName: "Jonah Ellison", caption: "Forty minutes. Kind sitting. Then the board.", placeLabel: "Pittsburgh", timePhrase: "2026-04-04 19:48", likeCount: 720, commentCount: 29, shareCount: 11, meridian: .global, musicTitle: "Board Quiet"),
+        LoungeClipReel(clipKey: "clip.marisol.1", authorDeskKey: "desk.sophia.lane", authorSpokenName: "Sophia Lane", caption: "Keep my world soft, and meet interesting souls in live spaces.", placeLabel: "Lisbon", timePhrase: "2026-04-11 01:12", likeCount: 2254, commentCount: 154, shareCount: 88, meridian: .europe, musicTitle: "Cardamom After Rain"),
+        LoungeClipReel(clipKey: "clip.ellis.1", authorDeskKey: "desk.theo.miles", authorSpokenName: "Theo Miles", caption: "The wind off the dock still knows my name.", placeLabel: "Austin", timePhrase: "2026-04-10 23:40", likeCount: 1802, commentCount: 96, shareCount: 41, meridian: .global, musicTitle: "Late Tide"),
+        LoungeClipReel(clipKey: "clip.priya.1", authorDeskKey: "desk.emma.reed", authorSpokenName: "Emma Reed", caption: "Two offices, one lamp, no daylight required.", placeLabel: "Dublin", timePhrase: "2026-04-09 21:05", likeCount: 990, commentCount: 44, shareCount: 19, meridian: .europe, musicTitle: "Two Offices"),
+        LoungeClipReel(clipKey: "clip.nadine.1", authorDeskKey: "desk.luca.brooks", authorSpokenName: "Luca Brooks", caption: "A phrase I will not play until morning.", placeLabel: "Milan", timePhrase: "2026-04-08 02:18", likeCount: 1340, commentCount: 71, shareCount: 28, meridian: .europe, musicTitle: "Clay and Strings"),
+        LoungeClipReel(clipKey: "clip.sable.1", authorDeskKey: "desk.isla.west", authorSpokenName: "Isla West", caption: "Soup is a form of sitting.", placeLabel: "Edinburgh", timePhrase: "2026-04-07 02:02", likeCount: 640, commentCount: 33, shareCount: 12, meridian: .europe, musicTitle: "Kitchen at Two"),
+        LoungeClipReel(clipKey: "clip.yara.1", authorDeskKey: "desk.nora.blake", authorSpokenName: "Nora Blake", caption: "Keep the roof lamp low so the city can rest.", placeLabel: "Denver", timePhrase: "2026-04-06 00:55", likeCount: 870, commentCount: 51, shareCount: 17, meridian: .global, musicTitle: "Roof Radio"),
+        LoungeClipReel(clipKey: "clip.kohei.1", authorDeskKey: "desk.maya.rose", authorSpokenName: "Maya Rose", caption: "Headphones on the hook. Come sit without the microphone.", placeLabel: "Marseille", timePhrase: "2026-04-05 23:11", likeCount: 2110, commentCount: 120, shareCount: 64, meridian: .europe, musicTitle: "After Sign-off"),
+        LoungeClipReel(clipKey: "clip.jonah.1", authorDeskKey: "desk.jude.ford", authorSpokenName: "Jude Ford", caption: "Forty minutes. Kind sitting. Then the board.", placeLabel: "Bristol", timePhrase: "2026-04-04 19:48", likeCount: 720, commentCount: 29, shareCount: 11, meridian: .europe, musicTitle: "Board Quiet"),
     ]
 
     static let gifts: [LoungeGiftToken] = [
@@ -287,10 +288,22 @@ enum NightSocialLoungeCatalog {
                         momentKey: rec["key"] ?? UUID().uuidString,
                         deskKey: deskKey,
                         caption: rec["caption"] ?? "",
-                        useCover: false
+                        useCover: false,
+                        clipKey: nil
                     )
                 )
             }
+        }
+        for clip in clips(for: deskKey) {
+            rows.append(
+                DeskMoment(
+                    momentKey: clip.clipKey,
+                    deskKey: deskKey,
+                    caption: clip.caption,
+                    useCover: true,
+                    clipKey: clip.clipKey
+                )
+            )
         }
         if let desk = creator(deskKey: deskKey) {
             for (index, caption) in desk.clipCaptions.enumerated() {
@@ -299,7 +312,8 @@ enum NightSocialLoungeCatalog {
                         momentKey: "moment.\(deskKey).\(index)",
                         deskKey: deskKey,
                         caption: caption,
-                        useCover: index % 2 == 1
+                        useCover: index % 2 == 1,
+                        clipKey: nil
                     )
                 )
             }

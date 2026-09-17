@@ -71,7 +71,7 @@ enum NightSocialMediaAssets {
 
     static func clipCover(_ key: String, size: CGSize) -> UIImage {
         guard let clip = NightSocialLoungeCatalog.clip(clipKey: key) else { return localCover(size: size) }
-        return cover(for: clip.authorDeskKey, size: size)
+        return portrait(for: clip.authorDeskKey, size: size)
     }
 
     static func localPortrait(size: CGSize) -> UIImage {
