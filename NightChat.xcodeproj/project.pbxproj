@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -59,6 +59,7 @@
 		D30BE776B7B19853C8C91841 /* NightSocialWaveStageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70BE7158A9EBAC423D8A30D /* NightSocialWaveStageController.swift */; };
 		D52D3EE8DCA0A17AD09B6403 /* NightSocialChimeThreadBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 545CECB30CCA63B915251C7C /* NightSocialChimeThreadBoard.swift */; };
 		D9D35F14C368F9CC7248C801 /* AfterHoursPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = B77FBAD4EA204A0B519D0290 /* AfterHoursPalette.swift */; };
+		1F8A6C2D9E4B70C3A5D1829E /* NightSocialCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */; };
 		E0158B77B6735C30C7C0512E /* NightSocialPortraitIntake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CE29552CE50EBCAC6C6384 /* NightSocialPortraitIntake.swift */; };
 		E1162EA930A2493AD712AC50 /* NightSocialCommunityLampBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69B136EA75589026E0D3A88F /* NightSocialCommunityLampBoard.swift */; };
 		E43B469CE260E4DEC1CED1D1 /* AfterglowLampClothController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9BA05898CBE3E71F522DB /* AfterglowLampClothController.swift */; };
@@ -86,7 +87,7 @@
 		34A32E68B2FCF9556F3EC044 /* NightSocialChimeCallStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialChimeCallStage.swift; sourceTree = "<group>"; };
 		366A776F47330540629D034C /* NightSocialFoyerChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialFoyerChrome.swift; sourceTree = "<group>"; };
 		3672AAA2734844116C36F52F /* NightSocialLoungeChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLoungeChrome.swift; sourceTree = "<group>"; };
-		3A2434E28BF225CA9C3358F6 /* NightChat.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NightChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A2434E28BF225CA9C3358F6 /* NightChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NightChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A943A1BA782186A14044104 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3BC0DAFEDC2449349A125223 /* NightSocialDeskMirrorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialDeskMirrorController.swift; sourceTree = "<group>"; };
 		42196C00C1E2673242CFFD65 /* NightSocialChimeNoticeBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialChimeNoticeBoard.swift; sourceTree = "<group>"; };
@@ -124,10 +125,11 @@
 		B0D96B9AB63A3185FB799253 /* Outfit-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Outfit-Regular.ttf"; sourceTree = "<group>"; };
 		B0EDDA9E8B5376544D439FC2 /* NightSocialStageShellController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialStageShellController.swift; sourceTree = "<group>"; };
 		B77FBAD4EA204A0B519D0290 /* AfterHoursPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterHoursPalette.swift; sourceTree = "<group>"; };
+		C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialCopy.swift; sourceTree = "<group>"; };
 		B888E35DCF1E803592EBC0DA /* NightSocialMirrorPeopleBoards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialMirrorPeopleBoards.swift; sourceTree = "<group>"; };
 		B8E075B539E2BE2696B46B7D /* NightSocialWaveVoiceStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialWaveVoiceStage.swift; sourceTree = "<group>"; };
 		BFE1D2325A81167BE2F40BA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C9982E70A4E36569DEB8AFDE /* NightSocialMotionLoaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialMotionLoaders.swift; sourceTree = "<group>"; };
 		CFEA01497A4BCF69815FB659 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D70BE7158A9EBAC423D8A30D /* NightSocialWaveStageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialWaveStageController.swift; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 			isa = PBXGroup;
 			children = (
 				B77FBAD4EA204A0B519D0290 /* AfterHoursPalette.swift */,
+				C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */,
 				67FAD01949886FA48DBF91FE /* NightSocialMediaAssets.swift */,
 				141DD1148444064ADF10C8D4 /* Fonts */,
 			);
@@ -371,7 +374,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					E47EDA8DA780B9479DE4494F = {
 						DevelopmentTeam = JPTS6M4T5B;
@@ -388,7 +391,6 @@
 			);
 			mainGroup = 42D8D929BF7E95B0EA44265C;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -425,6 +427,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9D35F14C368F9CC7248C801 /* AfterHoursPalette.swift in Sources */,
+				1F8A6C2D9E4B70C3A5D1829E /* NightSocialCopy.swift in Sources */,
 				B89A535D573541F787B9B8A1 /* AfterglowAppDelegate.swift in Sources */,
 				E43B469CE260E4DEC1CED1D1 /* AfterglowLampClothController.swift in Sources */,
 				85AEA01C251560742970D087 /* AfterglowRootCoordinator.swift in Sources */,
@@ -529,6 +532,7 @@
 				DEVELOPMENT_TEAM = JPTS6M4T5B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -549,6 +553,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -621,6 +626,7 @@
 				DEVELOPMENT_TEAM = JPTS6M4T5B;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -634,6 +640,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;

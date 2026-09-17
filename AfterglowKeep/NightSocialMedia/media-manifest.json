@@ -116,8 +116,8 @@
       "portrait": "portrait_sophia_lane.jpg",
       "cover": "cover_sophia_lane.jpg",
       "presentation": "feminine",
-      "video": "live_sophia_lane.mp4",
-      "videoPresentation": "scenery"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.theo.miles",
@@ -125,8 +125,8 @@
       "portrait": "portrait_theo_miles.jpg",
       "cover": "cover_theo_miles.jpg",
       "presentation": "masculine",
-      "video": "live_theo_miles.mp4",
-      "videoPresentation": "masculine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.emma.reed",
@@ -134,8 +134,8 @@
       "portrait": "portrait_emma_reed.jpg",
       "cover": "cover_emma_reed.jpg",
       "presentation": "feminine",
-      "video": "live_emma_reed.mp4",
-      "videoPresentation": "feminine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.luca.brooks",
@@ -143,8 +143,8 @@
       "portrait": "portrait_luca_brooks.jpg",
       "cover": "cover_luca_brooks.jpg",
       "presentation": "masculine",
-      "video": "live_luca_brooks.mp4",
-      "videoPresentation": "masculine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.isla.west",
@@ -152,8 +152,8 @@
       "portrait": "portrait_isla_west.jpg",
       "cover": "cover_isla_west.jpg",
       "presentation": "feminine",
-      "video": "live_isla_west.mp4",
-      "videoPresentation": "feminine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.felix.hayes",
@@ -161,8 +161,8 @@
       "portrait": "portrait_faye_hayes.jpg",
       "cover": "cover_faye_hayes.jpg",
       "presentation": "feminine",
-      "video": "live_faye_hayes.mp4",
-      "videoPresentation": "feminine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.nora.blake",
@@ -170,8 +170,8 @@
       "portrait": "portrait_nora_blake.jpg",
       "cover": "cover_nora_blake.jpg",
       "presentation": "feminine",
-      "video": "live_nora_blake.mp4",
-      "videoPresentation": "feminine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.noah.rivers",
@@ -179,8 +179,8 @@
       "portrait": "portrait_noah_rivers.jpg",
       "cover": "cover_noah_rivers.jpg",
       "presentation": "masculine",
-      "video": "live_noah_rivers.mp4",
-      "videoPresentation": "masculine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.maya.rose",
@@ -188,8 +188,8 @@
       "portrait": "portrait_maya_rose.jpg",
       "cover": "cover_maya_rose.jpg",
       "presentation": "feminine",
-      "video": "live_maya_rose.mp4",
-      "videoPresentation": "feminine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.leo.gray",
@@ -197,8 +197,8 @@
       "portrait": "portrait_leo_gray.jpg",
       "cover": "cover_leo_gray.jpg",
       "presentation": "masculine",
-      "video": "live_leo_gray.mp4",
-      "videoPresentation": "masculine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.ivy.stone",
@@ -215,8 +215,8 @@
       "portrait": "portrait_jude_ford.jpg",
       "cover": "cover_jude_ford.jpg",
       "presentation": "masculine",
-      "video": "live_jude_ford.mp4",
-      "videoPresentation": "masculine"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.zoe.wells",
@@ -269,8 +269,8 @@
       "portrait": "portrait_finn_woods.jpg",
       "cover": "cover_finn_woods.jpg",
       "presentation": "masculine",
-      "video": "live_finn_woods.mp4",
-      "videoPresentation": "scenery"
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.alex.park",
