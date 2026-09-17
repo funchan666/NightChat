@@ -27,7 +27,7 @@ enum AfterHoursType {
     static func registerLampFaces() {
         guard !facesReady else { return }
         facesReady = true
-        let files = ["Syne.ttf", "Outfit-Regular.ttf", "Outfit-Medium.ttf", "Outfit-SemiBold.ttf"]
+        let files = ["Outfit-Regular.ttf", "Outfit-Medium.ttf", "Outfit-SemiBold.ttf"]
         for file in files {
             let stem = (file as NSString).deletingPathExtension
             let ext = (file as NSString).pathExtension

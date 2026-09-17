@@ -407,12 +407,11 @@
 				4F5FFB7C386CF22F43557E08 /* Assets.xcassets in Resources */,
 				C37691A84B4BD85FF711361C /* LaunchScreen.storyboard in Resources */,
 				9D37F57D6D4E1D37E7B55089 /* OFL-Outfit.txt in Resources */,
-				1AB67B9E95BA87CC2ADA6DCC /* OFL-Syne.txt in Resources */,
 				202CC513C1B25EF98C96E82F /* Outfit-Medium.ttf in Resources */,
 				34428289063AADEF523896C5 /* Outfit-Regular.ttf in Resources */,
 				0032A53DFD14E4E0A023CCBE /* Outfit-SemiBold.ttf in Resources */,
 				792255F648E079A9D5B79A90 /* PrivacyInfo.xcprivacy in Resources */,
-				6D9C346740C474B8861B7606 /* Syne.ttf in Resources */,
+
 				31338D1299CBBC1610CA8E21 /* media-manifest.json in Resources */,
 				6C6142E4C9A1ED6AA43F884A /* pics in Resources */,
 				C249A424AA84E1B0B64F3A33 /* videos in Resources */,
