@@ -592,6 +592,7 @@ final class NightSocialMirrorSupportBoard: UIViewController, UITableViewDataSour
 final class NightSocialMirrorRechargeBoard: UIViewController {
     private let pursePlate = UILabel()
     private let busy = UIActivityIndicatorView(style: .large)
+    private var pricePlates: [UILabel] = []
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
     override func viewDidLoad() {
@@ -655,11 +656,12 @@ final class NightSocialMirrorRechargeBoard: UIViewController {
                 coins.textAlignment = .center
                 coins.translatesAutoresizingMaskIntoConstraints = false
                 let price = UILabel()
-                price.text = pack.listedPrice
+                price.text = NightSocialLampStore.storePrice(for: pack) ?? " "
                 price.font = AfterHoursType.foyerCaption(12)
                 price.textColor = AfterHoursPalette.inkOnSnow
                 price.textAlignment = .center
                 price.translatesAutoresizingMaskIntoConstraints = false
+                pricePlates.append(price)
                 let name = UILabel()
                 name.text = pack.spokenTitle
                 name.font = AfterHoursType.foyerCaption(11)
@@ -754,7 +756,10 @@ final class NightSocialMirrorRechargeBoard: UIViewController {
             busy.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
         NotificationCenter.default.addObserver(self, selector: #selector(paintPurse), name: .deskDrawerDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(paintPackPrices), name: NightSocialLampStore.catalogDidChange, object: nil)
         paintPurse()
+        paintPackPrices()
+        Task { await NightSocialLampStore.refreshCatalog() }
     }
 
     deinit { NotificationCenter.default.removeObserver(self) }
@@ -763,6 +768,13 @@ final class NightSocialMirrorRechargeBoard: UIViewController {
 
     @objc private func paintPurse() {
         pursePlate.text = "\(NightSocialSessionDrawer.shared.diamondPurse)"
+    }
+
+    @objc private func paintPackPrices() {
+        for (index, pack) in NightSocialLampPack.allCases.enumerated() {
+            guard index < pricePlates.count else { continue }
+            pricePlates[index].text = NightSocialLampStore.storePrice(for: pack) ?? "—"
+        }
     }
 
     @objc private func buyPack(_ sender: UIControl) {

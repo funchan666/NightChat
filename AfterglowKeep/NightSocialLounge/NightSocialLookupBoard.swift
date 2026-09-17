@@ -22,7 +22,16 @@ final class NightSocialLookupBoard: UIViewController, UITableViewDataSource, UIT
         field.font = AfterHoursType.foyerBody(14)
         field.backgroundColor = UIColor.white.withAlphaComponent(0.10)
         field.layer.cornerRadius = 18
-        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 14, height: 36))
+        field.clearButtonMode = .whileEditing
+        field.returnKeyType = .search
+        field.autocorrectionType = .no
+        field.autocapitalizationType = .none
+        let searchWell = UIView(frame: CGRect(x: 0, y: 0, width: 36, height: 36))
+        let glass = UIImageView(image: UIImage(systemName: "magnifyingglass", withConfiguration: UIImage.SymbolConfiguration(pointSize: 13, weight: .medium)))
+        glass.tintColor = UIColor.white.withAlphaComponent(0.45)
+        glass.frame = CGRect(x: 12, y: 10, width: 16, height: 16)
+        searchWell.addSubview(glass)
+        field.leftView = searchWell
         field.leftViewMode = .always
         field.delegate = self
         field.addTarget(self, action: #selector(rewriteHits), for: .editingChanged)
@@ -33,7 +42,10 @@ final class NightSocialLookupBoard: UIViewController, UITableViewDataSource, UIT
         table.separatorStyle = .none
         table.dataSource = self
         table.delegate = self
+        table.keyboardDismissMode = .onDrag
         table.contentInsetAdjustmentBehavior = .never
+        table.rowHeight = 80
+        table.estimatedRowHeight = 80
         table.register(LookupDeskRow.self, forCellReuseIdentifier: LookupDeskRow.reuseId)
         table.translatesAutoresizingMaskIntoConstraints = false
 
@@ -67,6 +79,14 @@ final class NightSocialLookupBoard: UIViewController, UITableViewDataSource, UIT
                 || desk.musicTitle.lowercased().contains(query)
         }
         table.reloadData()
+        table.backgroundView = hits.isEmpty
+            ? NightSocialEmptyPane.tableBackdrop(spoken: "No desks match this search.")
+            : nil
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { hits.count }
