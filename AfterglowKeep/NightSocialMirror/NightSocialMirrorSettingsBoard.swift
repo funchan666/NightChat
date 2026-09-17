@@ -180,7 +180,7 @@ final class NightSocialMirrorSettingsBoard: UIViewController {
 
     @objc private func paintDesk() {
         let session = NightSocialSessionDrawer.shared.restoredSession()
-        let alias = session?.nightAlias.isEmpty == false ? session!.nightAlias : "Night guest"
+        let alias = session?.nightAlias.isEmpty == false ? session!.nightAlias : "You"
         let handle = "@\(String((session?.deskHolderId ?? "nightchat").prefix(10)))"
         deskCard.paint(
             alias: alias,

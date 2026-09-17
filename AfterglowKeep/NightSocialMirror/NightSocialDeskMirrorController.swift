@@ -427,12 +427,12 @@ final class NightSocialDeskMirrorController: UIViewController {
 
     @objc private func paintDesk() {
         let session = NightSocialSessionDrawer.shared.restoredSession()
-        let alias = session?.nightAlias.isEmpty == false ? session!.nightAlias : "Night guest"
+        let alias = session?.nightAlias.isEmpty == false ? session!.nightAlias : "You"
         namePlate.text = alias
-        handlePlate.text = "@\(String((session?.deskHolderId ?? "nightchat").prefix(10)))"
+        handlePlate.text = NightSocialSessionDrawer.handle(fromAlias: alias, fallback: session?.deskHolderId ?? "night")
         vibePlate.text = session?.nightSignature.isEmpty == false
             ? session!.nightSignature
-            : "Live bright, connect with wonderful people."
+            : "Up late with the lamp on."
         followCount.text = "\(NightSocialSessionDrawer.shared.followedDeskKeys().count)"
         fanCount.text = "\(NightSocialSessionDrawer.shared.fanDeskKeys().count)"
         friendCount.text = "\(NightSocialSessionDrawer.shared.mutualFollowDeskKeys().count)"

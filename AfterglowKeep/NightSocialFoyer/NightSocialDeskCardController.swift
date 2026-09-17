@@ -211,7 +211,9 @@ final class NightSocialDeskCardController: NightSocialWashController, PHPickerVi
 
     private func fillNameChips(_ names: [String]) {
         chipStrip.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let visible = names.isEmpty ? ["Night guest"] : names
+        let visible = names.isEmpty
+            ? ["Nia", "Jules", "Remy", "Tess"].filter { $0 != spokenNameField.text }
+            : names
         for spoken in visible {
             var config = UIButton.Configuration.filled()
             config.title = spoken

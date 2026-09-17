@@ -141,6 +141,7 @@ final class NightSocialSessionDrawer {
         if liveSession?.deskCardCompleted == true {
             defaults.set(true, forKey: DrawerSlot.seatedFlag)
         }
+        polishNightAliasIfNeeded()
     }
 
     func restoredSession() -> NightSocialStageSession? {
@@ -218,7 +219,8 @@ final class NightSocialSessionDrawer {
             defaults.set(true, forKey: DrawerSlot.seatedFlag)
             return
         }
-        let spoken = Self.spokenName(fromMailbox: trimmedMail)
+        var spoken = Self.spokenName(fromMailbox: trimmedMail)
+        if Self.isTemplateAlias(spoken) { spoken = Self.freshAlias(from: trimmedMail) }
         let card = NightSocialStageSession(
             deskHolderId: UUID().uuidString,
             mailboxAddress: trimmedMail,
@@ -759,15 +761,57 @@ final class NightSocialSessionDrawer {
     }
 
     static func spokenName(fromMailbox mailbox: String) -> String {
-        let local = mailbox.split(separator: "@").first.map(String.init) ?? "Guest"
-        let cleaned = local.replacingOccurrences(of: "[^A-Za-z0-9]+", with: " ", options: .regularExpression)
-        let trimmed = NightSocialFoyerGuard.trimmed(cleaned)
-        guard !trimmed.isEmpty else { return "Night guest" }
-        return trimmed
-            .split(separator: " ")
-            .map { part in
-                part.prefix(1).uppercased() + part.dropFirst().lowercased()
-            }
-            .joined(separator: " ")
+        let local = mailbox.split(separator: "@").first.map(String.init) ?? ""
+        let tokens = local.lowercased().split { !$0.isLetter }.map(String.init)
+        let skip: Set<String> = ["qa", "test", "user", "admin", "app", "mail", "desk", "night", "chat", "nightchat"]
+        let picked = tokens.first { token in
+            token.count >= 3 && token.count <= 12 && !skip.contains(token)
+        } ?? tokens.first { $0.count >= 3 }
+        guard let picked else { return freshAlias(from: mailbox) }
+        let titled = picked.prefix(1).uppercased() + picked.dropFirst()
+        return isTemplateAlias(titled) ? freshAlias(from: mailbox) : titled
     }
+
+    static func isTemplateAlias(_ name: String) -> Bool {
+        let n = NightSocialFoyerGuard.trimmed(name).lowercased()
+        if n.isEmpty { return true }
+        let banned: Set<String> = [
+            "night guest", "guest", "user", "test", "admin", "luna", "nova",
+            "nightchat", "night chat", "qa", "demo",
+        ]
+        if banned.contains(n) { return true }
+        if n.contains("-") || n.contains("_") { return true }
+        if n.contains("desk") || n.contains("qa") { return true }
+        return false
+    }
+
+    static func freshAlias(from seed: String) -> String {
+        let pool = ["Nia", "Jules", "Remy", "Arlo", "Tess", "Nico", "Noor", "Kit", "Sol", "Indi", "Pax", "Vale", "Ash", "Rowan", "Sky"]
+        let total = seed.utf8.reduce(0) { ($0 &* 33) &+ Int($1) }
+        return pool[abs(total) % pool.count]
+    }
+
+    static func handle(fromAlias alias: String, fallback: String) -> String {
+        let letters = alias.lowercased().filter(\.isLetter)
+        if letters.count >= 3 { return "@" + letters }
+        let tail = fallback.lowercased().filter(\.isLetterOrNumber).suffix(6)
+        return "@n" + tail
+    }
+
+    func polishNightAliasIfNeeded() {
+        guard var card = restoredSession() else { return }
+        if Self.isTemplateAlias(card.nightAlias) {
+            let fromMail = Self.spokenName(fromMailbox: card.mailboxAddress)
+            card.nightAlias = Self.isTemplateAlias(fromMail) ? Self.freshAlias(from: card.deskHolderId) : fromMail
+            persist(card)
+        }
+        if Self.isTemplateAlias(card.stageSpokenName) {
+            card.stageSpokenName = card.nightAlias
+            persist(card)
+        }
+    }
+}
+
+private extension Character {
+    var isLetterOrNumber: Bool { isLetter || isNumber }
 }

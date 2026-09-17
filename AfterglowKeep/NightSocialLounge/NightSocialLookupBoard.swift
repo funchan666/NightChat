@@ -70,7 +70,7 @@ final class NightSocialLookupBoard: UIViewController, UITableViewDataSource, UIT
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { hits.count }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 72 }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat { 80 }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: LookupDeskRow.reuseId, for: indexPath) as! LookupDeskRow
         cell.paint(hits[indexPath.row])
@@ -86,67 +86,80 @@ final class LookupDeskRow: UITableViewCell {
     static let reuseId = "LookupDeskRow"
     private let portrait = UIImageView()
     private let namePlate = UILabel()
-    private let handlePlate = UILabel()
+    private let metaPlate = UILabel()
     private let liveMark = UIImageView()
-    private var levelWrap: UIView?
+    private let levelHost = UIView()
+    private let chevron = UIImageView(image: UIImage(systemName: "chevron.right", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)))
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         selectionStyle = .none
         portrait.contentMode = .scaleAspectFill
-        portrait.layer.cornerRadius = 22
+        portrait.layer.cornerRadius = 24
         portrait.clipsToBounds = true
         portrait.translatesAutoresizingMaskIntoConstraints = false
-        namePlate.font = AfterHoursType.foyerPill(15)
+        namePlate.font = AfterHoursType.foyerPill(16)
         namePlate.textColor = .white
+        namePlate.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         namePlate.translatesAutoresizingMaskIntoConstraints = false
-        handlePlate.font = AfterHoursType.foyerCaption(11)
-        handlePlate.textColor = UIColor.white.withAlphaComponent(0.65)
-        handlePlate.translatesAutoresizingMaskIntoConstraints = false
+        metaPlate.font = AfterHoursType.foyerCaption(12)
+        metaPlate.textColor = UIColor.white.withAlphaComponent(0.58)
+        metaPlate.lineBreakMode = .byTruncatingTail
+        metaPlate.translatesAutoresizingMaskIntoConstraints = false
         liveMark.image = NightSocialImageCabinet.named("LiveBadge", fallback: "LiveBadge")
         liveMark.contentMode = .scaleAspectFit
+        liveMark.setContentCompressionResistancePriority(.required, for: .horizontal)
         liveMark.translatesAutoresizingMaskIntoConstraints = false
-        let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
-        chevron.tintColor = UIColor.white.withAlphaComponent(0.5)
+        levelHost.translatesAutoresizingMaskIntoConstraints = false
+        chevron.tintColor = UIColor.white.withAlphaComponent(0.35)
         chevron.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(portrait)
         contentView.addSubview(namePlate)
-        contentView.addSubview(handlePlate)
+        contentView.addSubview(metaPlate)
         contentView.addSubview(liveMark)
+        contentView.addSubview(levelHost)
         contentView.addSubview(chevron)
         NSLayoutConstraint.activate([
             portrait.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             portrait.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            portrait.widthAnchor.constraint(equalToConstant: 44),
-            portrait.heightAnchor.constraint(equalToConstant: 44),
-            namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 10),
-            namePlate.topAnchor.constraint(equalTo: portrait.topAnchor, constant: 2),
-            handlePlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
-            handlePlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 2),
+            portrait.widthAnchor.constraint(equalToConstant: 48),
+            portrait.heightAnchor.constraint(equalToConstant: 48),
+            chevron.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            chevron.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            chevron.widthAnchor.constraint(equalToConstant: 10),
+            levelHost.trailingAnchor.constraint(equalTo: chevron.leadingAnchor, constant: -10),
+            levelHost.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
+            levelHost.widthAnchor.constraint(equalToConstant: 52),
+            levelHost.heightAnchor.constraint(equalToConstant: 18),
+            namePlate.leadingAnchor.constraint(equalTo: portrait.trailingAnchor, constant: 12),
+            namePlate.topAnchor.constraint(equalTo: portrait.topAnchor, constant: 4),
             liveMark.leadingAnchor.constraint(equalTo: namePlate.trailingAnchor, constant: 8),
             liveMark.centerYAnchor.constraint(equalTo: namePlate.centerYAnchor),
             liveMark.widthAnchor.constraint(equalToConstant: 40),
             liveMark.heightAnchor.constraint(equalToConstant: 16),
-            chevron.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            chevron.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            liveMark.trailingAnchor.constraint(lessThanOrEqualTo: levelHost.leadingAnchor, constant: -8),
+            metaPlate.leadingAnchor.constraint(equalTo: namePlate.leadingAnchor),
+            metaPlate.topAnchor.constraint(equalTo: namePlate.bottomAnchor, constant: 5),
+            metaPlate.trailingAnchor.constraint(equalTo: levelHost.leadingAnchor, constant: -8),
         ])
     }
 
     required init?(coder: NSCoder) { nil }
 
     func paint(_ desk: LoungeCreatorDesk) {
-        portrait.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 120, height: 120))
-        namePlate.text = "\(desk.spokenName)  \(desk.cityLabel)"
-        handlePlate.text = "\(desk.handleTag)  \(desk.vibeLine)"
+        portrait.image = NightSocialMediaAssets.portrait(for: desk.deskKey, size: CGSize(width: 144, height: 144))
+        namePlate.text = desk.spokenName
+        metaPlate.text = "\(desk.handleTag)  ·  \(desk.cityLabel)"
         liveMark.isHidden = !desk.isLive
-        levelWrap?.removeFromSuperview()
+        levelHost.subviews.forEach { $0.removeFromSuperview() }
         let level = NightSocialLoungeChrome.mintLevelPlate(desk.levelMark)
-        levelWrap = level
-        contentView.addSubview(level)
+        levelHost.addSubview(level)
         NSLayoutConstraint.activate([
-            level.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -36),
-            level.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            level.topAnchor.constraint(equalTo: levelHost.topAnchor),
+            level.leadingAnchor.constraint(equalTo: levelHost.leadingAnchor),
+            level.trailingAnchor.constraint(equalTo: levelHost.trailingAnchor),
+            level.bottomAnchor.constraint(equalTo: levelHost.bottomAnchor),
         ])
     }
 }
