@@ -168,15 +168,15 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         case .party:
             bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerHosts", fallback: "PartyBannerHosts"), seats: liveHosts)
             bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerOpen", fallback: "PartyBannerOpen"), seats: Array(liveHosts.dropFirst(1)))
-            headPlate.text = "Live voice rooms"
+            headPlate.text = NightLang.t(.liveVoiceRooms)
         case .follow:
             bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerFollow", fallback: "PartyBannerFollow"), seats: followHosts)
             bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerSoon", fallback: "PartyBannerSoon"), seats: followHosts)
-            headPlate.text = "Followed rooms"
+            headPlate.text = NightLang.t(.followedRooms)
         case .recent:
             bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerRecent", fallback: "PartyBannerRecent"), seats: recentHosts)
             bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerActive", fallback: "PartyBannerActive"), seats: recentHosts)
-            headPlate.text = "Recently joined"
+            headPlate.text = NightLang.t(.recentlyJoined)
         }
     }
 
@@ -201,19 +201,19 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         }
         if partyLane == .party { rows.insert(contentsOf: extra, at: 0) }
         countPlate.text = partyLane == .recent
-            ? "\(rows.count) rooms you visited recently"
+            ? NightLang.format(.roomsRecent, rows.count)
             : partyLane == .follow
-                ? "\(rows.count) rooms from creators you follow"
-                : "\(rows.count) active rooms"
+                ? NightLang.format(.roomsFollow, rows.count)
+                : NightLang.format(.roomsActive, rows.count)
         paintBanners()
         table.reloadData()
         table.backgroundView = rows.isEmpty
             ? NightSocialEmptyPane.tableBackdrop(
                 spoken: partyLane == .follow
-                    ? "No followed rooms yet."
+                    ? NightLang.t(.noFollowedRooms)
                     : partyLane == .recent
-                        ? "No recent rooms yet."
-                        : "No live rooms right now.",
+                        ? NightLang.t(.noRecentRooms)
+                        : NightLang.t(.noLiveRooms),
                 lift: -36
             )
             : nil

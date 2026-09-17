@@ -22,8 +22,8 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         view.insetsLayoutMarginsFromSafeArea = false
         navigationController?.setNavigationBarHidden(true, animated: false)
 
-        messageMark.setTitle("Message", for: .normal)
-        followMark.setTitle("Following", for: .normal)
+        messageMark.setTitle(NightLang.t(.message), for: .normal)
+        followMark.setTitle(NightLang.t(.following), for: .normal)
         messageMark.addTarget(self, action: #selector(showMessages), for: .touchUpInside)
         followMark.addTarget(self, action: #selector(showFollow), for: .touchUpInside)
         let compose = UIButton(type: .system)
@@ -50,7 +50,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         friendsRow.addSubview(friendsStack)
 
         let chatHead = UILabel()
-        chatHead.text = "Chat with friends"
+        chatHead.text = NightLang.t(.chatWithFriends)
         chatHead.font = AfterHoursType.foyerPill(16)
         chatHead.textColor = .white
         chatHead.translatesAutoresizingMaskIntoConstraints = false
@@ -166,8 +166,8 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         guard showingEmpty else { return }
         let empty = NightSocialEmptyPane(
             spoken: showingFollow
-                ? "Follows you start sit here.\nNobody is auto-followed."
-                : "No chats yet.\nOpen a desk, then send a line after you follow each other."
+                ? NightLang.t(.noFollowsYet)
+                : NightLang.t(.noChatsYet)
         )
         empty.tag = 77
         view.addSubview(empty)

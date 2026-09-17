@@ -97,7 +97,7 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
         dockWash.endPoint = CGPoint(x: 1, y: 0.5)
         dock.layer.insertSublayer(dockWash, at: 0)
         field.attributedPlaceholder = NSAttributedString(
-            string: "Tell me your opinion...",
+            string: NightLang.t(.tellOpinion),
             attributes: [.foregroundColor: UIColor.white.withAlphaComponent(0.72), .font: AfterHoursType.foyerBody(14)]
         )
         field.textColor = .white
@@ -107,7 +107,7 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
         field.leftViewMode = .always
         field.translatesAutoresizingMaskIntoConstraints = false
         let send = UIButton(type: .custom)
-        send.setTitle("SEND", for: .normal)
+        send.setTitle(NightLang.t(.send), for: .normal)
         send.setTitleColor(.white, for: .normal)
         send.titleLabel?.font = AfterHoursType.foyerPill(13)
         send.backgroundColor = AfterHoursPalette.inkOnSnow
@@ -300,13 +300,13 @@ final class NightSocialChimeThreadMoreSheet: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = AfterHoursPalette.loungeCard
         let title = UILabel()
-        title.text = "More"
+        title.text = NightLang.t(.more)
         title.font = AfterHoursType.foyerHeadline(22)
         title.textColor = .white
         title.translatesAutoresizingMaskIntoConstraints = false
-        let clear = makeRow(title: "Delete conversation", symbol: "trash.fill", tint: AfterHoursPalette.loungePink)
+        let clear = makeRow(title: NightLang.t(.deleteConversation), symbol: "trash.fill", tint: AfterHoursPalette.loungePink)
         clear.addTarget(self, action: #selector(clearChat), for: .touchUpInside)
-        let cancel = NightSocialLoungeChrome.ghostPill(title: "Cancel")
+        let cancel = NightSocialLoungeChrome.ghostPill(title: NightLang.t(.cancel))
         cancel.addTarget(self, action: #selector(fold), for: .touchUpInside)
         view.addSubview(title)
         view.addSubview(clear)
