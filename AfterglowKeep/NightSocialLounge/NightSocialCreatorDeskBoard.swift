@@ -207,7 +207,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        paintPosts()
+        updateCollectionHeight()
     }
 
     private func reloadClips() {
@@ -220,15 +220,22 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
         let empty = clips.isEmpty
         emptyPane.isHidden = !empty
         collection.isHidden = empty
-        guard !empty else {
-            collectionHeight.constant = 220
+        collection.reloadData()
+        updateCollectionHeight()
+    }
+
+    private func updateCollectionHeight() {
+        guard !clips.isEmpty else {
+            if collectionHeight.constant != 220 { collectionHeight.constant = 220 }
             return
         }
         let width = max(120, (view.bounds.width - 42) / 2)
         let height = width * 1.32
         let rows = ceil(CGFloat(clips.count) / 2)
-        collectionHeight.constant = rows * height + max(0, rows - 1) * 10
-        collection.reloadData()
+        let next = rows * height + max(0, rows - 1) * 10
+        if abs(collectionHeight.constant - next) > 0.5 {
+            collectionHeight.constant = next
+        }
     }
 
     private func styleActionPill(_ pill: UIButton, title: String, symbol: String) {
