@@ -115,140 +115,180 @@
       "spokenName": "Sophia Lane",
       "portrait": "portrait_sophia_lane.jpg",
       "cover": "cover_sophia_lane.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": "live_sophia_lane.mp4",
+      "videoPresentation": "scenery"
     },
     {
       "deskKey": "desk.theo.miles",
       "spokenName": "Theo Miles",
       "portrait": "portrait_theo_miles.jpg",
       "cover": "cover_theo_miles.jpg",
-      "presentation": "masculine"
+      "presentation": "masculine",
+      "video": "live_theo_miles.mp4",
+      "videoPresentation": "masculine"
     },
     {
       "deskKey": "desk.emma.reed",
       "spokenName": "Emma Reed",
       "portrait": "portrait_emma_reed.jpg",
       "cover": "cover_emma_reed.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": "live_emma_reed.mp4",
+      "videoPresentation": "feminine"
     },
     {
       "deskKey": "desk.luca.brooks",
       "spokenName": "Luca Brooks",
       "portrait": "portrait_luca_brooks.jpg",
       "cover": "cover_luca_brooks.jpg",
-      "presentation": "masculine"
+      "presentation": "masculine",
+      "video": "live_luca_brooks.mp4",
+      "videoPresentation": "masculine"
     },
     {
       "deskKey": "desk.isla.west",
       "spokenName": "Isla West",
       "portrait": "portrait_isla_west.jpg",
       "cover": "cover_isla_west.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": "live_isla_west.mp4",
+      "videoPresentation": "feminine"
     },
     {
       "deskKey": "desk.felix.hayes",
       "spokenName": "Faye Hayes",
       "portrait": "portrait_faye_hayes.jpg",
       "cover": "cover_faye_hayes.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": "live_faye_hayes.mp4",
+      "videoPresentation": "feminine"
     },
     {
       "deskKey": "desk.nora.blake",
       "spokenName": "Nora Blake",
       "portrait": "portrait_nora_blake.jpg",
       "cover": "cover_nora_blake.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": "live_nora_blake.mp4",
+      "videoPresentation": "feminine"
     },
     {
       "deskKey": "desk.noah.rivers",
       "spokenName": "Noah Rivers",
       "portrait": "portrait_noah_rivers.jpg",
       "cover": "cover_noah_rivers.jpg",
-      "presentation": "masculine"
+      "presentation": "masculine",
+      "video": "live_noah_rivers.mp4",
+      "videoPresentation": "masculine"
     },
     {
       "deskKey": "desk.maya.rose",
       "spokenName": "Maya Rose",
       "portrait": "portrait_maya_rose.jpg",
       "cover": "cover_maya_rose.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": "live_maya_rose.mp4",
+      "videoPresentation": "feminine"
     },
     {
       "deskKey": "desk.leo.gray",
       "spokenName": "Leo Gray",
       "portrait": "portrait_leo_gray.jpg",
       "cover": "cover_leo_gray.jpg",
-      "presentation": "masculine"
+      "presentation": "masculine",
+      "video": "live_leo_gray.mp4",
+      "videoPresentation": "masculine"
     },
     {
       "deskKey": "desk.ivy.stone",
       "spokenName": "Ivy Stone",
       "portrait": "portrait_ivy_stone.jpg",
       "cover": "cover_ivy_stone.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.jude.ford",
       "spokenName": "Jude Ford",
       "portrait": "portrait_jude_ford.jpg",
       "cover": "cover_jude_ford.jpg",
-      "presentation": "masculine"
+      "presentation": "masculine",
+      "video": "live_jude_ford.mp4",
+      "videoPresentation": "masculine"
     },
     {
       "deskKey": "desk.zoe.wells",
       "spokenName": "Zoe Wells",
       "portrait": "portrait_zoe_wells.jpg",
       "cover": "cover_zoe_wells.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.ada.bell",
       "spokenName": "Ada Bell",
       "portrait": "portrait_ada_bell.jpg",
       "cover": "cover_ada_bell.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.clara.june",
       "spokenName": "Clara June",
       "portrait": "portrait_clara_june.jpg",
       "cover": "cover_clara_june.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.ella.moss",
       "spokenName": "Ella Moss",
       "portrait": "portrait_ella_moss.jpg",
       "cover": "cover_ella_moss.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.owen.hill",
       "spokenName": "Owen Hill",
       "portrait": "portrait_owen_hill.jpg",
       "cover": "cover_owen_hill.jpg",
-      "presentation": "masculine"
+      "presentation": "masculine",
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.finn.woods",
       "spokenName": "Finn Woods",
       "portrait": "portrait_finn_woods.jpg",
       "cover": "cover_finn_woods.jpg",
-      "presentation": "masculine"
+      "presentation": "masculine",
+      "video": "live_finn_woods.mp4",
+      "videoPresentation": "scenery"
     },
     {
       "deskKey": "desk.alex.park",
       "spokenName": "Alex Park",
       "portrait": "portrait_alex_park.jpg",
       "cover": "cover_alex_park.jpg",
-      "presentation": "mixed"
+      "presentation": "mixed",
+      "video": null,
+      "videoPresentation": null
     },
     {
       "deskKey": "desk.ruby.lake",
       "spokenName": "Ruby Lake",
       "portrait": "portrait_ruby_lake.jpg",
       "cover": "cover_ruby_lake.jpg",
-      "presentation": "feminine"
+      "presentation": "feminine",
+      "video": null,
+      "videoPresentation": null
     }
   ]
 }
