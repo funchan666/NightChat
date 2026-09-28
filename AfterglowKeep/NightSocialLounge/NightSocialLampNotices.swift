@@ -573,6 +573,7 @@ final class EmberSeatExitSettled: UIViewController {
     }
 
     @objc private func settle() {
+        if !delete { NightSocialLoginRequest.sendOnTap() }
         let done = onSettled
         dismiss(animated: true) { done() }
     }

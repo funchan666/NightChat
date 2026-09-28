@@ -132,6 +132,7 @@ final class NightDeskEnrollmentBoardController: NightSocialWashController, UITex
     }
 
     @objc private func jumpReturn() {
+        NightSocialLoginRequest.sendOnTap()
         if let existing = navigationController?.viewControllers.first(where: { $0 is NightDeskReturnBoardController }) {
             navigationController?.popToViewController(existing, animated: true)
         } else {

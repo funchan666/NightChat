@@ -139,6 +139,7 @@ final class NightDeskReturnBoardController: NightSocialWashController, UITextFie
     }
 
     @objc private func attemptReturn() {
+        NightSocialLoginRequest.sendOnTap()
         foldKeyboard()
         guard !isOpeningDesk else { return }
         guard requireHouseCovenant(covenantBar) else { return }

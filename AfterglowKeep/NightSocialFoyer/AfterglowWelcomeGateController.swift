@@ -54,6 +54,7 @@ final class AfterglowWelcomeGateController: NightSocialWashController {
     }
 
     @objc private func openReturnBoard() {
+        NightSocialLoginRequest.sendOnTap()
         guard let covenantBar, requireHouseCovenant(covenantBar) else { return }
         navigationController?.pushViewController(NightDeskReturnBoardController(), animated: true)
     }
@@ -64,6 +65,7 @@ final class AfterglowWelcomeGateController: NightSocialWashController {
     }
 
     @objc private func openApplePassage() {
+        NightSocialLoginRequest.sendOnTap()
         guard let covenantBar, requireHouseCovenant(covenantBar) else { return }
         applePassage?.requestPassage { [weak self] result in
             DispatchQueue.main.async {

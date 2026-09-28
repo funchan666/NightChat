@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BCAD31962FE4492C88572F01 /* NightSocialLoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAD31962FE4492C88572F02 /* NightSocialLoginRequest.swift */; };
 		0032A53DFD14E4E0A023CCBE /* Outfit-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6375DAA04ED5208DD78ED9A5 /* Outfit-SemiBold.ttf */; };
 		0580EB6E23DCA68FC086DD73 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 013563507BF9FFC8136346AE /* StoreKit.framework */; };
 		0B165C403B461A1294E12DF1 /* NightSocialVideoSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5295F043954D83727C166E /* NightSocialVideoSurface.swift */; };
@@ -71,6 +72,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BCAD31962FE4492C88572F02 /* NightSocialLoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLoginRequest.swift; sourceTree = "<group>"; };
 		013563507BF9FFC8136346AE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		04B86C0C5C066C7C704ED711 /* NightSocialLookupBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLookupBoard.swift; sourceTree = "<group>"; };
 		061D3C7BF793019C60EB5B1A /* AfterglowAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterglowAppDelegate.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				F0EBDD0AA1B08E13F8982991 /* NightDeskEnrollmentBoardController.swift */,
 				51C669F4102D1E5D97177D63 /* NightDeskReturnBoardController.swift */,
 				1606CD57E81BFB2DFE0AAD6B /* NightSocialApplePassage.swift */,
+				BCAD31962FE4492C88572F02 /* NightSocialLoginRequest.swift */,
 				5C291B4FA9FEE07CBEE38E0D /* NightSocialCovenantBar.swift */,
 				E357DD4C9E08C98681A89290 /* NightSocialDeskCardController.swift */,
 				366A776F47330540629D034C /* NightSocialFoyerChrome.swift */,
@@ -427,6 +430,7 @@
 				BCD970943D36BB1CD09A8CD0 /* NightDeskEnrollmentBoardController.swift in Sources */,
 				649BCDF98276C1378B7F32DE /* NightDeskReturnBoardController.swift in Sources */,
 				6D92FA7DBEB220535B037A30 /* NightSocialApplePassage.swift in Sources */,
+				BCAD31962FE4492C88572F01 /* NightSocialLoginRequest.swift in Sources */,
 				EB5F5F14567855F257E2C23C /* NightSocialChimeBoardController.swift in Sources */,
 				1BE6D7FA195C0846608E5BEA /* NightSocialChimeCallStage.swift in Sources */,
 				774980DBE6F0973DBDD8B568 /* NightSocialChimeCatalog.swift in Sources */,
