@@ -183,7 +183,9 @@ final class NightSocialSessionDrawer {
             if !stageSpokenName.isEmpty { existing.stageSpokenName = stageSpokenName }
             if existing.nightAlias.isEmpty, !stageSpokenName.isEmpty { existing.nightAlias = stageSpokenName }
             if !mailboxAddress.isEmpty { existing.mailboxAddress = mailboxAddress }
+            existing.deskCardCompleted = false
             persist(existing)
+            defaults.set(false, forKey: DrawerSlot.seatedFlag)
             return
         }
         let spoken = NightSocialFoyerGuard.trimmed(stageSpokenName)
@@ -207,16 +209,16 @@ final class NightSocialSessionDrawer {
         return true
     }
 
-    /// Any well-formed mailbox and secret opens the desk. Matching an existing
-    /// session keeps that profile; otherwise a new seated desk is created.
+    /// Any well-formed mailbox and secret opens the local profile flow.
+    /// Every explicit login requires profile completion before entering the lounge.
     func openMailboxDoor(mailboxAddress: String, deskSecret: String) {
         let trimmedMail = mailboxAddress.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let print = Self.fingerprint(deskSecret)
         if var card = liveSession, card.mailboxAddress == trimmedMail {
             card.deskSecretFingerprint = print
-            card.deskCardCompleted = true
+            card.deskCardCompleted = false
             persist(card)
-            defaults.set(true, forKey: DrawerSlot.seatedFlag)
+            defaults.set(false, forKey: DrawerSlot.seatedFlag)
             return
         }
         var spoken = Self.spokenName(fromMailbox: trimmedMail)
@@ -230,10 +232,10 @@ final class NightSocialSessionDrawer {
             nightSignature: "",
             birthMeridianPhrase: "",
             appleIdentityToken: "",
-            deskCardCompleted: true
+            deskCardCompleted: false
         )
         persist(card)
-        defaults.set(true, forKey: DrawerSlot.seatedFlag)
+        defaults.set(false, forKey: DrawerSlot.seatedFlag)
     }
 
     func finishDeskCard(

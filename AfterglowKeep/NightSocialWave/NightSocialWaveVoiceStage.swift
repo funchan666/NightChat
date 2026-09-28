@@ -835,3 +835,18 @@ final class NightSocialVoiceMoreSheet: UIViewController {
         }
     }
 }
+
+extension NightSocialWaveVoiceStage: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideDesk(chamber.hostDeskKey)
+    }
+
+    func prepareForSafetyRemoval() {
+        chatter?.invalidate()
+        speakTimer?.invalidate()
+        if NightSocialSessionDrawer.shared.seatedChamberSeat()?.0 == chamberKey {
+            NightSocialSessionDrawer.shared.clearSeatedChamber()
+        }
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
+}

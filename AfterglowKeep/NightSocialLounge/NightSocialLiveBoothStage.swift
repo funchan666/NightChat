@@ -1296,3 +1296,9 @@ final class NightSocialHostCardSheet: UIViewController {
         NightSocialDeskGate.revealDesk(from: self, deskKey: booth.hostDeskKey)
     }
 }
+
+extension NightSocialLiveBoothStage: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideDesk(NightSocialLoungeCatalog.booth(boothKey: boothKey)?.hostDeskKey ?? "")
+    }
+}

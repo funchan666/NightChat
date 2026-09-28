@@ -24,18 +24,78 @@ enum NightSocialReportKind: String, CaseIterable {
     case other = "Other"
 }
 
+protocol NightSocialSafetyContent: AnyObject {
+    var isHiddenBySafetyAction: Bool { get }
+    func prepareForSafetyRemoval()
+}
+
+extension NightSocialSafetyContent {
+    func prepareForSafetyRemoval() {}
+}
+
 enum NightSocialSafetyFlow {
     static func presentChooser(from host: UIViewController, target: NightSocialSafetyTarget) {
-        host.present(NightSocialSafetySheet(target: target), animated: true)
+        let sheet = NightSocialSafetySheet(target: target)
+        sheet.sourceController = host
+        host.present(sheet, animated: true)
     }
 
     static func presentReportKinds(from host: UIViewController, target: NightSocialSafetyTarget) {
-        host.present(NightSocialReportKindBoard(target: target), animated: true)
+        let sheet = NightSocialReportKindBoard(target: target)
+        sheet.sourceController = host
+        host.present(sheet, animated: true)
+    }
+
+    static func complete(from sheet: UIViewController, source: UIViewController?,
+                         blocked: Bool, save: @escaping () -> Void) {
+        // UIKit may promote the presentation to a navigation controller.
+        // Keep the actual content controller for the return destination.
+        guard let presenter = source ?? sheet.presentingViewController else { return }
+        let host = (presenter as? UINavigationController)?.visibleViewController ?? presenter
+        sheet.dismiss(animated: true) {
+            save()
+            let finish = { returnToVisibleContent(from: host) }
+            if blocked {
+                NightSocialLampNotices.presentBlockSettled(from: host, then: finish)
+            } else {
+                NightSocialLampNotices.presentReportSettled(from: host, then: finish)
+            }
+        }
+    }
+
+    private static func returnToVisibleContent(from host: UIViewController) {
+        let navigation = host.navigationController
+            ?? (host.presentingViewController as? UINavigationController)
+            ?? host.presentingViewController?.navigationController
+        let finish = {
+            if let navigation {
+                let visible = navigation.viewControllers.filter {
+                    guard let content = $0 as? NightSocialSafetyContent,
+                          content.isHiddenBySafetyAction else { return true }
+                    content.prepareForSafetyRemoval()
+                    return false
+                }
+                if !visible.isEmpty, visible.count != navigation.viewControllers.count {
+                    navigation.setViewControllers(visible, animated: true)
+                }
+            }
+            NotificationCenter.default.post(name: .deskDrawerDidChange,
+                                            object: NightSocialSessionDrawer.shared)
+        }
+        if host.navigationController == nil,
+           (host as? NightSocialSafetyContent)?.isHiddenBySafetyAction == true,
+           host.presentingViewController != nil {
+            host.dismiss(animated: true, completion: finish)
+        } else {
+            finish()
+        }
     }
 }
 
-final class NightSocialSafetySheet: UIViewController {
+final class NightSocialSafetySheet: UIViewController, UIGestureRecognizerDelegate {
     private let target: NightSocialSafetyTarget
+    weak var sourceController: UIViewController?
+    private var isFinishing = false
     init(target: NightSocialSafetyTarget) {
         self.target = target
         super.init(nibName: nil, bundle: nil)
@@ -85,35 +145,40 @@ final class NightSocialSafetySheet: UIViewController {
             row.heightAnchor.constraint(equalToConstant: 92),
         ])
         let dimTap = UITapGestureRecognizer(target: self, action: #selector(fold))
+        dimTap.delegate = self
         dimTap.cancelsTouchesInView = false
         view.addGestureRecognizer(dimTap)
     }
 
-    @objc private func fold() { dismiss(animated: true) }
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        touch.view === view
+    }
+
+    @objc private func fold() {
+        guard !isFinishing else { return }
+        dismiss(animated: true)
+    }
 
     @objc private func blockDesk() {
+        guard !isFinishing else { return }
         let key = target.deskKey
         guard !key.isEmpty else {
             dismiss(animated: true)
             return
         }
-        NightSocialSessionDrawer.shared.blockDesk(key)
-        let host = presentingViewController
-        dismiss(animated: true) {
-            guard let host else { return }
-            NightSocialLampNotices.presentBlockSettled(from: host) {
-                if host is NightSocialCreatorDeskBoard {
-                    host.navigationController?.popViewController(animated: true)
-                } else if host is NightSocialClipTheater {
-                    host.navigationController?.popViewController(animated: true)
-                }
-            }
+        isFinishing = true
+        view.isUserInteractionEnabled = false
+        NightSocialSafetyFlow.complete(from: self, source: sourceController, blocked: true) {
+            NightSocialSessionDrawer.shared.blockDesk(key)
         }
     }
 
     @objc private func reportDesk() {
+        guard !isFinishing else { return }
+        isFinishing = true
+        view.isUserInteractionEnabled = false
         let target = self.target
-        let host = presentingViewController
+        let host = sourceController ?? presentingViewController
         dismiss(animated: true) {
             guard let host else { return }
             NightSocialSafetyFlow.presentReportKinds(from: host, target: target)
@@ -125,6 +190,8 @@ final class NightSocialReportKindBoard: UIViewController, UITableViewDataSource,
     private let target: NightSocialSafetyTarget
     private var picked: NightSocialReportKind = .harassment
     private let table = UITableView()
+    weak var sourceController: UIViewController?
+    private var isFinishing = false
 
     init(target: NightSocialSafetyTarget) {
         self.target = target
@@ -206,27 +273,19 @@ final class NightSocialReportKindBoard: UIViewController, UITableViewDataSource,
         tableView.reloadData()
     }
 
-    @objc private func fold() { dismiss(animated: true) }
+    @objc private func fold() {
+        guard !isFinishing else { return }
+        dismiss(animated: true)
+    }
 
     @objc private func submit() {
-        NightSocialSessionDrawer.shared.rememberReport(target, kind: picked)
-        let host = presentingViewController
-        dismiss(animated: true) {
-            guard let host else { return }
-            NightSocialLampNotices.presentReportSettled(from: host) {
-                switch self.target {
-                case .desk:
-                    if host is NightSocialCreatorDeskBoard {
-                        host.navigationController?.popViewController(animated: true)
-                    }
-                case .clip:
-                    if host is NightSocialClipTheater {
-                        host.navigationController?.popViewController(animated: true)
-                    }
-                case .comment:
-                    break
-                }
-            }
+        guard !isFinishing else { return }
+        isFinishing = true
+        view.isUserInteractionEnabled = false
+        let target = self.target
+        let kind = picked
+        NightSocialSafetyFlow.complete(from: self, source: sourceController, blocked: false) {
+            NightSocialSessionDrawer.shared.rememberReport(target, kind: kind)
         }
     }
 }

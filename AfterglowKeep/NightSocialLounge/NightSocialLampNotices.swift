@@ -34,8 +34,10 @@ private func lampDimCloth() -> UIColor {
     UIColor(red: 0.07, green: 0.02, blue: 0.08, alpha: 0.62)
 }
 
-final class EmberReportSettledPane: UIViewController {
+class EmberSafetySettledPane: UIViewController {
     private let onFold: (() -> Void)?
+    private var autoClose: DispatchWorkItem?
+    private var isClosing = false
     init(onFold: (() -> Void)?) {
         self.onFold = onFold
         super.init(nibName: nil, bundle: nil)
@@ -44,6 +46,33 @@ final class EmberReportSettledPane: UIViewController {
     }
     required init?(coder: NSCoder) { nil }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard autoClose == nil, !isClosing else { return }
+        // VoiceOver users dismiss explicitly after reading the confirmation.
+        guard !UIAccessibility.isVoiceOverRunning else { return }
+        let task = DispatchWorkItem { [weak self] in self?.fold() }
+        autoClose = task
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8, execute: task)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        autoClose?.cancel()
+    }
+
+    deinit { autoClose?.cancel() }
+
+    @objc func fold() {
+        guard !isClosing else { return }
+        isClosing = true
+        autoClose?.cancel()
+        let done = onFold
+        dismiss(animated: true) { done?() }
+    }
+}
+
+final class EmberReportSettledPane: EmberSafetySettledPane {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = lampDimCloth()
@@ -61,14 +90,14 @@ final class EmberReportSettledPane: UIViewController {
         shield.contentMode = .scaleAspectFit
         shield.translatesAutoresizingMaskIntoConstraints = false
         let title = UILabel()
-        title.text = "The lamp took this report"
+        title.text = "Report saved"
         title.font = AfterHoursType.foyerHeadline(20)
         title.textColor = UIColor(red: 1, green: 0.90, blue: 0.62, alpha: 1)
         title.textAlignment = .center
         title.numberOfLines = 0
         title.translatesAutoresizingMaskIntoConstraints = false
         let body = UILabel()
-        body.text = "This sitting is hidden from your night. House review keeps NightChat free of anonymous harm."
+        body.text = "The reported content has been hidden from your view."
         body.font = AfterHoursType.foyerBody(14)
         body.textColor = UIColor.white.withAlphaComponent(0.82)
         body.textAlignment = .center
@@ -107,22 +136,9 @@ final class EmberReportSettledPane: UIViewController {
         ])
     }
 
-    @objc private func fold() {
-        let done = onFold
-        dismiss(animated: true) { done?() }
-    }
 }
 
-final class EmberBlockSettledPane: UIViewController {
-    private let onFold: (() -> Void)?
-    init(onFold: (() -> Void)?) {
-        self.onFold = onFold
-        super.init(nibName: nil, bundle: nil)
-        modalPresentationStyle = .overFullScreen
-        modalTransitionStyle = .crossDissolve
-    }
-    required init?(coder: NSCoder) { nil }
-
+final class EmberBlockSettledPane: EmberSafetySettledPane {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = lampDimCloth()
@@ -141,7 +157,7 @@ final class EmberBlockSettledPane: UIViewController {
         minus.layer.cornerRadius = 2
         minus.translatesAutoresizingMaskIntoConstraints = false
         let title = UILabel()
-        title.text = "This desk left your night"
+        title.text = "User blocked"
         title.font = AfterHoursType.foyerHeadline(20)
         title.textColor = UIColor(red: 1, green: 0.72, blue: 0.62, alpha: 1)
         title.textAlignment = .center
@@ -187,10 +203,6 @@ final class EmberBlockSettledPane: UIViewController {
         ])
     }
 
-    @objc private func fold() {
-        let done = onFold
-        dismiss(animated: true) { done?() }
-    }
 }
 
 final class EmberReviewHoldPane: UIViewController {

@@ -87,14 +87,10 @@ final class AfterglowWelcomeGateController: NightSocialWashController {
                 stageSpokenName: outcome.stageSpokenName,
                 mailboxAddress: outcome.mailboxAddress
             )
-            if NightSocialSessionDrawer.shared.isSeatedAtLounge {
-                AfterglowRootCoordinator.revealLoungeFloor(from: self)
-            } else {
-                navigationController?.pushViewController(
-                    NightSocialDeskCardController(arrival: .applePassage),
-                    animated: true
-                )
-            }
+            navigationController?.pushViewController(
+                NightSocialDeskCardController(arrival: .applePassage),
+                animated: true
+            )
         }
     }
 }

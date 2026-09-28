@@ -451,3 +451,9 @@ final class NightSocialChimeComposeBoard: UIViewController, UITableViewDataSourc
         navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: desks[indexPath.row].deskKey), animated: true)
     }
 }
+
+extension NightSocialChimeThreadBoard: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideDesk(deskKey)
+    }
+}

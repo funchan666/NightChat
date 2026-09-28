@@ -193,7 +193,10 @@ final class NightDeskReturnBoardController: NightSocialWashController, UITextFie
     private func finishReturn(mailbox: String, secret: String) {
         NightSocialSessionDrawer.shared.openMailboxDoor(mailboxAddress: mailbox, deskSecret: secret)
         quenchLoginKindle()
-        AfterglowRootCoordinator.revealLoungeFloor(from: self)
+        navigationController?.pushViewController(
+            NightSocialDeskCardController(arrival: .mailboxEnrollment),
+            animated: true
+        )
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

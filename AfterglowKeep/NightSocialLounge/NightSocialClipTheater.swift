@@ -443,7 +443,6 @@ final class NightSocialClipTheater: UIViewController {
 
     @objc private func refreshCounts() {
         if NightSocialSessionDrawer.shared.shouldHideClip(clipKey, authorDeskKey: NightSocialLoungeCatalog.clip(clipKey: clipKey)?.authorDeskKey ?? "") {
-            navigationController?.popViewController(animated: true)
             return
         }
         commentPlate.text = "\(NightSocialSessionDrawer.shared.discussLines(for: clipKey).count)"
@@ -770,5 +769,23 @@ final class NightSocialWhisperTrail: UIViewController, UITableViewDataSource {
         lines.append(LoungeDiscussLine(speakerName: me, spokenBody: body))
         field.text = ""
         table.reloadData()
+    }
+}
+
+extension NightSocialClipTheater: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideClip(clipKey, authorDeskKey: NightSocialLoungeCatalog.clip(clipKey: clipKey)?.authorDeskKey ?? "")
+    }
+}
+
+extension NightSocialMusicStage: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideClip(clipKey, authorDeskKey: NightSocialLoungeCatalog.clip(clipKey: clipKey)?.authorDeskKey ?? "")
+    }
+}
+
+extension NightSocialDiscussSheet: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideClip(clipKey, authorDeskKey: NightSocialLoungeCatalog.clip(clipKey: clipKey)?.authorDeskKey ?? "")
     }
 }

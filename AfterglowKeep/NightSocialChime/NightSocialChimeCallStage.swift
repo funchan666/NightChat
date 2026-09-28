@@ -175,6 +175,7 @@ final class NightSocialChimeCallStage: UIViewController {
     }
 
     private func connectCall() {
+        guard !NightSocialSessionDrawer.shared.shouldHideDesk(deskKey) else { return }
         connected = true
         clock.text = "00:00"
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
@@ -195,9 +196,19 @@ final class NightSocialChimeCallStage: UIViewController {
     }
     @objc private func flipMute() { muted.toggle() }
     @objc private func fold() {
+        prepareForSafetyRemoval()
+        navigationController?.popViewController(animated: true)
+    }
+}
+
+extension NightSocialChimeCallStage: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideDesk(deskKey)
+    }
+
+    func prepareForSafetyRemoval() {
         timer?.invalidate()
         if capture.isRunning { capture.stopRunning() }
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        navigationController?.popViewController(animated: true)
     }
 }

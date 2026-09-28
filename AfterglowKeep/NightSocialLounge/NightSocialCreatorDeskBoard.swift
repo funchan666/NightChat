@@ -279,7 +279,6 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
 
     @objc private func reloadDesk() {
         if NightSocialSessionDrawer.shared.shouldHideDesk(deskKey) {
-            navigationController?.popViewController(animated: true)
             return
         }
         reloadClips()
@@ -402,4 +401,10 @@ final class NightSocialMomentBoard: UIViewController {
     }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
+}
+
+extension NightSocialCreatorDeskBoard: NightSocialSafetyContent {
+    var isHiddenBySafetyAction: Bool {
+        NightSocialSessionDrawer.shared.shouldHideDesk(deskKey)
+    }
 }

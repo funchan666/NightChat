@@ -63,8 +63,11 @@ final class NightSocialLookupBoard: UIViewController, UITableViewDataSource, UIT
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        NotificationCenter.default.addObserver(self, selector: #selector(rewriteHits), name: .deskDrawerDidChange, object: nil)
         rewriteHits()
     }
+
+    deinit { NotificationCenter.default.removeObserver(self) }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
 
