@@ -99,9 +99,8 @@ final class NightSocialSessionDrawer {
         static let lampWelcome = "lampdesk.nightSocial.lampWelcome.v1"
         static let lampReceipts = "lampdesk.nightSocial.lampReceipts.v1"
         static let followedDesks = "lampdesk.nightSocial.followedDesks.v2"
-        // v1 was populated by the removed welcome-fan simulation. It cannot establish consent.
-        static let legacyFollowerDesks = "lampdesk.nightSocial.followerDesks.v1"
-        static let followerDesks = "lampdesk.nightSocial.followerDesks.v2"
+        // Local preset followers are explicitly part of the requested onboarding flow.
+        static let followerDesks = "lampdesk.nightSocial.followerDesks.v1"
         static let welcomeFansSeeded = "lampdesk.nightSocial.welcomeFansSeeded.v1"
         static let welcomeFanQueue = "lampdesk.nightSocial.welcomeFanQueue.v1"
         static let blockedDesks = "lampdesk.nightSocial.blockedDesks.v1"
@@ -139,11 +138,7 @@ final class NightSocialSessionDrawer {
 
     private(set) var liveSession: NightSocialStageSession?
 
-    private init() {
-        // Discard pending generated interactions; keep user-selected follows untouched.
-        defaults.removeObject(forKey: DrawerSlot.welcomeFanQueue)
-        defaults.removeObject(forKey: DrawerSlot.welcomeFansSeeded)
-    }
+    private init() {}
 
     func openDrawer() {
         liveSession = decode(NightSocialStageSession.self, key: DrawerSlot.stageSession)
@@ -362,13 +357,60 @@ final class NightSocialSessionDrawer {
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
     }
 
-    // Call only when a real incoming follow has been verified by the account service.
-    // There is deliberately no timer, seed, or local action that invokes this method.
     func addFollower(_ deskKey: String) {
         var keys = followerDeskKeys()
         guard keys.insert(deskKey).inserted else { return }
         defaults.set(Array(keys), forKey: DrawerSlot.followerDesks)
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
+    }
+
+    private var welcomeFanTask: DispatchWorkItem?
+    private var welcomeFanOwner: String?
+
+    func beginWelcomeFansIfNeeded() {
+        guard isSeatedAtLounge, let owner = liveSession?.deskHolderId else { return }
+        if welcomeFanOwner != owner { cancelWelcomeFans() }
+        if !defaults.bool(forKey: DrawerSlot.welcomeFansSeeded) {
+            let existing = followerDeskKeys()
+            // A fixed catalog order supplies up to three inbound follows. It never
+            // follows anyone on the user's behalf or selects a chat/call partner.
+            let candidates = NightSocialLoungeCatalog.creators.map(\.deskKey).filter {
+                $0 != owner && !existing.contains($0) && !shouldHideDesk($0)
+            }
+            let picked = Array(candidates.prefix(max(0, 3 - existing.count)))
+            defaults.set(picked, forKey: DrawerSlot.welcomeFanQueue)
+            defaults.set(true, forKey: DrawerSlot.welcomeFansSeeded)
+        }
+        pumpWelcomeFans(owner: owner)
+    }
+
+    private func pumpWelcomeFans(owner: String) {
+        guard welcomeFanTask == nil, isSeatedAtLounge,
+              liveSession?.deskHolderId == owner else { return }
+        let queue = defaults.stringArray(forKey: DrawerSlot.welcomeFanQueue) ?? []
+        guard !queue.isEmpty else { return }
+        welcomeFanOwner = owner
+        let task = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            self.welcomeFanTask = nil
+            guard self.isSeatedAtLounge, self.liveSession?.deskHolderId == owner else { return }
+            var remaining = self.defaults.stringArray(forKey: DrawerSlot.welcomeFanQueue) ?? []
+            guard !remaining.isEmpty else { return }
+            let next = remaining.removeFirst()
+            self.defaults.set(remaining, forKey: DrawerSlot.welcomeFanQueue)
+            if !self.shouldHideDesk(next), NightSocialLoungeCatalog.creator(deskKey: next) != nil {
+                self.addFollower(next)
+            }
+            self.pumpWelcomeFans(owner: owner)
+        }
+        welcomeFanTask = task
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: task)
+    }
+
+    private func cancelWelcomeFans() {
+        welcomeFanTask?.cancel()
+        welcomeFanTask = nil
+        welcomeFanOwner = nil
     }
 
     func sentFriendAskKeys() -> Set<String> {
@@ -688,6 +730,7 @@ final class NightSocialSessionDrawer {
     }
 
     func parkDesk() {
+        cancelWelcomeFans()
         defaults.set(false, forKey: DrawerSlot.seatedFlag)
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
     }
@@ -697,10 +740,11 @@ final class NightSocialSessionDrawer {
     }
 
     func eraseDesk() {
+        cancelWelcomeFans()
         liveSession = nil
         let keys = [
             DrawerSlot.stageSession, DrawerSlot.houseCovenant, DrawerSlot.seatedFlag,
-            DrawerSlot.diamondPurse, DrawerSlot.followedDesks, DrawerSlot.followerDesks, DrawerSlot.legacyFollowerDesks,
+            DrawerSlot.diamondPurse, DrawerSlot.followedDesks, DrawerSlot.followerDesks,
             DrawerSlot.welcomeFansSeeded, DrawerSlot.welcomeFanQueue,
             DrawerSlot.blockedDesks, DrawerSlot.reportedDesks, DrawerSlot.reportedClips,
             DrawerSlot.reportedLines, DrawerSlot.clipComments, DrawerSlot.pendingClips,

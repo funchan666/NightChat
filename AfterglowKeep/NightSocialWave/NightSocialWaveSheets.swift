@@ -584,8 +584,13 @@ private final class NightSocialWaveRoomDetails: UIViewController, NightSocialSaf
         let back = NightSocialLoungeChrome.backControl()
         back.addTarget(self, action: #selector(goBack), for: .touchUpInside)
         let heading = label(NightLang.t(.roomDetails), size: 20, headline: true)
+        let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle", edge: 44)
+        more.accessibilityLabel = NightLang.t(.more)
+        more.addTarget(self, action: #selector(openSafety), for: .touchUpInside)
+        more.isEnabled = chamber != nil
         view.addSubview(back)
         view.addSubview(heading)
+        view.addSubview(more)
 
         let scroll = UIScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
@@ -596,7 +601,10 @@ private final class NightSocialWaveRoomDetails: UIViewController, NightSocialSaf
         scroll.addSubview(content)
         view.addSubview(scroll)
 
-        let artwork = UIImageView(image: UIImage(named: "RoomDirectoryArtwork"))
+        let coverSize = CGSize(width: max(1, view.bounds.width - 40), height: max(1, (view.bounds.width - 40) * 0.5))
+        let artwork = UIImageView(image: chamber.map {
+            NightSocialMediaAssets.portrait(for: $0.hostDeskKey, size: coverSize)
+        })
         artwork.contentMode = .scaleAspectFill
         artwork.clipsToBounds = true
         artwork.layer.cornerRadius = 18
@@ -628,8 +636,10 @@ private final class NightSocialWaveRoomDetails: UIViewController, NightSocialSaf
             back.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             back.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             heading.leadingAnchor.constraint(equalTo: back.trailingAnchor, constant: 12),
-            heading.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            heading.trailingAnchor.constraint(equalTo: more.leadingAnchor, constant: -12),
             heading.centerYAnchor.constraint(equalTo: back.centerYAnchor),
+            more.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            more.centerYAnchor.constraint(equalTo: back.centerYAnchor),
             scroll.topAnchor.constraint(equalTo: back.bottomAnchor, constant: 16),
             scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -683,6 +693,11 @@ private final class NightSocialWaveRoomDetails: UIViewController, NightSocialSaf
         // A detail view is not a visit; record history only after this explicit action.
         NightSocialSessionDrawer.shared.rememberVisitedChamber(chamber.chamberKey)
         nav.pushViewController(NightSocialWaveVoiceStage(chamberKey: chamber.chamberKey), animated: true)
+    }
+
+    @objc private func openSafety() {
+        guard let chamber, !isHiddenBySafetyAction, presentedViewController == nil else { return }
+        NightSocialSafetyFlow.presentChooser(from: self, target: .desk(chamber.hostDeskKey))
     }
 
     @objc private func goBack() { navigationController?.popViewController(animated: true) }
