@@ -36,6 +36,7 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
         name.translatesAutoresizingMaskIntoConstraints = false
         let more = NightSocialLoungeChrome.iconControl(catalog: "MoreCircle", fallback: "MoreCircle", edge: 34)
         more.addTarget(self, action: #selector(openMore), for: .touchUpInside)
+        more.accessibilityLabel = "Report this chat"
 
         let isSupport = deskKey == NightSocialChimeCatalog.supportDeskKey
         let card = UIView()
@@ -197,10 +198,7 @@ final class NightSocialChimeThreadBoard: UIViewController, UITableViewDataSource
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
     @objc private func openMore() {
-        present(NightSocialChimeThreadMoreSheet(deskKey: deskKey) { [weak self] in
-            NightSocialSessionDrawer.shared.clearChimeLines(deskKey: self?.deskKey ?? "")
-            self?.reloadLines()
-        }, animated: true)
+        NightSocialSafetyFlow.presentReportKinds(from: self, target: .chat(deskKey))
     }
     @objc private func openDesk() {
         NightSocialDeskGate.revealDesk(from: self, deskKey: deskKey)
@@ -310,83 +308,6 @@ final class ChimeBubbleCell: UITableViewCell {
     }
 }
 
-final class NightSocialChimeThreadMoreSheet: UIViewController {
-    private let deskKey: String
-    private let onClear: () -> Void
-
-    init(deskKey: String, onClear: @escaping () -> Void) {
-        self.deskKey = deskKey
-        self.onClear = onClear
-        super.init(nibName: nil, bundle: nil)
-        modalPresentationStyle = .pageSheet
-        sheetPresentationController?.detents = [
-            .custom(identifier: .init("chimeMore")) { _ in 240 }
-        ]
-        sheetPresentationController?.prefersGrabberVisible = true
-        sheetPresentationController?.preferredCornerRadius = 26
-    }
-    required init?(coder: NSCoder) { nil }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = AfterHoursPalette.loungeCard
-        let title = UILabel()
-        title.text = NightLang.t(.more)
-        title.font = AfterHoursType.foyerHeadline(22)
-        title.textColor = .white
-        title.translatesAutoresizingMaskIntoConstraints = false
-        let clear = makeRow(title: NightLang.t(.deleteConversation), symbol: "trash.fill", tint: AfterHoursPalette.loungePink)
-        clear.addTarget(self, action: #selector(clearChat), for: .touchUpInside)
-        let cancel = NightSocialLoungeChrome.ghostPill(title: NightLang.t(.cancel))
-        cancel.addTarget(self, action: #selector(fold), for: .touchUpInside)
-        view.addSubview(title)
-        view.addSubview(clear)
-        view.addSubview(cancel)
-        NSLayoutConstraint.activate([
-            title.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            title.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            clear.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            clear.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            clear.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 16),
-            cancel.leadingAnchor.constraint(equalTo: clear.leadingAnchor),
-            cancel.trailingAnchor.constraint(equalTo: clear.trailingAnchor),
-            cancel.topAnchor.constraint(equalTo: clear.bottomAnchor, constant: 14),
-        ])
-    }
-
-    private func makeRow(title: String, symbol: String, tint: UIColor) -> UIButton {
-        let row = UIButton(type: .custom)
-        row.backgroundColor = UIColor.white.withAlphaComponent(0.08)
-        row.layer.cornerRadius = 16
-        row.translatesAutoresizingMaskIntoConstraints = false
-        row.heightAnchor.constraint(equalToConstant: 52).isActive = true
-        let mark = UIImageView(image: UIImage(systemName: symbol, withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .semibold)))
-        mark.tintColor = tint
-        mark.translatesAutoresizingMaskIntoConstraints = false
-        let plate = UILabel()
-        plate.text = title
-        plate.font = AfterHoursType.foyerPill(15)
-        plate.textColor = .white
-        plate.translatesAutoresizingMaskIntoConstraints = false
-        row.addSubview(mark)
-        row.addSubview(plate)
-        NSLayoutConstraint.activate([
-            mark.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: 16),
-            mark.centerYAnchor.constraint(equalTo: row.centerYAnchor),
-            mark.widthAnchor.constraint(equalToConstant: 22),
-            plate.leadingAnchor.constraint(equalTo: mark.trailingAnchor, constant: 12),
-            plate.centerYAnchor.constraint(equalTo: row.centerYAnchor),
-        ])
-        return row
-    }
-
-    @objc private func fold() { dismiss(animated: true) }
-    @objc private func clearChat() {
-        let clear = onClear
-        dismiss(animated: true) { clear() }
-    }
-}
-
 final class NightSocialChimeComposeBoard: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private let table = UITableView()
     private var desks: [LoungeCreatorDesk] = []
@@ -427,7 +348,7 @@ final class NightSocialChimeComposeBoard: UIViewController, UITableViewDataSourc
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         if desks.isEmpty {
-            let empty = NightSocialEmptyPane(spoken: "Follow someone first.\nNew messages start from desks you follow.")
+            let empty = NightSocialEmptyPane(spoken: "Follow someone and wait for a follow back.\nChats require mutual follows.")
             view.addSubview(empty)
             NSLayoutConstraint.activate([
                 empty.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -443,17 +364,18 @@ final class NightSocialChimeComposeBoard: UIViewController, UITableViewDataSourc
         let desk = desks[indexPath.row]
         cell.paint(desk)
         cell.onChat = { [weak self] in
-            self?.navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: desk.deskKey), animated: true)
+            guard let self else { return }
+            NightSocialDeskGate.revealChime(from: self, deskKey: desk.deskKey)
         }
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: desks[indexPath.row].deskKey), animated: true)
+        NightSocialDeskGate.revealChime(from: self, deskKey: desks[indexPath.row].deskKey)
     }
 }
 
 extension NightSocialChimeThreadBoard: NightSocialSafetyContent {
     var isHiddenBySafetyAction: Bool {
-        NightSocialSessionDrawer.shared.shouldHideDesk(deskKey)
+        NightSocialSessionDrawer.shared.shouldHideChat(deskKey)
     }
 }

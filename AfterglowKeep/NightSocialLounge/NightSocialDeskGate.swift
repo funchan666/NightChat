@@ -6,6 +6,7 @@ enum NightSocialDeskGate {
     }
 
     static func canExchangeChime(with deskKey: String) -> Bool {
+        guard !NightSocialSessionDrawer.shared.shouldHideChat(deskKey) else { return false }
         if isHouseDesk(deskKey) { return true }
         return NightSocialSessionDrawer.shared.isMutualFollow(deskKey)
     }
@@ -25,20 +26,28 @@ enum NightSocialDeskGate {
         }
     }
 
-    static func revealChime(from host: UIViewController, deskKey: String) {
-        let board = NightSocialChimeThreadBoard(deskKey: deskKey)
+    static func revealChime(from host: UIViewController, deskKey: String,
+                            navigation: UINavigationController? = nil) {
+        guard guardExchange(on: host, deskKey: deskKey) else { return }
         if let nav = host.navigationController {
-            nav.pushViewController(board, animated: true)
+            nav.pushViewController(NightSocialChimeThreadBoard(deskKey: deskKey), animated: true)
             return
         }
-        let nav = host.presentingViewController as? UINavigationController
+        let nav = navigation ?? (host.presentingViewController as? UINavigationController)
             ?? host.presentingViewController?.navigationController
         host.dismiss(animated: true) {
-            nav?.pushViewController(board, animated: true)
+            guard let nav, let visible = nav.visibleViewController,
+                  guardExchange(on: visible, deskKey: deskKey) else { return }
+            nav.pushViewController(NightSocialChimeThreadBoard(deskKey: deskKey), animated: true)
         }
     }
 
     static func guardExchange(on host: UIViewController, deskKey: String) -> Bool {
+        if NightSocialSessionDrawer.shared.shouldHideChat(deskKey) {
+            FoyerNotice.present(on: host, spokenTitle: "Chat unavailable",
+                                spokenBody: "This conversation is hidden because it or the profile was reported or blocked.")
+            return false
+        }
         if canExchangeChime(with: deskKey) { return true }
         NightSocialLampNotices.presentMutualFollow(from: host)
         return false

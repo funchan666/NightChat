@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BCAD31962FE4492C88572F01 /* NightSocialLoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAD31962FE4492C88572F02 /* NightSocialLoginRequest.swift */; };
 		0032A53DFD14E4E0A023CCBE /* Outfit-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6375DAA04ED5208DD78ED9A5 /* Outfit-SemiBold.ttf */; };
 		0580EB6E23DCA68FC086DD73 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 013563507BF9FFC8136346AE /* StoreKit.framework */; };
 		0B165C403B461A1294E12DF1 /* NightSocialVideoSurface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5295F043954D83727C166E /* NightSocialVideoSurface.swift */; };
@@ -53,6 +52,7 @@
 		B7609BAFE6FFCA909CF65503 /* NightSocialMirrorPeopleBoards.swift in Sources */ = {isa = PBXBuildFile; fileRef = B888E35DCF1E803592EBC0DA /* NightSocialMirrorPeopleBoards.swift */; };
 		B7AF04750479962468F0ED26 /* NightSocialLookupBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B86C0C5C066C7C704ED711 /* NightSocialLookupBoard.swift */; };
 		B89A535D573541F787B9B8A1 /* AfterglowAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061D3C7BF793019C60EB5B1A /* AfterglowAppDelegate.swift */; };
+		BCAD31962FE4492C88572F01 /* NightSocialLoginRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAD31962FE4492C88572F02 /* NightSocialLoginRequest.swift */; };
 		BCD970943D36BB1CD09A8CD0 /* NightDeskEnrollmentBoardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EBDD0AA1B08E13F8982991 /* NightDeskEnrollmentBoardController.swift */; };
 		C249A424AA84E1B0B64F3A33 /* videos in Resources */ = {isa = PBXBuildFile; fileRef = 58A2A769DC1E3CD0565310AB /* videos */; };
 		C37691A84B4BD85FF711361C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D70AC5A12142BA77ECFA50C /* LaunchScreen.storyboard */; };
@@ -72,7 +72,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BCAD31962FE4492C88572F02 /* NightSocialLoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLoginRequest.swift; sourceTree = "<group>"; };
 		013563507BF9FFC8136346AE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		04B86C0C5C066C7C704ED711 /* NightSocialLookupBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLookupBoard.swift; sourceTree = "<group>"; };
 		061D3C7BF793019C60EB5B1A /* AfterglowAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterglowAppDelegate.swift; sourceTree = "<group>"; };
@@ -127,6 +126,7 @@
 		B77FBAD4EA204A0B519D0290 /* AfterHoursPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterHoursPalette.swift; sourceTree = "<group>"; };
 		B888E35DCF1E803592EBC0DA /* NightSocialMirrorPeopleBoards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialMirrorPeopleBoards.swift; sourceTree = "<group>"; };
 		B8E075B539E2BE2696B46B7D /* NightSocialWaveVoiceStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialWaveVoiceStage.swift; sourceTree = "<group>"; };
+		BCAD31962FE4492C88572F02 /* NightSocialLoginRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialLoginRequest.swift; sourceTree = "<group>"; };
 		BFE1D2325A81167BE2F40BA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BFEE740AEFCD6217FB8CEE7B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C4E91A2B7D334F0A9C1E8B27 /* NightSocialCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NightSocialCopy.swift; sourceTree = "<group>"; };

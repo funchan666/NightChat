@@ -113,7 +113,8 @@ final class NightSocialMirrorPeopleBoard: UIViewController, UITableViewDataSourc
             self?.reloadRows()
         }
         cell.onChat = { [weak self] in
-            self?.navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: desk.deskKey), animated: true)
+            guard let self else { return }
+            NightSocialDeskGate.revealChime(from: self, deskKey: desk.deskKey)
         }
         cell.onFollowTap = { [weak self] in
             NightSocialSessionDrawer.shared.toggleFollow(desk.deskKey)

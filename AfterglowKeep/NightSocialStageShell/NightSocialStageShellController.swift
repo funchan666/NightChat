@@ -81,7 +81,6 @@ final class NightSocialStageShellController: UIViewController, UINavigationContr
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        NightSocialSessionDrawer.shared.beginWelcomeFansIfNeeded()
         guard !didOfferLampWelcome else { return }
         didOfferLampWelcome = true
         NightSocialLampWelcomePane.offer(from: self)

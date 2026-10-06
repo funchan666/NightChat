@@ -17,6 +17,11 @@ enum NightKey: String {
     case all, live, fresh, followTab, music
     case featuredCreators, liveRooms, newVideo, followCreators, nightTracks
     case global, europe, eastAsia, latin, africa
+    case roomDirectory, browseHosts, browseRooms, followingLiveRooms, followingUpcomingRooms
+    case roomHistory, recentlyVisitedLive, viewRoomList, roomBrowseHint, privateMessagingHint
+    case hostsBrowseHint, openRoomsBrowseHint, followingLiveHint, followingUpcomingHint
+    case roomHistoryHint, recentlyVisitedLiveHint, roomDetails, joinThisRoom, viewRoom
+    case roomTopic, roomLanguage, roomStartingSoon, roomNotOpenHint, roomUnavailable, roomUnavailableHint
     case party, recent
     case liveVoiceRooms, followedRooms, recentlyJoined
     case roomsFollow, roomsRecent, roomsActive
@@ -106,6 +111,31 @@ enum NightLang {
     ] }
 
     private static let en: [NightKey: String] = [
+        .roomDirectory: "Rooms",
+        .browseHosts: "Browse Hosts",
+        .browseRooms: "Browse Rooms",
+        .followingLiveRooms: "Following · Live",
+        .followingUpcomingRooms: "Following · Upcoming",
+        .roomHistory: "Room History",
+        .recentlyVisitedLive: "Recently Visited · Live",
+        .viewRoomList: "View room list",
+        .roomBrowseHint: "Browse rooms by topic and host, then choose a room to join.",
+        .privateMessagingHint: "Private messaging is available only when you follow each other.",
+        .hostsBrowseHint: "Browse hosts and select a room to view its details.",
+        .openRoomsBrowseHint: "Choose a room by its topic and host. View details before joining.",
+        .followingLiveHint: "Live rooms hosted by people you follow. Choose a room to view details.",
+        .followingUpcomingHint: "Upcoming rooms hosted by people you follow. Join when the room opens.",
+        .roomHistoryHint: "Rooms you previously joined. Choose one to view its details.",
+        .recentlyVisitedLiveHint: "Rooms you previously joined that are live now.",
+        .roomDetails: "Room details",
+        .joinThisRoom: "Join this room",
+        .viewRoom: "Details",
+        .roomTopic: "Topic",
+        .roomLanguage: "Language",
+        .roomStartingSoon: "Starting soon",
+        .roomNotOpenHint: "This room is not open yet. You can return when it starts.",
+        .roomUnavailable: "Room unavailable",
+        .roomUnavailableHint: "This room is no longer available to you. Please choose another room.",
         .cancel: "Cancel", .confirm: "Confirm", .more: "More", .send: "SEND",
         .stay: "Stay", .leave: "Leave",
         .follow: "Follow", .followed: "Followed", .following: "Following",
@@ -165,6 +195,31 @@ enum NightLang {
     ]
 
     private static let zhHans: [NightKey: String] = [
+        .roomDirectory: "房间",
+        .browseHosts: "浏览主持人",
+        .browseRooms: "浏览房间",
+        .followingLiveRooms: "已关注 · 进行中",
+        .followingUpcomingRooms: "已关注 · 即将开始",
+        .roomHistory: "房间记录",
+        .recentlyVisitedLive: "最近访问 · 进行中",
+        .viewRoomList: "查看房间列表",
+        .roomBrowseHint: "按主题和主持人浏览房间，再选择你想加入的房间。",
+        .privateMessagingHint: "只有互相关注后，才能进行私聊。",
+        .hostsBrowseHint: "浏览主持人，选择房间查看详情。",
+        .openRoomsBrowseHint: "按主题和主持人选择房间，查看详情后再加入。",
+        .followingLiveHint: "你关注的主持人正在开放的房间，选择房间查看详情。",
+        .followingUpcomingHint: "你关注的主持人即将开放的房间，开放后可加入。",
+        .roomHistoryHint: "你曾加入的房间，选择房间查看详情。",
+        .recentlyVisitedLiveHint: "你曾加入、目前正在开放的房间。",
+        .roomDetails: "房间详情",
+        .joinThisRoom: "加入此房间",
+        .viewRoom: "详情",
+        .roomTopic: "主题",
+        .roomLanguage: "语言",
+        .roomStartingSoon: "即将开始",
+        .roomNotOpenHint: "此房间尚未开放，请在开始后再来。",
+        .roomUnavailable: "房间不可用",
+        .roomUnavailableHint: "此房间已不可用，请选择其他房间。",
         .cancel: "取消", .confirm: "确认", .more: "更多", .send: "发送",
         .stay: "留下", .leave: "退出",
         .follow: "关注", .followed: "已关注", .following: "关注",
@@ -224,6 +279,31 @@ enum NightLang {
     ]
 
     private static let zhHant: [NightKey: String] = [
+        .roomDirectory: "房間",
+        .browseHosts: "瀏覽主持人",
+        .browseRooms: "瀏覽房間",
+        .followingLiveRooms: "已關注 · 進行中",
+        .followingUpcomingRooms: "已關注 · 即將開始",
+        .roomHistory: "房間記錄",
+        .recentlyVisitedLive: "最近造訪 · 進行中",
+        .viewRoomList: "查看房間列表",
+        .roomBrowseHint: "按主題和主持人瀏覽房間，再選擇你想加入的房間。",
+        .privateMessagingHint: "只有互相關注後，才能進行私聊。",
+        .hostsBrowseHint: "瀏覽主持人，選擇房間查看詳情。",
+        .openRoomsBrowseHint: "按主題和主持人選擇房間，查看詳情後再加入。",
+        .followingLiveHint: "你關注的主持人正在開放的房間，選擇房間查看詳情。",
+        .followingUpcomingHint: "你關注的主持人即將開放的房間，開放後可加入。",
+        .roomHistoryHint: "你曾加入的房間，選擇房間查看詳情。",
+        .recentlyVisitedLiveHint: "你曾加入、目前正在開放的房間。",
+        .roomDetails: "房間詳情",
+        .joinThisRoom: "加入此房間",
+        .viewRoom: "詳情",
+        .roomTopic: "主題",
+        .roomLanguage: "語言",
+        .roomStartingSoon: "即將開始",
+        .roomNotOpenHint: "此房間尚未開放，請在開始後再來。",
+        .roomUnavailable: "房間無法使用",
+        .roomUnavailableHint: "此房間已無法使用，請選擇其他房間。",
         .cancel: "取消", .confirm: "確認", .more: "更多", .send: "傳送",
         .stay: "留下", .leave: "離開",
         .follow: "追蹤", .followed: "已追蹤", .following: "追蹤中",

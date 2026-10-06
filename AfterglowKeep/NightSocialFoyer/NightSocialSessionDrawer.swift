@@ -99,13 +99,18 @@ final class NightSocialSessionDrawer {
         static let lampWelcome = "lampdesk.nightSocial.lampWelcome.v1"
         static let lampReceipts = "lampdesk.nightSocial.lampReceipts.v1"
         static let followedDesks = "lampdesk.nightSocial.followedDesks.v2"
-        static let followerDesks = "lampdesk.nightSocial.followerDesks.v1"
+        // v1 was populated by the removed welcome-fan simulation. It cannot establish consent.
+        static let legacyFollowerDesks = "lampdesk.nightSocial.followerDesks.v1"
+        static let followerDesks = "lampdesk.nightSocial.followerDesks.v2"
         static let welcomeFansSeeded = "lampdesk.nightSocial.welcomeFansSeeded.v1"
         static let welcomeFanQueue = "lampdesk.nightSocial.welcomeFanQueue.v1"
         static let blockedDesks = "lampdesk.nightSocial.blockedDesks.v1"
         static let reportedDesks = "lampdesk.nightSocial.reportedDesks.v1"
         static let reportedClips = "lampdesk.nightSocial.reportedClips.v1"
         static let reportedLines = "lampdesk.nightSocial.reportedLines.v1"
+        static let reportedChats = "lampdesk.nightSocial.reportedChats.v1"
+        static let safetyNotices = "lampdesk.nightSocial.safetyNotices.v1"
+        static let safetyReadHeads = "lampdesk.nightSocial.safetyReadHeads.v1"
         static let clipComments = "lampdesk.nightSocial.clipComments.v1"
         static let pendingClips = "lampdesk.nightSocial.pendingClips.v1"
         static let sentFriendAsks = "lampdesk.nightSocial.sentFriendAsks.v1"
@@ -134,7 +139,11 @@ final class NightSocialSessionDrawer {
 
     private(set) var liveSession: NightSocialStageSession?
 
-    private init() {}
+    private init() {
+        // Discard pending generated interactions; keep user-selected follows untouched.
+        defaults.removeObject(forKey: DrawerSlot.welcomeFanQueue)
+        defaults.removeObject(forKey: DrawerSlot.welcomeFansSeeded)
+    }
 
     func openDrawer() {
         liveSession = decode(NightSocialStageSession.self, key: DrawerSlot.stageSession)
@@ -353,42 +362,13 @@ final class NightSocialSessionDrawer {
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
     }
 
+    // Call only when a real incoming follow has been verified by the account service.
+    // There is deliberately no timer, seed, or local action that invokes this method.
     func addFollower(_ deskKey: String) {
         var keys = followerDeskKeys()
         guard keys.insert(deskKey).inserted else { return }
         defaults.set(Array(keys), forKey: DrawerSlot.followerDesks)
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
-    }
-
-    func beginWelcomeFansIfNeeded() {
-        if !defaults.bool(forKey: DrawerSlot.welcomeFansSeeded) {
-            let pool = NightSocialLoungeCatalog.creators.map(\.deskKey).filter { !shouldHideDesk($0) }
-            let count = min(pool.count, Int.random(in: 1...3))
-            let picked = Array(pool.shuffled().prefix(count))
-            defaults.set(true, forKey: DrawerSlot.welcomeFansSeeded)
-            defaults.set(picked, forKey: DrawerSlot.welcomeFanQueue)
-        }
-        pumpWelcomeFans()
-    }
-
-    private var welcomeFanPumping = false
-
-    private func pumpWelcomeFans() {
-        guard !welcomeFanPumping else { return }
-        let queue = defaults.stringArray(forKey: DrawerSlot.welcomeFanQueue) ?? []
-        guard !queue.isEmpty else { return }
-        welcomeFanPumping = true
-        let delay = Double.random(in: 5...12)
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-            guard let self else { return }
-            self.welcomeFanPumping = false
-            var remaining = self.defaults.stringArray(forKey: DrawerSlot.welcomeFanQueue) ?? []
-            guard let next = remaining.first else { return }
-            remaining.removeFirst()
-            self.defaults.set(remaining, forKey: DrawerSlot.welcomeFanQueue)
-            self.addFollower(next)
-            self.pumpWelcomeFans()
-        }
     }
 
     func sentFriendAskKeys() -> Set<String> {
@@ -446,6 +426,13 @@ final class NightSocialSessionDrawer {
         isBlocked(deskKey) || reportedDeskKeys().contains(deskKey)
     }
 
+    func shouldHideChat(_ deskKey: String) -> Bool {
+        if shouldHideDesk(deskKey) { return true }
+        guard let owner = liveSession?.deskHolderId else { return false }
+        let records = decode([String: [String]].self, key: DrawerSlot.reportedChats) ?? [:]
+        return records[owner, default: []].contains(deskKey)
+    }
+
     func shouldHideClip(_ clipKey: String, authorDeskKey: String) -> Bool {
         shouldHideDesk(authorDeskKey) || reportedClipKeys().contains(clipKey)
     }
@@ -455,21 +442,35 @@ final class NightSocialSessionDrawer {
     }
 
     func rememberReport(_ target: NightSocialSafetyTarget, kind: NightSocialReportKind) {
-        _ = kind
+        let subject: String
+        let name = NightSocialChimeCatalog.desk(for: target.deskKey)?.spokenName ?? "this profile"
         switch target {
         case .desk(let key):
+            subject = "the profile of \(name)"
             var keys = reportedDeskKeys()
             keys.insert(key)
             defaults.set(Array(keys), forKey: DrawerSlot.reportedDesks)
         case .clip(let clipKey, _):
+            subject = "a video from \(name)"
             var keys = reportedClipKeys()
             keys.insert(clipKey)
             defaults.set(Array(keys), forKey: DrawerSlot.reportedClips)
         case .comment(let lineKey, _):
+            subject = "a comment from \(name)"
             var keys = reportedLineKeys()
             keys.insert(lineKey)
             defaults.set(Array(keys), forKey: DrawerSlot.reportedLines)
+        case .chat(let key):
+            subject = "your chat with \(name)"
+            guard let owner = liveSession?.deskHolderId else { return }
+            var records = decode([String: [String]].self, key: DrawerSlot.reportedChats) ?? [:]
+            var keys = Set(records[owner] ?? [])
+            keys.insert(key)
+            records[owner] = Array(keys)
+            persist(records, key: DrawerSlot.reportedChats)
         }
+        appendSafetyNotice(title: "Report saved",
+                           body: "Your report about \(subject) was saved. Reason: \(kind.rawValue). The reported content is now hidden from your view.")
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
     }
 
@@ -513,8 +514,7 @@ final class NightSocialSessionDrawer {
         let box = decode([String: [ChimeLine]].self, key: DrawerSlot.chimeLines) ?? [:]
         return box.keys.filter { key in
             guard let rows = box[key], !rows.isEmpty else { return false }
-            if NightSocialDeskGate.isHouseDesk(key) { return true }
-            return !isBlocked(key)
+            return !shouldHideChat(key)
         }.sorted { a, b in
             (box[a]?.last?.spokenAt ?? 0) > (box[b]?.last?.spokenAt ?? 0)
         }
@@ -606,8 +606,40 @@ final class NightSocialSessionDrawer {
         Set(defaults.stringArray(forKey: DrawerSlot.chimeRead) ?? []).contains(deskKey)
     }
 
-    func markPlatformRead() { defaults.set(true, forKey: DrawerSlot.platformRead) }
-    func platformIsRead() -> Bool { defaults.bool(forKey: DrawerSlot.platformRead) }
+    func markPlatformRead() {
+        defaults.set(true, forKey: DrawerSlot.platformRead)
+        guard let owner = liveSession?.deskHolderId, let newest = safetyNotices().first else { return }
+        var heads = defaults.dictionary(forKey: DrawerSlot.safetyReadHeads) as? [String: String] ?? [:]
+        heads[owner] = newest.noticeKey
+        defaults.set(heads, forKey: DrawerSlot.safetyReadHeads)
+    }
+
+    func platformIsRead() -> Bool {
+        guard let owner = liveSession?.deskHolderId, let newest = safetyNotices().first else {
+            return defaults.bool(forKey: DrawerSlot.platformRead)
+        }
+        let heads = defaults.dictionary(forKey: DrawerSlot.safetyReadHeads) as? [String: String] ?? [:]
+        return heads[owner] == newest.noticeKey
+    }
+
+    func safetyNotices() -> [ChimeNotice] {
+        guard let owner = liveSession?.deskHolderId else { return [] }
+        let records = decode([String: [ChimeNotice]].self, key: DrawerSlot.safetyNotices) ?? [:]
+        return records[owner] ?? []
+    }
+
+    private func appendSafetyNotice(title: String, body: String) {
+        guard let owner = liveSession?.deskHolderId else { return }
+        var records = decode([String: [ChimeNotice]].self, key: DrawerSlot.safetyNotices) ?? [:]
+        let notice = ChimeNotice(noticeKey: "safety.\(UUID().uuidString)",
+                                 spokenTitle: title, spokenBody: body, minutesAgo: 0,
+                                 speakerDeskKey: nil, clipKey: nil, glyph: "", tintKind: 1,
+                                 createdAt: Date().timeIntervalSince1970,
+                                 artworkName: "SafetyShield")
+        records[owner, default: []].insert(notice, at: 0)
+        persist(records, key: DrawerSlot.safetyNotices)
+        defaults.set(false, forKey: DrawerSlot.platformRead)
+    }
     func markLikesRead() { defaults.set(true, forKey: DrawerSlot.likesRead) }
     func likesAreRead() -> Bool { defaults.bool(forKey: DrawerSlot.likesRead) }
 
@@ -668,10 +700,11 @@ final class NightSocialSessionDrawer {
         liveSession = nil
         let keys = [
             DrawerSlot.stageSession, DrawerSlot.houseCovenant, DrawerSlot.seatedFlag,
-            DrawerSlot.diamondPurse, DrawerSlot.followedDesks, DrawerSlot.followerDesks,
+            DrawerSlot.diamondPurse, DrawerSlot.followedDesks, DrawerSlot.followerDesks, DrawerSlot.legacyFollowerDesks,
             DrawerSlot.welcomeFansSeeded, DrawerSlot.welcomeFanQueue,
             DrawerSlot.blockedDesks, DrawerSlot.reportedDesks, DrawerSlot.reportedClips,
             DrawerSlot.reportedLines, DrawerSlot.clipComments, DrawerSlot.pendingClips,
+            DrawerSlot.reportedChats, DrawerSlot.safetyNotices, DrawerSlot.safetyReadHeads,
             DrawerSlot.sentFriendAsks, DrawerSlot.incomingFriendAsks, DrawerSlot.acceptedFriends,
             DrawerSlot.recentChambers, DrawerSlot.hostedChambers, DrawerSlot.hostedLives, DrawerSlot.seatedChamber,
             DrawerSlot.chimeLines, DrawerSlot.chimeRead, DrawerSlot.platformRead,
@@ -729,6 +762,9 @@ final class NightSocialSessionDrawer {
         var friends = acceptedFriendKeys()
         friends.remove(deskKey)
         defaults.set(Array(friends), forKey: DrawerSlot.acceptedFriends)
+        let name = NightSocialChimeCatalog.desk(for: deskKey)?.spokenName ?? "This profile"
+        appendSafetyNotice(title: "User blocked",
+                           body: "You blocked \(name). Their content and conversations are now hidden. You can manage blocked profiles in Settings → Blacklist.")
         NotificationCenter.default.post(name: .deskDrawerDidChange, object: self)
     }
 

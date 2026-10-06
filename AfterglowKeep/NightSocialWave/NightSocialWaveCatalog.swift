@@ -7,8 +7,8 @@ enum WavePartyLane: Int, CaseIterable {
 
     var spokenTitle: String {
         switch self {
-        case .party: return NightLang.t(.party)
-        case .follow: return NightLang.t(.followTab)
+        case .party: return NightLang.t(.roomDirectory)
+        case .follow: return NightLang.t(.following)
         case .recent: return NightLang.t(.recent)
         }
     }

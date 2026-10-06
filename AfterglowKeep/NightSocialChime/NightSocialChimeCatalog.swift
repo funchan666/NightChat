@@ -6,7 +6,7 @@ struct ChimeLine: Codable, Equatable {
     var spokenAt: TimeInterval
 }
 
-struct ChimeNotice: Equatable {
+struct ChimeNotice: Codable, Equatable {
     let noticeKey: String
     let spokenTitle: String
     let spokenBody: String
@@ -15,12 +15,18 @@ struct ChimeNotice: Equatable {
     let clipKey: String?
     let glyph: String
     let tintKind: Int
+    var createdAt: TimeInterval? = nil
+    var artworkName: String? = nil
 }
 
 enum NightSocialChimeCatalog {
     static let supportDeskKey = "desk.house.support"
 
-    static let platformNotices: [ChimeNotice] = [
+    static var platformNotices: [ChimeNotice] {
+        NightSocialSessionDrawer.shared.safetyNotices() + platformSeed
+    }
+
+    private static let platformSeed: [ChimeNotice] = [
         ChimeNotice(noticeKey: "plat.1", spokenTitle: "Room update", spokenBody: "Night rooms were refreshed. Take a look when you are free.", minutesAgo: 5, speakerDeskKey: nil, clipKey: nil, glyph: "sparkles", tintKind: 0),
         ChimeNotice(noticeKey: "plat.2", spokenTitle: "Night note", spokenBody: "Keep rooms kind after dark. Thanks for being here.", minutesAgo: 18, speakerDeskKey: nil, clipKey: nil, glyph: "moon.stars.fill", tintKind: 1),
         ChimeNotice(noticeKey: "plat.3", spokenTitle: "Coins", spokenBody: "A coin change was added to your balance.", minutesAgo: 42, speakerDeskKey: nil, clipKey: nil, glyph: "diamond.fill", tintKind: 2),
@@ -58,7 +64,6 @@ enum NightSocialChimeCatalog {
             followerCount: "120",
             friendCount: "8",
             watchingCount: "3",
-            matchPercent: "64%",
             activityScore: 80,
             isHot: false,
             isLive: false,

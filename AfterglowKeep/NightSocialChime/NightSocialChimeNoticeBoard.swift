@@ -29,6 +29,7 @@ enum ChimeNoticeKind {
 final class NightSocialChimeNoticeBoard: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private let kind: ChimeNoticeKind
     private let table = UITableView()
+    private var notices: [ChimeNotice] = []
 
     init(kind: ChimeNoticeKind) {
         self.kind = kind
@@ -80,18 +81,37 @@ final class NightSocialChimeNoticeBoard: UIViewController, UITableViewDataSource
             table.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             table.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadNotices), name: .deskDrawerDidChange, object: nil)
+        reloadNotices()
+    }
+
+    deinit { NotificationCenter.default.removeObserver(self) }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if kind == .platform { NightSocialSessionDrawer.shared.markPlatformRead() }
+        reloadNotices()
+    }
+
+    @objc private func reloadNotices() {
+        notices = kind.notices
+        if kind == .platform, viewIfLoaded?.window != nil,
+           navigationController?.topViewController === self, presentedViewController == nil {
+            NightSocialSessionDrawer.shared.markPlatformRead()
+        }
+        table.reloadData()
     }
 
     @objc private func fold() { navigationController?.popViewController(animated: true) }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { kind.notices.count }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { notices.count }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ChimeNoticeRow.reuseId, for: indexPath) as! ChimeNoticeRow
-        cell.paint(kind.notices[indexPath.row], likes: kind == .likes)
+        cell.paint(notices[indexPath.row], likes: kind == .likes)
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let notice = kind.notices[indexPath.row]
+        let notice = notices[indexPath.row]
         if let clipKey = notice.clipKey {
             navigationController?.pushViewController(NightSocialClipTheater(clipKey: clipKey), animated: true)
         } else if let deskKey = notice.speakerDeskKey {
@@ -140,7 +160,7 @@ final class ChimeNoticeRow: UITableViewCell {
         titlePlate.translatesAutoresizingMaskIntoConstraints = false
         bodyPlate.font = AfterHoursType.foyerBody(13)
         bodyPlate.textColor = UIColor.white.withAlphaComponent(0.68)
-        bodyPlate.numberOfLines = 2
+        bodyPlate.numberOfLines = 0
         bodyPlate.translatesAutoresizingMaskIntoConstraints = false
         clock.font = AfterHoursType.foyerCaption(11)
         clock.textColor = UIColor.white.withAlphaComponent(0.42)
@@ -171,6 +191,8 @@ final class ChimeNoticeRow: UITableViewCell {
             disc.heightAnchor.constraint(equalToConstant: 44),
             glyph.centerXAnchor.constraint(equalTo: disc.centerXAnchor),
             glyph.centerYAnchor.constraint(equalTo: disc.centerYAnchor),
+            glyph.widthAnchor.constraint(equalToConstant: 22),
+            glyph.heightAnchor.constraint(equalToConstant: 22),
             portrait.leadingAnchor.constraint(equalTo: disc.leadingAnchor),
             portrait.topAnchor.constraint(equalTo: disc.topAnchor),
             portrait.widthAnchor.constraint(equalToConstant: 44),
@@ -199,7 +221,9 @@ final class ChimeNoticeRow: UITableViewCell {
     func paint(_ notice: ChimeNotice, likes: Bool) {
         titlePlate.text = notice.spokenTitle
         bodyPlate.text = notice.spokenBody
-        clock.text = Self.clockPhrase(notice.minutesAgo)
+        let minutes = notice.createdAt.map { max(0, Int((Date().timeIntervalSince1970 - $0) / 60)) }
+            ?? notice.minutesAgo
+        clock.text = Self.clockPhrase(minutes)
         let tints = [
             AfterHoursPalette.loungePink,
             AfterHoursPalette.levelMint,
@@ -207,7 +231,11 @@ final class ChimeNoticeRow: UITableViewCell {
         ]
         let tint = tints[min(notice.tintKind, tints.count - 1)]
         disc.backgroundColor = tint.withAlphaComponent(0.18)
-        glyph.image = UIImage(systemName: notice.glyph, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold))
+        if let artworkName = notice.artworkName {
+            glyph.image = NightSocialImageCabinet.named(artworkName, fallback: artworkName)
+        } else {
+            glyph.image = UIImage(systemName: notice.glyph, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold))
+        }
         glyph.tintColor = tint
         if likes, let deskKey = notice.speakerDeskKey {
             portrait.image = NightSocialMediaAssets.portrait(for: deskKey, size: CGSize(width: 88, height: 88))
@@ -230,6 +258,7 @@ final class ChimeNoticeRow: UITableViewCell {
     }
 
     private static func clockPhrase(_ minutes: Int) -> String {
+        if minutes == 0 { return "Just now" }
         if minutes < 60 { return "\(minutes) min ago" }
         let hours = minutes / 60
         if hours < 24 { return "\(hours)h ago" }

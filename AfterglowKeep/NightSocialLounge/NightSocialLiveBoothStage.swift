@@ -212,7 +212,6 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     private let danmaku = LiveDanmakuLane()
     private let giftRibbon = LiveGiftRibbon()
     private let giftBurst = UIImageView()
-    private var chatter: Timer?
     private let followPlus = UIButton(type: .system)
     private var followPlusWidth: NSLayoutConstraint!
 
@@ -226,14 +225,11 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         videoSurface?.start()
-        startAtmosphere()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         videoSurface?.stop()
-        chatter?.invalidate()
-        chatter = nil
     }
 
     override func viewDidLoad() {
@@ -415,7 +411,6 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         followPlusWidth.isActive = true
         NotificationCenter.default.addObserver(self, selector: #selector(catchGift(_:)), name: .liveGiftOffered, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(paintFollowPlus), name: .deskDrawerDidChange, object: nil)
-        seedOpeningChat()
         paintFollowPlus()
     }
 
@@ -466,59 +461,6 @@ final class NightSocialLiveBoothStage: UIViewController, UITableViewDataSource {
         let me = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "You"
         pushLine(speaker: me, body: body, deskKey: "")
         field.text = ""
-    }
-
-    private func seedOpeningChat() {
-        guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
-        let others = NightSocialLoungeCatalog.visibleCreators().filter { $0.deskKey != booth.hostDeskKey }
-        guard !others.isEmpty else { return }
-        let opening = [
-            "The lighting on this sitting is unreal.",
-            "Just walked in. Stay a minute.",
-            "Send a wand if the talk lands.",
-        ]
-        for (index, phrase) in opening.enumerated() {
-            let speaker = others[index % others.count]
-            chatLines.append(LoungeDiscussLine(speakerDeskKey: speaker.deskKey, speakerName: speaker.spokenName, spokenBody: phrase))
-        }
-        table.reloadData()
-    }
-
-    private func startAtmosphere() {
-        chatter?.invalidate()
-        chatter = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: true) { [weak self] _ in
-            self?.spillAtmosphere()
-        }
-        if let first = chatLines.first {
-            danmaku.fire("\(first.speakerName): \(first.spokenBody)")
-        }
-    }
-
-    private func spillAtmosphere() {
-        guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
-        let others = NightSocialLoungeCatalog.visibleCreators().filter { $0.deskKey != booth.hostDeskKey }
-        guard let speaker = others.randomElement() else { return }
-        let phrases = [
-            "This room is warm tonight.",
-            "The talk landed.",
-            "Stay, don't fold yet.",
-            "That shot is cinematic.",
-            "Hi from the back row.",
-            "Gift a heart if you're still here.",
-            "The night desk is kind.",
-            "Keep the lamp low.",
-        ]
-        let phrase = phrases.randomElement() ?? "Hello."
-        pushLine(speaker: speaker.spokenName, body: phrase, deskKey: speaker.deskKey)
-        if Int.random(in: 0...4) == 0, let gift = NightSocialLoungeCatalog.gifts.randomElement() {
-            paintGift(
-                speaker: speaker.spokenName,
-                deskKey: speaker.deskKey,
-                title: gift.spokenTitle,
-                quantity: 1,
-                glyphName: gift.glyphCatalog
-            )
-        }
     }
 
     private func pushLine(speaker: String, body: String, deskKey: String) {
@@ -1287,9 +1229,7 @@ final class NightSocialHostCardSheet: UIViewController {
     }
     @objc private func openWhisper() {
         guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }
-        dismiss(animated: true) { [weak self] in
-            self?.nav?.pushViewController(NightSocialChimeThreadBoard(deskKey: booth.hostDeskKey), animated: true)
-        }
+        NightSocialDeskGate.revealChime(from: self, deskKey: booth.hostDeskKey, navigation: nav)
     }
     @objc private func openDesk() {
         guard let booth = NightSocialLoungeCatalog.booth(boothKey: boothKey) else { return }

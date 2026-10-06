@@ -12,6 +12,8 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
     private var tableToHead: NSLayoutConstraint?
     private var tableToTabs: NSLayoutConstraint?
     private var friendsHeight: NSLayoutConstraint?
+    private let platformUnread = UILabel()
+    private let messagingHint = UILabel()
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
@@ -26,6 +28,11 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         followMark.setTitle(NightLang.t(.following), for: .normal)
         messageMark.addTarget(self, action: #selector(showMessages), for: .touchUpInside)
         followMark.addTarget(self, action: #selector(showFollow), for: .touchUpInside)
+        messagingHint.text = NightLang.t(.privateMessagingHint)
+        messagingHint.font = AfterHoursType.foyerBody(13)
+        messagingHint.textColor = UIColor.white.withAlphaComponent(0.8)
+        messagingHint.numberOfLines = 0
+        messagingHint.translatesAutoresizingMaskIntoConstraints = false
         let compose = UIButton(type: .system)
         compose.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
         compose.tintColor = .white
@@ -33,6 +40,16 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         compose.translatesAutoresizingMaskIntoConstraints = false
 
         let platform = tileButton("PlatformTile", "PlatformTile", #selector(openPlatform))
+        platformUnread.text = "NEW"
+        platformUnread.font = AfterHoursType.foyerPill(12)
+        platformUnread.textColor = .white
+        platformUnread.isUserInteractionEnabled = false
+        platformUnread.translatesAutoresizingMaskIntoConstraints = false
+        platform.addSubview(platformUnread)
+        NSLayoutConstraint.activate([
+            platformUnread.topAnchor.constraint(equalTo: platform.topAnchor, constant: 6),
+            platformUnread.trailingAnchor.constraint(equalTo: platform.trailingAnchor, constant: -8),
+        ])
         let likes = tileButton("LikesTile", "LikesTile", #selector(openLikes))
         let support = tileButton("SupportAvatar", "SupportAvatar", #selector(openSupport))
         let tiles = UIStackView(arrangedSubviews: [platform, likes, support])
@@ -72,6 +89,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         view.addSubview(tiles)
         view.addSubview(friendsRow)
         view.addSubview(chatHead)
+        view.addSubview(messagingHint)
         view.addSubview(table)
         messageMark.translatesAutoresizingMaskIntoConstraints = false
         followMark.translatesAutoresizingMaskIntoConstraints = false
@@ -84,7 +102,10 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
             compose.centerYAnchor.constraint(equalTo: messageMark.centerYAnchor),
             tiles.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tiles.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tiles.topAnchor.constraint(equalTo: messageMark.bottomAnchor, constant: 14),
+            messagingHint.topAnchor.constraint(equalTo: messageMark.bottomAnchor, constant: 10),
+            messagingHint.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            messagingHint.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            tiles.topAnchor.constraint(equalTo: messagingHint.bottomAnchor, constant: 14),
             tiles.heightAnchor.constraint(equalToConstant: 92),
             friendsRow.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             friendsRow.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -103,7 +124,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         friendsHeight = friendsRow.heightAnchor.constraint(equalToConstant: 86)
         friendsHeight?.isActive = true
         tableToHead = table.topAnchor.constraint(equalTo: chatHead.bottomAnchor, constant: 6)
-        tableToTabs = table.topAnchor.constraint(equalTo: followMark.bottomAnchor, constant: 16)
+        tableToTabs = table.topAnchor.constraint(equalTo: messagingHint.bottomAnchor, constant: 16)
         tableToHead?.isActive = true
         NotificationCenter.default.addObserver(self, selector: #selector(reloadBoard), name: .deskDrawerDidChange, object: nil)
         paintTabs()
@@ -151,6 +172,8 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
     }
 
     @objc private func reloadBoard() {
+        platformUnread.isHidden = NightSocialSessionDrawer.shared.platformIsRead()
+            || NightSocialSessionDrawer.shared.safetyNotices().isEmpty
         threadKeys = NightSocialSessionDrawer.shared.chimeThreadKeys()
         followDesks = NightSocialSessionDrawer.shared.followedDeskKeys().compactMap {
             NightSocialLoungeCatalog.creator(deskKey: $0)
@@ -266,7 +289,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
     }
 
     private func openThread(_ deskKey: String) {
-        navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: deskKey), animated: true)
+        NightSocialDeskGate.revealChime(from: self, deskKey: deskKey)
     }
 
     @objc private func openCompose() {
@@ -281,7 +304,7 @@ final class NightSocialChimeBoardController: UIViewController, UITableViewDataSo
         navigationController?.pushViewController(NightSocialChimeNoticeBoard(kind: .likes), animated: true)
     }
     @objc private func openSupport() {
-        navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: NightSocialChimeCatalog.supportDeskKey), animated: true)
+        NightSocialDeskGate.revealChime(from: self, deskKey: NightSocialChimeCatalog.supportDeskKey)
     }
 }
 

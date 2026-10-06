@@ -4,12 +4,14 @@ enum NightSocialSafetyTarget {
     case desk(String)
     case clip(clipKey: String, authorDeskKey: String)
     case comment(lineKey: String, speakerDeskKey: String)
+    case chat(String)
 
     var deskKey: String {
         switch self {
         case .desk(let key): return key
         case .clip(_, let author): return author
         case .comment(_, let speaker): return speaker
+        case .chat(let key): return key
         }
     }
 }
@@ -209,12 +211,20 @@ final class NightSocialReportKindBoard: UIViewController, UITableViewDataSource,
         card.layer.cornerRadius = 24
         card.translatesAutoresizingMaskIntoConstraints = false
         let title = UILabel()
-        title.text = "Report"
+        if case .chat = target {
+            title.text = "Report chat"
+        } else {
+            title.text = "Report"
+        }
         title.font = AfterHoursType.foyerHeadline(20)
         title.textColor = AfterHoursPalette.inkOnSnow
         title.translatesAutoresizingMaskIntoConstraints = false
         let hint = UILabel()
-        hint.text = "Pick why this sitting should leave your night."
+        if case .chat = target {
+            hint.text = "Choose why you are reporting this conversation."
+        } else {
+            hint.text = "Pick why this sitting should leave your night."
+        }
         hint.font = AfterHoursType.foyerCaption(12)
         hint.textColor = AfterHoursPalette.inkOnSnow.withAlphaComponent(0.6)
         hint.translatesAutoresizingMaskIntoConstraints = false

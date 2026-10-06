@@ -14,9 +14,6 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
     private let danmaku = LiveDanmakuLane()
     private let giftRibbon = LiveGiftRibbon()
     private let giftBurst = UIImageView()
-    private var chatter: Timer?
-    private var speakTimer: Timer?
-    private var speakingIndex: Int?
     private let followPlus = UIButton(type: .system)
     private var followPlusWidth: NSLayoutConstraint!
 
@@ -247,29 +244,22 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         followPlusWidth.isActive = true
         NotificationCenter.default.addObserver(self, selector: #selector(catchGift(_:)), name: .liveGiftOffered, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(paintFollowPlus), name: .deskDrawerDidChange, object: nil)
-        seedOpeningChat()
         paintFollowPlus()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        startAtmosphere()
-        startSpeakCycle()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if isMovingFromParent {
-            chatter?.invalidate()
-            speakTimer?.invalidate()
             navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         }
     }
 
     deinit {
-        chatter?.invalidate()
-        speakTimer?.invalidate()
         NotificationCenter.default.removeObserver(self)
     }
 
@@ -459,26 +449,6 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         }
     }
 
-    private func startSpeakCycle() {
-        speakTimer?.invalidate()
-        advanceSpeaker()
-        speakTimer = Timer.scheduledTimer(withTimeInterval: 2.6, repeats: true) { [weak self] _ in
-            self?.advanceSpeaker()
-        }
-    }
-
-    private func advanceSpeaker() {
-        let filled = Array(0..<min(8, occupied.count))
-        guard !filled.isEmpty else { return }
-        if let current = speakingIndex { setSpeaking(index: current, on: false) }
-        var next = filled.randomElement() ?? 0
-        if filled.count > 1, next == speakingIndex {
-            next = filled.first { $0 != speakingIndex } ?? next
-        }
-        speakingIndex = next
-        setSpeaking(index: next, on: true)
-    }
-
     private func setSpeaking(index: Int, on: Bool) {
         guard let halo = seatHalos[index] else { return }
         halo.layer.removeAllAnimations()
@@ -564,57 +534,6 @@ final class NightSocialWaveVoiceStage: UIViewController, UITableViewDataSource {
         let me = NightSocialSessionDrawer.shared.restoredSession()?.nightAlias ?? "You"
         pushLine(speaker: me, body: body, deskKey: "")
         field.text = ""
-    }
-
-    private func seedOpeningChat() {
-        let others = NightSocialLoungeCatalog.visibleCreators().filter { $0.deskKey != chamber.hostDeskKey }
-        guard !others.isEmpty else { return }
-        let opening = [
-            "Who's on the mic first?",
-            "This sitting already feels warm.",
-            "Pass the mic if the talk lands.",
-        ]
-        for (index, phrase) in opening.enumerated() {
-            let speaker = others[index % others.count]
-            chatLines.append(LoungeDiscussLine(speakerDeskKey: speaker.deskKey, speakerName: speaker.spokenName, spokenBody: phrase))
-        }
-        table.reloadData()
-    }
-
-    private func startAtmosphere() {
-        chatter?.invalidate()
-        chatter = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { [weak self] _ in
-            self?.spillAtmosphere()
-        }
-        if let first = chatLines.first {
-            danmaku.fire("\(first.speakerName): \(first.spokenBody)")
-        }
-    }
-
-    private func spillAtmosphere() {
-        let others = NightSocialLoungeCatalog.visibleCreators().filter { $0.deskKey != chamber.hostDeskKey }
-        guard let speaker = others.randomElement() else { return }
-        let phrases = [
-            "Keep the mic kind.",
-            "That line landed.",
-            "Who's taking the next seat?",
-            "This room is easy tonight.",
-            "Say it again, slower.",
-            "Gift a wand if you're still here.",
-            "The night desk is listening.",
-            "Stay on this sitting.",
-        ]
-        let phrase = phrases.randomElement() ?? "Hello."
-        pushLine(speaker: speaker.spokenName, body: phrase, deskKey: speaker.deskKey)
-        if Int.random(in: 0...4) == 0, let gift = NightSocialLoungeCatalog.gifts.randomElement() {
-            paintGift(
-                speaker: speaker.spokenName,
-                deskKey: speaker.deskKey,
-                title: gift.spokenTitle,
-                quantity: 1,
-                glyphName: gift.glyphCatalog
-            )
-        }
     }
 
     private func pushLine(speaker: String, body: String, deskKey: String) {
@@ -842,8 +761,6 @@ extension NightSocialWaveVoiceStage: NightSocialSafetyContent {
     }
 
     func prepareForSafetyRemoval() {
-        chatter?.invalidate()
-        speakTimer?.invalidate()
         if NightSocialSessionDrawer.shared.seatedChamberSeat()?.0 == chamberKey {
             NightSocialSessionDrawer.shared.clearSeatedChamber()
         }

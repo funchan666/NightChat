@@ -7,6 +7,7 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
     private let tongueRow = UIStackView()
     private let bannerA = WaveBannerTile()
     private let bannerB = WaveBannerTile()
+    private let browseHint = UILabel()
     private let headPlate = UILabel()
     private let countPlate = UILabel()
     private let table = UITableView()
@@ -56,6 +57,12 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         bannerA.addTarget(self, action: #selector(tapBannerA), for: .touchUpInside)
         bannerB.addTarget(self, action: #selector(tapBannerB), for: .touchUpInside)
 
+        browseHint.text = NightLang.t(.roomBrowseHint)
+        browseHint.font = AfterHoursType.foyerBody(13)
+        browseHint.textColor = UIColor.white.withAlphaComponent(0.8)
+        browseHint.numberOfLines = 0
+        browseHint.translatesAutoresizingMaskIntoConstraints = false
+
         headPlate.font = AfterHoursType.foyerPill(18)
         headPlate.textColor = .white
         headPlate.translatesAutoresizingMaskIntoConstraints = false
@@ -78,6 +85,7 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
         view.addSubview(tongueRow)
         view.addSubview(bannerA)
         view.addSubview(bannerB)
+        view.addSubview(browseHint)
         view.addSubview(headPlate)
         view.addSubview(countPlate)
         view.addSubview(table)
@@ -92,14 +100,17 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
             tongueRow.topAnchor.constraint(equalTo: partyRow.bottomAnchor, constant: 12),
             bannerA.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             bannerA.topAnchor.constraint(equalTo: tongueRow.bottomAnchor, constant: 14),
-            bannerA.widthAnchor.constraint(equalToConstant: 173),
-            bannerA.heightAnchor.constraint(equalToConstant: 100),
+            bannerA.widthAnchor.constraint(equalTo: bannerB.widthAnchor),
+            bannerA.heightAnchor.constraint(equalToConstant: 112),
             bannerB.leadingAnchor.constraint(equalTo: bannerA.trailingAnchor, constant: 10),
             bannerB.topAnchor.constraint(equalTo: bannerA.topAnchor),
-            bannerB.widthAnchor.constraint(equalToConstant: 173),
-            bannerB.heightAnchor.constraint(equalToConstant: 100),
+            bannerB.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            bannerB.heightAnchor.constraint(equalToConstant: 112),
             headPlate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            headPlate.topAnchor.constraint(equalTo: bannerA.bottomAnchor, constant: 16),
+            browseHint.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            browseHint.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            browseHint.topAnchor.constraint(equalTo: bannerA.bottomAnchor, constant: 12),
+            headPlate.topAnchor.constraint(equalTo: browseHint.bottomAnchor, constant: 16),
             countPlate.leadingAnchor.constraint(equalTo: headPlate.leadingAnchor),
             countPlate.topAnchor.constraint(equalTo: headPlate.bottomAnchor, constant: 2),
             table.topAnchor.constraint(equalTo: countPlate.bottomAnchor, constant: 8),
@@ -158,24 +169,18 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
     }
 
     private func paintBanners() {
-        let liveHosts = NightSocialWaveCatalog.chambers.filter { $0.isLive }.map(\.hostDeskKey)
-        let followed = NightSocialSessionDrawer.shared.followedDeskKeys()
-        let followHosts = liveHosts.filter { followed.contains($0) }
-        let recentHosts = NightSocialSessionDrawer.shared.recentChamberKeys().compactMap { key in
-            NightSocialWaveCatalog.chamber(key)?.hostDeskKey
-        }
         switch partyLane {
         case .party:
-            bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerHosts", fallback: "PartyBannerHosts"), seats: liveHosts)
-            bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerOpen", fallback: "PartyBannerOpen"), seats: Array(liveHosts.dropFirst(1)))
+            bannerA.paint(title: NightLang.t(.browseHosts))
+            bannerB.paint(title: NightLang.t(.browseRooms))
             headPlate.text = NightLang.t(.liveVoiceRooms)
         case .follow:
-            bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerFollow", fallback: "PartyBannerFollow"), seats: followHosts)
-            bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerSoon", fallback: "PartyBannerSoon"), seats: followHosts)
+            bannerA.paint(title: NightLang.t(.followingLiveRooms))
+            bannerB.paint(title: NightLang.t(.followingUpcomingRooms))
             headPlate.text = NightLang.t(.followedRooms)
         case .recent:
-            bannerA.paint(image: NightSocialImageCabinet.named("PartyBannerRecent", fallback: "PartyBannerRecent"), seats: recentHosts)
-            bannerB.paint(image: NightSocialImageCabinet.named("PartyBannerActive", fallback: "PartyBannerActive"), seats: recentHosts)
+            bannerA.paint(title: NightLang.t(.roomHistory))
+            bannerB.paint(title: NightLang.t(.recentlyVisitedLive))
             headPlate.text = NightLang.t(.recentlyJoined)
         }
     }
@@ -232,12 +237,7 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
     }
 
     private func enterChamber(_ chamber: WaveVoiceChamber) {
-        if chamber.isUpcoming {
-            FoyerNotice.present(on: self, spokenTitle: "Starting soon", spokenBody: "This voice desk is not open yet. Keep the chair, come back when the lamp is lit.")
-            return
-        }
-        NightSocialSessionDrawer.shared.rememberVisitedChamber(chamber.chamberKey)
-        navigationController?.pushViewController(NightSocialWaveVoiceStage(chamberKey: chamber.chamberKey), animated: true)
+        NightSocialWaveRoomEntry.showDetails(for: chamber, from: self)
     }
 
     @objc private func openLookup() {
@@ -251,100 +251,79 @@ final class NightSocialWaveStageController: UIViewController, UITableViewDataSou
     @objc private func tapBannerA() {
         switch partyLane {
         case .party:
-            present(NightSocialWaveHostPicksSheet(nav: navigationController), animated: true)
+            present(NightSocialWaveHostPicksSheet(nav: navigationController, tongue: tongueLane), animated: true)
         case .follow:
-            present(NightSocialWaveRoomListSheet(kind: .followingLive, nav: navigationController), animated: true)
+            present(NightSocialWaveRoomListSheet(kind: .followingLive, nav: navigationController, tongue: tongueLane), animated: true)
         case .recent:
-            present(NightSocialWaveRoomListSheet(kind: .returnRooms, nav: navigationController), animated: true)
+            present(NightSocialWaveRoomListSheet(kind: .returnRooms, nav: navigationController, tongue: tongueLane), animated: true)
         }
     }
 
     @objc private func tapBannerB() {
         switch partyLane {
         case .party:
-            present(NightSocialWaveOpenRoomsSheet(nav: navigationController), animated: true)
+            present(NightSocialWaveOpenRoomsSheet(nav: navigationController, tongue: tongueLane), animated: true)
         case .follow:
-            present(NightSocialWaveRoomListSheet(kind: .startingSoon, nav: navigationController), animated: true)
+            present(NightSocialWaveRoomListSheet(kind: .startingSoon, nav: navigationController, tongue: tongueLane), animated: true)
         case .recent:
-            present(NightSocialWaveRoomListSheet(kind: .activeAgain, nav: navigationController), animated: true)
+            present(NightSocialWaveRoomListSheet(kind: .activeAgain, nav: navigationController, tongue: tongueLane), animated: true)
         }
     }
 }
 
 final class WaveBannerTile: UIControl {
-    private let cloth = UIImageView()
-    private let stackA = UIImageView()
-    private let stackB = UIImageView()
-    private let stackC = UIImageView()
-    private let arrow = UIImageView()
+    private let cloth = UIImageView(image: UIImage(named: "RoomDirectoryArtwork"))
+    private let titlePlate = UILabel()
+    private let actionPlate = UILabel()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false
         clipsToBounds = true
         layer.cornerRadius = 18
+        isAccessibilityElement = true
+        accessibilityTraits = .button
         cloth.contentMode = .scaleAspectFill
         cloth.clipsToBounds = true
         cloth.isUserInteractionEnabled = false
         cloth.translatesAutoresizingMaskIntoConstraints = false
-        arrow.image = UIImage(systemName: "arrow.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 9, weight: .bold))
-        arrow.tintColor = AfterHoursPalette.inkOnSnow
-        arrow.backgroundColor = UIColor.white.withAlphaComponent(0.88)
-        arrow.layer.cornerRadius = 11
-        arrow.contentMode = .center
-        arrow.clipsToBounds = true
-        arrow.isUserInteractionEnabled = false
-        arrow.translatesAutoresizingMaskIntoConstraints = false
+        titlePlate.font = AfterHoursType.foyerPill(16)
+        titlePlate.textColor = .white
+        titlePlate.numberOfLines = 3
+        titlePlate.translatesAutoresizingMaskIntoConstraints = false
+        actionPlate.text = NightLang.t(.viewRoomList)
+        actionPlate.font = AfterHoursType.foyerCaption(11)
+        actionPlate.textColor = UIColor.white.withAlphaComponent(0.85)
+        actionPlate.numberOfLines = 2
+        actionPlate.translatesAutoresizingMaskIntoConstraints = false
         addSubview(cloth)
-        addSubview(stackC)
-        addSubview(stackB)
-        addSubview(stackA)
-        addSubview(arrow)
-        for mark in [stackA, stackB, stackC] {
-            mark.contentMode = .scaleAspectFill
-            mark.clipsToBounds = true
-            mark.layer.cornerRadius = 11
-            mark.layer.borderWidth = 1.5
-            mark.layer.borderColor = UIColor.white.cgColor
-            mark.isUserInteractionEnabled = false
-            mark.translatesAutoresizingMaskIntoConstraints = false
-        }
+        addSubview(titlePlate)
+        addSubview(actionPlate)
         NSLayoutConstraint.activate([
             cloth.topAnchor.constraint(equalTo: topAnchor),
             cloth.leadingAnchor.constraint(equalTo: leadingAnchor),
             cloth.trailingAnchor.constraint(equalTo: trailingAnchor),
             cloth.bottomAnchor.constraint(equalTo: bottomAnchor),
-            stackA.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            stackA.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
-            stackA.widthAnchor.constraint(equalToConstant: 22),
-            stackA.heightAnchor.constraint(equalToConstant: 22),
-            stackB.leadingAnchor.constraint(equalTo: stackA.leadingAnchor, constant: 14),
-            stackB.centerYAnchor.constraint(equalTo: stackA.centerYAnchor),
-            stackB.widthAnchor.constraint(equalToConstant: 22),
-            stackB.heightAnchor.constraint(equalToConstant: 22),
-            stackC.leadingAnchor.constraint(equalTo: stackB.leadingAnchor, constant: 14),
-            stackC.centerYAnchor.constraint(equalTo: stackA.centerYAnchor),
-            stackC.widthAnchor.constraint(equalToConstant: 22),
-            stackC.heightAnchor.constraint(equalToConstant: 22),
-            arrow.leadingAnchor.constraint(equalTo: stackC.trailingAnchor, constant: 8),
-            arrow.centerYAnchor.constraint(equalTo: stackA.centerYAnchor),
-            arrow.widthAnchor.constraint(equalToConstant: 22),
-            arrow.heightAnchor.constraint(equalToConstant: 22),
+            titlePlate.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            titlePlate.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            titlePlate.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            titlePlate.bottomAnchor.constraint(lessThanOrEqualTo: actionPlate.topAnchor, constant: -4),
+            actionPlate.leadingAnchor.constraint(equalTo: titlePlate.leadingAnchor),
+            actionPlate.trailingAnchor.constraint(lessThanOrEqualTo: centerXAnchor, constant: 6),
+            actionPlate.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
         ])
     }
 
     required init?(coder: NSCoder) { nil }
 
-    func paint(image: UIImage?, seats: [String]) {
-        cloth.image = image
-        let keys = Array(seats.prefix(3))
-        stackA.image = keys.indices.contains(0) ? NightSocialMediaAssets.portrait(for: keys[0], size: CGSize(width: 44, height: 44)) : nil
-        stackB.image = keys.indices.contains(1) ? NightSocialMediaAssets.portrait(for: keys[1], size: CGSize(width: 44, height: 44)) : nil
-        stackC.image = keys.indices.contains(2) ? NightSocialMediaAssets.portrait(for: keys[2], size: CGSize(width: 44, height: 44)) : nil
-        stackA.isHidden = keys.isEmpty
-        stackB.isHidden = keys.count < 2
-        stackC.isHidden = keys.count < 3
-        arrow.isHidden = keys.isEmpty
+    override var isHighlighted: Bool {
+        didSet { alpha = isHighlighted ? 0.7 : 1 }
+    }
+
+    func paint(title: String) {
+        titlePlate.text = title
+        accessibilityLabel = title
+        accessibilityHint = NightLang.t(.viewRoomList)
     }
 }
 

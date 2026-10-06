@@ -307,7 +307,7 @@ final class NightSocialCreatorDeskBoard: UIViewController, UICollectionViewDataS
     }
 
     @objc private func openWhisper() {
-        navigationController?.pushViewController(NightSocialChimeThreadBoard(deskKey: deskKey), animated: true)
+        NightSocialDeskGate.revealChime(from: self, deskKey: deskKey)
     }
 
     @objc private func openSafety() {
